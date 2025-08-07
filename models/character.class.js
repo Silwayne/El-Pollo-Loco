@@ -1,5 +1,6 @@
 class Character extends MovableObject {
   y = 200;
+  speed = 10;
   height = 250;
   width = 150;
   IMAGES_WALKING = [
@@ -11,7 +12,7 @@ class Character extends MovableObject {
     "img/2_character_pepe/2_walk/W-26.png",
   ];
 
-  world;
+  world; 
 
   constructor() {
     super().loadImage("img/2_character_pepe/2_walk/W-21.png");
@@ -23,12 +24,25 @@ class Character extends MovableObject {
   animate() {
     setInterval(() => {
       if (this.world.keyboard.RIGHT) {
+        this.x += this.speed;
+        this.otherDirection = false; // Setzt die andere Richtung, wenn nach rechts bewegt wird
+      }
+
+      if (this.world.keyboard.LEFT) {
+        this.x -= this.speed;
+        this.otherDirection = true; // Setzt die andere Richtung, wenn nach links bewegt wird
+      }
+    }, 1000 / 60);
+
+    setInterval(() => {
+      if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+        // Walk Animation
         let i = this.currentImage % this.IMAGES_WALKING.length; // Modulus-Operator, um den Index zu begrenzen
         let path = this.IMAGES_WALKING[i]; // Mit dem i startet das Array wieder von vorne
         this.img = this.imageCache[path]; // Greift auf das Bild im Cache zu
         this.currentImage++; // Erhöht den Index für das nächste Bild
       }
-    }, 200);
+    }, 50);
   }
 
   jump() {}

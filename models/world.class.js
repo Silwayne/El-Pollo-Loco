@@ -1,14 +1,6 @@
 class World {
   character = new Character();
-  enemies = [new Chicken(), new Chicken(), new Chicken()];
-  clouds = [new Cloud()];
-
-  backgroundObjects = [
-    new BackgroundObject("img/5_background/layers/air.png", 0),
-    new BackgroundObject("img/5_background/layers/3_third_layer/1.png", 0),
-    new BackgroundObject("img/5_background/layers/2_second_layer/1.png", 0),
-    new BackgroundObject("img/5_background/layers/1_first_layer/1.png", 0),
-  ];
+  level = level1;
   canvas;
   ctx;
   keyboard;
@@ -33,10 +25,10 @@ class World {
     this.ctx.translate(this.camera_x, 0); // Verschiebe die Kamera
 
     // Zeichne alle Objekte auf den Canvas
-    this.addObjectToMap(this.backgroundObjects); // Zeichne die Hintergrundobjekte
+    this.addObjectToMap(this.level.backgroundObjects); // Zeichne die Hintergrundobjekte
     this.addToMap(this.character); // Zeichne den Charakter
-    this.addObjectToMap(this.enemies); // Zeichne die Gegner
-    this.addObjectToMap(this.clouds); // Zeichne die Wolken
+    this.addObjectToMap(this.level.enemies); // Zeichne die Gegner
+    this.addObjectToMap(this.level.clouds); // Zeichne die Wolken
 
     this.ctx.translate(-this.camera_x, 0); // Rückgängig machen der Verschiebung
     // draw() wird immer wieder ausgeführt
@@ -53,7 +45,7 @@ class World {
   }
 
   addToMap(mo) {
-    if(mo.otherDirection) {
+    if (mo.otherDirection) {
       this.ctx.save();
       this.ctx.translate(mo.width, 0);
       this.ctx.scale(-1, 1);
@@ -64,6 +56,5 @@ class World {
       mo.x = mo.x * -1;
       this.ctx.restore();
     }
-
   }
 }

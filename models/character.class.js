@@ -23,25 +23,22 @@ class Character extends MovableObject {
 
   animate() {
     setInterval(() => {
-      if (this.world.keyboard.RIGHT) {
+      if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
         this.x += this.speed;
         this.otherDirection = false; // Setzt die andere Richtung, wenn nach rechts bewegt wird
       }
 
-      if (this.world.keyboard.LEFT) {
+      if (this.world.keyboard.LEFT && this.x > -619) {
         this.x -= this.speed;
         this.otherDirection = true; // Setzt die andere Richtung, wenn nach links bewegt wird
       }
-      this.world.camera_x = -this.x; // Aktualisiert die Kameraposition
+      this.world.camera_x = -this.x + 100; // Aktualisiert die Kameraposition
     }, 1000 / 60);
 
     setInterval(() => {
       if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
         // Walk Animation
-        let i = this.currentImage % this.IMAGES_WALKING.length; // Modulus-Operator, um den Index zu begrenzen
-        let path = this.IMAGES_WALKING[i]; // Mit dem i startet das Array wieder von vorne
-        this.img = this.imageCache[path]; // Greift auf das Bild im Cache zu
-        this.currentImage++; // Erhöht den Index für das nächste Bild
+        this.playAnimation(this.IMAGES_WALKING);
       }
     }, 50);
   }

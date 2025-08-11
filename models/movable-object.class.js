@@ -27,6 +27,14 @@ class MovableObject {
     });
   }
 
+  playAnimation(images) {
+    // Walk Animation
+    let i = this.currentImage % this.IMAGES_WALKING.length; // Modulus-Operator, um den Index zu begrenzen
+    let path = images[i]; // Mit dem i startet das Array wieder von vorne
+    this.img = this.imageCache[path]; // Greift auf das Bild im Cache zu
+    this.currentImage++; // Erhöht den Index für das nächste Bild
+  }
+
   moveRight() {
     console.log("Move right");
   }

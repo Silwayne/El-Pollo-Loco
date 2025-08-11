@@ -24,10 +24,7 @@ class Chicken extends MovableObject {
     this.moveLeft(); // Startet die Bewegung nach links
 
     setInterval(() => {
-      let i = this.currentImage % this.IMAGES_WALKING.length; // Modulus-Operator, um den Index zu begrenzen
-      let path = this.IMAGES_WALKING[i]; // Mit dem i startet das Array wieder von vorne
-      this.img = this.imageCache[path]; // Greift auf das Bild im Cache zu
-      this.currentImage++; // Erhöht den Index für das nächste Bild
+      this.playAnimation(this.IMAGES_WALKING);
     }, 200);
   }
 }

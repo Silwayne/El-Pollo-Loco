@@ -12,6 +12,7 @@ class World {
   canvas;
   ctx;
   keyboard;
+  camera_x = 0;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -27,13 +28,17 @@ class World {
 
   draw() {
     // Leere den Canvas
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Leere den Canvas
+
+    this.ctx.translate(this.camera_x, 0); // Verschiebe die Kamera
 
     // Zeichne alle Objekte auf den Canvas
     this.addObjectToMap(this.backgroundObjects); // Zeichne die Hintergrundobjekte
     this.addToMap(this.character); // Zeichne den Charakter
     this.addObjectToMap(this.enemies); // Zeichne die Gegner
     this.addObjectToMap(this.clouds); // Zeichne die Wolken
+
+    this.ctx.translate(-this.camera_x, 0); // Rückgängig machen der Verschiebung
     // draw() wird immer wieder ausgeführt
     let self = this;
     requestAnimationFrame(function () {

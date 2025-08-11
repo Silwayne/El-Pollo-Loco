@@ -32,6 +32,7 @@ class Character extends MovableObject {
         this.x -= this.speed;
         this.otherDirection = true; // Setzt die andere Richtung, wenn nach links bewegt wird
       }
+      this.world.camera_x = -this.x; // Aktualisiert die Kameraposition
     }, 1000 / 60);
 
     setInterval(() => {

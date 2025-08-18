@@ -8,6 +8,21 @@ class MovableObject {
   currentImage = 0; // Index des aktuellen Bildes
   speed = 0.15;
   otherDirection = false;
+  speedY = 0;
+  acceleration = 2.5;
+
+  applyGravity() {
+    setInterval(() => {
+      if (this.isAboveGround() || this.speedY > 0) {
+        this.y -= this.speedY; // Bewegt das Objekt nach unten
+        this.speedY -= this.acceleration; // Verringert die Geschwindigkeit nach unten
+      }
+    }, 1000 / 25);
+  }
+
+  isAboveGround() {
+    return this.y < 180;
+  }
 
   // loadImage("img/test.png");
   loadImage(path) {
@@ -36,12 +51,16 @@ class MovableObject {
   }
 
   moveRight() {
-    console.log("Move right");
+    this.x += this.speed;
+    this.otherDirection = false; // Setzt die andere Richtung, wenn nach rechts bewegt wird
   }
 
   moveLeft() {
-    setInterval(() => {
       this.x -= this.speed; // Bewegt die Wolke nach links
-    }, 1000 / 60); // 60 FPS
+      this.otherDirection = true; // Setzt die andere Richtung, wenn nach links bewegt wird
+  }
+
+  jump() {
+    this.speedY = 30;
   }
 }

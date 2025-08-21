@@ -52,12 +52,10 @@ class MovableObject {
 
   moveRight() {
     this.x += this.speed;
-    this.otherDirection = false; // Setzt die andere Richtung, wenn nach rechts bewegt wird
   }
 
   moveLeft() {
       this.x -= this.speed; // Bewegt die Wolke nach links
-      this.otherDirection = true; // Setzt die andere Richtung, wenn nach links bewegt wird
   }
 
   jump() {

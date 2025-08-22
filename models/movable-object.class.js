@@ -42,6 +42,24 @@ class MovableObject {
     });
   }
 
+  draw(ctx) {
+    ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+  }
+
+  drawFrame(ctx) {
+    if (
+      this instanceof Character ||
+      this instanceof Chicken ||
+      this instanceof Endboss
+    ) {
+      ctx.beginPath();
+      ctx.lineWidth = "5";
+      ctx.strokeStyle = "blue";
+      ctx.rect(this.x, this.y, this.width, this.height);
+      ctx.stroke();
+    }
+  }
+
   playAnimation(images) {
     // Walk Animation
     let i = this.currentImage % this.IMAGES_WALKING.length; // Modulus-Operator, um den Index zu begrenzen
@@ -55,7 +73,7 @@ class MovableObject {
   }
 
   moveLeft() {
-      this.x -= this.speed; // Bewegt die Wolke nach links
+    this.x -= this.speed;
   }
 
   jump() {

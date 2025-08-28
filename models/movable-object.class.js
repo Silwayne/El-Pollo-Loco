@@ -47,11 +47,7 @@ class MovableObject {
   }
 
   drawFrame(ctx) {
-    if (
-      this instanceof Character ||
-      this instanceof Chicken ||
-      this instanceof Endboss
-    ) {
+    if (this instanceof Character || this instanceof Chicken) {
       ctx.beginPath();
       ctx.lineWidth = "5";
       ctx.strokeStyle = "blue";
@@ -62,11 +58,12 @@ class MovableObject {
 
   // character.isColliding(chicken)
   isColliding(mo) {
-    return 
-      this.x + this.width > mo.x &&
+    return (
+    this.x + this.width > mo.x &&
       this.y + this.height > mo.y &&
-      this.x < mo.x &&
-      this.y < mo.y + mo.height;
+      this.x < mo.x + mo.width &&
+      this.y < mo.y + mo.height
+    );
   }
 
   playAnimation(images) {

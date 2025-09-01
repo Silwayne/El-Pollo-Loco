@@ -1,11 +1,4 @@
-class MovableObject {
-  x = 120;
-  y = 280;
-  img;
-  height = 150;
-  width = 100;
-  imageCache = {};
-  currentImage = 0; // Index des aktuellen Bildes
+class MovableObject extends DrawableObject {
   speed = 0.15;
   otherDirection = false;
   speedY = 0;
@@ -26,38 +19,6 @@ class MovableObject {
     return this.y < 180;
   }
 
-  // loadImage("img/test.png");
-  loadImage(path) {
-    this.img = new Image(); // this.img = document.getElementById("image") <img id="image" src>
-    this.img.src = path;
-  }
-
-  /**
-   *
-   * @param {Array} arr - ["img/image1.png", "img/image2.png"]
-   */
-  loadImages(arr) {
-    arr.forEach((path) => {
-      let img = new Image();
-      img.src = path;
-      this.imageCache[path] = img;
-    });
-  }
-
-  draw(ctx) {
-    ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-  }
-
-  drawFrame(ctx) {
-    if (this instanceof Character || this instanceof Chicken) {
-      ctx.beginPath();
-      ctx.lineWidth = "5";
-      ctx.strokeStyle = "blue";
-      ctx.rect(this.x, this.y, this.width, this.height);
-      ctx.stroke();
-    }
-  }
-
   // character.isColliding(chicken)
   isColliding(mo) {
     return (
@@ -69,7 +30,7 @@ class MovableObject {
   }
 
   hit() {
-    this.energy -= 10;
+    this.energy -= 20;
     if (this.energy < 0) {
       this.energy = 0;
     } else {
@@ -77,7 +38,7 @@ class MovableObject {
     }
   }
 
-  isHurt () {
+  isHurt() {
     let timepassed = new Date().getTime() - this.lastHit; // Differenz in ms
     timepassed = timepassed / 1000; // Differenz in s
     return timepassed < 0.4;

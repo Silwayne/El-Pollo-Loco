@@ -5,6 +5,7 @@ class World {
   ctx;
   keyboard;
   camera_x = 0;
+  statusBar = new StatusBar();
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -24,6 +25,7 @@ class World {
       this.level.enemies.forEach((enemy) => {
         if (this.character.isColliding(enemy)) {
           this.character.hit();
+          this.statusBar.setPercentage(this.character.energy);
         }
       });
     }, 200);
@@ -37,10 +39,12 @@ class World {
 
     // Zeichne alle Objekte auf den Canvas
     this.addObjectToMap(this.level.backgroundObjects); // Zeichne die Hintergrundobjekte
+    this.ctx.translate(-this.camera_x, 0); // Kamera zurücksetzen
+    this.addToMap(this.statusBar); // Zeichne die Statusleiste
+    this.ctx.translate(this.camera_x, 0); // Kamera verschieben
     this.addToMap(this.character); // Zeichne den Charakter
     this.addObjectToMap(this.level.enemies); // Zeichne die Gegner
     this.addObjectToMap(this.level.clouds); // Zeichne die Wolken
-
     this.ctx.translate(-this.camera_x, 0); // Rückgängig machen der Verschiebung
     // draw() wird immer wieder ausgeführt
     let self = this;

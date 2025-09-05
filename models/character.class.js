@@ -64,7 +64,7 @@ class Character extends MovableObject {
         this.otherDirection = true; // Setzt die andere Richtung, wenn nach links bewegt wird
       }
 
-      if (this.world.keyboard.SPACE && !this.isAboveGround()) {
+      if (this.world.keyboard.UP && !this.isAboveGround()) {
         this.jump();
       }
 

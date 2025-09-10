@@ -6,7 +6,16 @@ function init() {
   canvas = document.getElementById("canvas");
   world = new World(canvas, keyboard);
 
-  console.log("Hier könnte ein Bild sein", world.character);
+    document.addEventListener("keydown", startBackgroundMusic, { once: true });
+    document.addEventListener("click", startBackgroundMusic, { once: true });
+}
+
+function startBackgroundMusic() {
+    if (world && world.audioManager) {
+        let music = world.audioManager.sounds.background;
+        music.volume = 0.3;
+        music.play().catch(err => console.log("Autoplay blockiert:", err));
+    }
 }
 
 window.addEventListener("keydown", (e) => {

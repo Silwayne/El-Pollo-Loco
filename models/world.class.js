@@ -11,7 +11,7 @@ class World {
   throwableObjects = [];
   bottleCount = 0;
   coinCount = 0;
-  
+  audioManager = new AudioManager();
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -20,6 +20,9 @@ class World {
     this.draw();
     this.setWorld();
     this.run();
+    this.audioManager = new AudioManager();
+    this.audioManager.sounds.background.volume = 0.3; // leiser machen
+    this.audioManager.sounds.background.play();
   }
 
   setWorld() {
@@ -43,6 +46,7 @@ class World {
       );
       this.throwableObjects.push(bottle);
       this.bottleCount--;
+      this.audioManager.play("throw");
       this.bottleBar.setPercentage(this.bottleCount);
     }
   }
@@ -60,6 +64,7 @@ class World {
     this.level.bottles.forEach((bottle, index) => {
       if (this.character.isColliding(bottle)) {
         this.bottleCount++;
+        this.audioManager.play("bottle");
         this.level.bottles.splice(index, 1);
         this.bottleBar.setPercentage(this.bottleCount);
       }
@@ -70,6 +75,7 @@ class World {
     this.level.coins.forEach((coin, index) => {
       if (this.character.isColliding(coin)) {
         this.coinCount++;
+        this.audioManager.play("coin");
         this.level.coins.splice(index, 1);
         this.coinBar.setPercentage(this.coinCount);
       }

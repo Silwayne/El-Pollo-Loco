@@ -1,4 +1,5 @@
 class Character extends MovableObject {
+  hurtSoundPlayed = false;
   y = 180;
   speed = 10;
   height = 250;
@@ -66,16 +67,25 @@ class Character extends MovableObject {
 
       if (this.world.keyboard.UP && !this.isAboveGround()) {
         this.jump();
+        this.world.audioManager.play("jump");
       }
 
       this.world.camera_x = -this.x + 100; // Aktualisiert die Kameraposition
     }, 1000 / 60);
 
     setInterval(() => {
+      if (!this.isHurt()) {
+        this.hurtSoundPlayed = false;
+      }
+
       if (this.isDead()) {
         this.playAnimation(this.IMAGES_DEAD);
       } else if (this.isHurt()) {
         this.playAnimation(this.IMAGES_HURT);
+        if (!this.hurtSoundPlayed) {
+          this.world.audioManager.play("hurt");
+          this.hurtSoundPlayed = true;
+        }
       } else if (this.isAboveGround()) {
         this.playAnimation(this.IMAGES_JUMPING);
       } else {

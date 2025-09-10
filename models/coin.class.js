@@ -1,17 +1,25 @@
 class Coin extends DrawableObject {
-    width = 80;
-    height = 80;
+    width = 100;
+    height = 100;
 
-    IMAGES = [
+    IMAGES_GROUND = [
         "img/8_coin/coin_1.png", // Dein Coin-Bild
     ];
 
-    constructor() {
-        super();
-        this.loadImage(this.IMAGES[0]);
+    IMAGES_AIR = [
+        "img/8_coin/coin_1.png", // Dein Coin-Bild
+    ];
 
-        // Zufällige Position der Coins
-        this.x = 200 + Math.random() * 2000;
-        this.y = 300 + Math.random() * 80; // leicht unterschiedliche Höhen
+    constructor(type) {
+        super();
+
+        if (type === "ground") {
+            this.loadImage(this.IMAGES_GROUND[0]);
+            this.y = 340;
+        } else {
+            this.loadImage(this.IMAGES_AIR[0]);
+            this.y = 70;
+        }
+        this.x = 200 + Math.random() * 2000; 
     }
 }

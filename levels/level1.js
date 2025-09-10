@@ -5,7 +5,7 @@ const level1 = new Level(
 
   [new Bottle("ground"), new Bottle("ground"), new Bottle("air"), new Bottle("air"), new Bottle("air")],
 
-  [new Coin(), new Coin(), new Coin(), new Coin(), new Coin()],
+  [new Coin("ground"), new Coin("ground"), new Coin("air"), new Coin("air"), new Coin("air")],
 
   [
     new BackgroundObject("img/5_background/layers/air.png", -719),

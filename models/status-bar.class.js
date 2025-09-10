@@ -1,11 +1,11 @@
 class StatusBar extends DrawableObject {
   IMAGES = [
-    "img/7_statusbars/1_statusbar/2_statusbar_health/green/0.png", // 0
-    "img/7_statusbars/1_statusbar/2_statusbar_health/green/20.png", // 1
-    "img/7_statusbars/1_statusbar/2_statusbar_health/green/40.png", // 2
-    "img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png", // 3
-    "img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png", // 4
-    "img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png", // 5
+    "img/7_statusbars/1_statusbar/2_statusbar_health/green/0.png",
+    "img/7_statusbars/1_statusbar/2_statusbar_health/green/20.png",
+    "img/7_statusbars/1_statusbar/2_statusbar_health/green/40.png",
+    "img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png",
+    "img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png",
+    "img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png",
   ];
 
   percentage = 100;
@@ -13,18 +13,17 @@ class StatusBar extends DrawableObject {
   constructor() {
     super();
     this.loadImages(this.IMAGES);
-    this.x = 40;
+    this.x = 10;
     this.y = 0;
     this.width = 200;
     this.height = 60;
     this.setPercentage(100);
   }
 
-  // setPercentage(50);
   setPercentage(percentage) {
-    this.percentage = percentage; // Eine Zahl zwischen 0 und 5 Ermitteln
-    let path = this.IMAGES[this.resolveImageIndex()]; // Pfad des Bildes anhand des Indexes
-    this.img = this.imageCache[path]; // Aktuelles Bild austauschen
+    this.percentage = percentage;
+    let path = this.IMAGES[this.resolveImageIndex()];
+    this.img = this.imageCache[path];
   }
 
   resolveImageIndex() {

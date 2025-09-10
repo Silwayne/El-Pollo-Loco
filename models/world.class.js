@@ -6,7 +6,9 @@ class World {
   keyboard;
   camera_x = 0;
   statusBar = new StatusBar();
+  bottleBar = new BottleBar();
   throwableObjects = [];
+  bottleCount = 0;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -24,14 +26,20 @@ class World {
   run() {
     setInterval(() => {
       this.checkCollisions();
+      this.checkBottleCollisions();
       this.checkThrowObjects();
     }, 200);
   }
 
   checkThrowObjects() {
-    if (this.keyboard.D) {
-      let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
+    if (this.keyboard.D && this.bottleCount > 0) {
+      let bottle = new ThrowableObject(
+        this.character.x + 100,
+        this.character.y + 100
+      );
       this.throwableObjects.push(bottle);
+      this.bottleCount--;
+      this.bottleBar.setPercentage(this.bottleCount);
     }
   }
 
@@ -44,23 +52,32 @@ class World {
     });
   }
 
+  checkBottleCollisions() {
+    this.level.bottles.forEach((bottle, index) => {
+      if (this.character.isColliding(bottle)) {
+        this.bottleCount++;
+        this.level.bottles.splice(index, 1);
+        this.bottleBar.setPercentage(this.bottleCount);
+      }
+    });
+  }
+
   draw() {
-    // Leere den Canvas
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Leere den Canvas
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.ctx.translate(this.camera_x, 0); // Verschiebe die Kamera
+    this.ctx.translate(this.camera_x, 0);
 
-    // Zeichne alle Objekte auf den Canvas
-    this.addObjectToMap(this.level.backgroundObjects); // Zeichne die Hintergrundobjekte
-    this.ctx.translate(-this.camera_x, 0); // Kamera zurücksetzen
-    this.addToMap(this.statusBar); // Zeichne die Statusleiste
-    this.ctx.translate(this.camera_x, 0); // Kamera verschieben
-    this.addToMap(this.character); // Zeichne den Charakter
-    this.addObjectToMap(this.level.clouds); // Zeichne die Wolken
-    this.addObjectToMap(this.level.enemies); // Zeichne die Gegner
-    this.addObjectToMap(this.throwableObjects); // Zeichne die Wurfobjekte
-    this.ctx.translate(-this.camera_x, 0); // Rückgängig machen der Verschiebung
-    // draw() wird immer wieder ausgeführt
+    this.addObjectToMap(this.level.backgroundObjects);
+    this.ctx.translate(-this.camera_x, 0);
+    this.addToMap(this.statusBar);
+    this.addToMap(this.bottleBar);
+    this.ctx.translate(this.camera_x, 0);
+    this.addToMap(this.character);
+    this.addObjectToMap(this.level.clouds);
+    this.addObjectToMap(this.level.enemies);
+    this.addObjectToMap(this.level.bottles);
+    this.addObjectToMap(this.throwableObjects);
+    this.ctx.translate(-this.camera_x, 0);
     let self = this;
     requestAnimationFrame(function () {
       self.draw();

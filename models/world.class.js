@@ -7,8 +7,11 @@ class World {
   camera_x = 0;
   statusBar = new StatusBar();
   bottleBar = new BottleBar();
+  coinBar = new CoinBar();
   throwableObjects = [];
   bottleCount = 0;
+  coinCount = 0;
+  
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -27,6 +30,7 @@ class World {
     setInterval(() => {
       this.checkCollisions();
       this.checkBottleCollisions();
+      this.checkCoinCollisions();
       this.checkThrowObjects();
     }, 200);
   }
@@ -62,6 +66,16 @@ class World {
     });
   }
 
+  checkCoinCollisions() {
+    this.level.coins.forEach((coin, index) => {
+      if (this.character.isColliding(coin)) {
+        this.coinCount++;
+        this.level.coins.splice(index, 1);
+        this.coinBar.setPercentage(this.coinCount);
+      }
+    });
+  }
+
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -71,11 +85,13 @@ class World {
     this.ctx.translate(-this.camera_x, 0);
     this.addToMap(this.statusBar);
     this.addToMap(this.bottleBar);
+    this.addToMap(this.coinBar);
     this.ctx.translate(this.camera_x, 0);
     this.addToMap(this.character);
     this.addObjectToMap(this.level.clouds);
     this.addObjectToMap(this.level.enemies);
     this.addObjectToMap(this.level.bottles);
+    this.addObjectToMap(this.level.coins);
     this.addObjectToMap(this.throwableObjects);
     this.ctx.translate(-this.camera_x, 0);
     let self = this;

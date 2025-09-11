@@ -1,9 +1,11 @@
 class Character extends MovableObject {
-  hurtSoundPlayed = false;
   y = 180;
   speed = 10;
   height = 250;
   width = 150;
+  hurtSoundPlayed = false;
+  world;
+
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
     "img/2_character_pepe/2_walk/W-22.png",
@@ -41,8 +43,6 @@ class Character extends MovableObject {
     "img/2_character_pepe/4_hurt/H-43.png",
   ];
 
-  world;
-
   constructor() {
     super().loadImage("img/2_character_pepe/2_walk/W-21.png");
     this.loadImages(this.IMAGES_WALKING);
@@ -57,12 +57,12 @@ class Character extends MovableObject {
     setInterval(() => {
       if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
         this.moveRight();
-        this.otherDirection = false; // Setzt die andere Richtung, wenn nach rechts bewegt wird
+        this.otherDirection = false;
       }
 
       if (this.world.keyboard.LEFT && this.x > -619) {
         this.moveLeft();
-        this.otherDirection = true; // Setzt die andere Richtung, wenn nach links bewegt wird
+        this.otherDirection = true;
       }
 
       if (this.world.keyboard.UP && !this.isAboveGround()) {
@@ -70,7 +70,7 @@ class Character extends MovableObject {
         this.world.audioManager.play("jump");
       }
 
-      this.world.camera_x = -this.x + 100; // Aktualisiert die Kameraposition
+      this.world.camera_x = -this.x + 100;
     }, 1000 / 60);
 
     setInterval(() => {
@@ -80,6 +80,19 @@ class Character extends MovableObject {
 
       if (this.isDead()) {
         this.playAnimation(this.IMAGES_DEAD);
+
+        if (!this.deathHandled) {
+          this.deathHandled = true;
+
+          setTimeout(() => {
+            let fallInterval = setInterval(() => {
+              this.y += 10;
+              if (this.y > 600) {
+                clearInterval(fallInterval);
+              }
+            }, 50);
+          }, 300);
+        }
       } else if (this.isHurt()) {
         this.playAnimation(this.IMAGES_HURT);
         if (!this.hurtSoundPlayed) {
@@ -90,14 +103,22 @@ class Character extends MovableObject {
         this.playAnimation(this.IMAGES_JUMPING);
       } else {
         if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-          // Walk Animation
           this.playAnimation(this.IMAGES_WALKING);
         }
       }
     }, 50);
   }
 
+  isCollidingBox(box) {
+    return (
+      this.x + this.width > box.x &&
+      this.x < box.x + box.width &&
+      this.y + this.height > box.y &&
+      this.y < box.y + box.height
+    );
+  }
+
   jump() {
-    this.speedY = 30; // Setzt die Sprunggeschwindigkeit
+    this.speedY = 30; //
   }
 }

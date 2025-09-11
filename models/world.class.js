@@ -52,13 +52,51 @@ class World {
   }
 
   checkCollisions() {
-    this.level.enemies.forEach((enemy) => {
-      if (this.character.isColliding(enemy)) {
+  this.level.enemies.forEach((enemy, index) => {
+    if (this.character.isColliding(enemy)) {
+
+      let topBox = enemy.getTopHitbox();
+
+      // Prüfen: kommt Pepe von oben UND trifft die obere Hitbox?
+      if (this.character.speedY < 0 && this.character.isCollidingBox(topBox)) {
+        enemy.die();
+        this.audioManager.play("enemyDead");
+        this.character.speedY = 15; // Bounce nach oben
+
+      } else if (!enemy.isDead) {
+        // Seitlich oder unten → Schaden
         this.character.hit();
         this.statusBar.setPercentage(this.character.energy);
+        this.audioManager.play("hurt");
       }
-    });
-  }
+    }
+  });
+
+  // Tote Gegner aus Array entfernen
+  this.level.enemies = this.level.enemies.filter(e => !e.remove);
+}
+
+
+  // checkCollisions() {
+  //   this.level.enemies.forEach((enemy) => {
+  //     if (this.character.isColliding(enemy)) {
+  //       let characterBottom = this.character.y + this.character.height;
+  //       let enemyTop = enemy.y + enemy.height / 2;
+
+  //       if (this.character.speedY < 0 && characterBottom < enemyTop) {
+  //         enemy.die();
+  //         this.audioManager.play("enemyDead");
+  //         this.character.speedY = 15;
+  //       } else if (!enemy.isDead) {
+  //         this.character.hit();
+  //         this.statusBar.setPercentage(this.character.energy);
+  //         this.audioManager.play("hurt");
+  //       }
+  //     }
+  //   });
+
+  //   this.level.enemies = this.level.enemies.filter((e) => !e.remove);
+  // }
 
   checkBottleCollisions() {
     this.level.bottles.forEach((bottle, index) => {

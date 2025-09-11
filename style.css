@@ -1,9 +1,39 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+
 body {
     display: flex;
+    justify-content: center;
     flex-direction: column;
     align-items: center;
+    background-image: url("img/body_background.png");
+    background-position: center;
+    background-size: cover;
+    min-height: 100vh;
 }
 
 canvas {
     background-color: black;
+}
+
+@media only screen and (max-width: 760px) {
+    canvas {
+        width: 100%;
+    }
+
+    h1 {
+        display: none;
+    }
+}
+
+@media only screen and (max-height: 480px) {
+    canvas {
+        height: 100vh;
+    }
+
+     h1 {
+        display: none;
+    }
 }

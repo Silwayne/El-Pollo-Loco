@@ -17,6 +17,7 @@ class AudioManager {
 
         this.sounds.background.loop = true;
         this.sounds.boss.loop = true;
+        this.sounds.boss.volume = 1.0;
     }
 
     play(name) {

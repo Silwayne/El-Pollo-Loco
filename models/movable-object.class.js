@@ -16,7 +16,8 @@ class MovableObject extends DrawableObject {
   }
 
   isAboveGround() {
-    if (this instanceof ThrowableObject) { // Wenn das Objekt ein ThrowableObject ist fällt es runter
+    if (this instanceof ThrowableObject) {
+      // Wenn das Objekt ein ThrowableObject ist fällt es runter
       return true;
     } else {
       return this.y < 180;
@@ -24,12 +25,22 @@ class MovableObject extends DrawableObject {
   }
 
   // character.isColliding(chicken)
-  isColliding(mo) {
+  // isColliding(mo) {
+  //   return (
+  //     this.x + this.width > mo.x &&
+  //     this.y + this.height > mo.y &&
+  //     this.x < mo.x + mo.width &&
+  //     this.y < mo.y + mo.height
+  //   );
+  // }
+
+  isColliding(obj) {
+    if (!obj) return false;
     return (
-      this.x + this.width > mo.x &&
-      this.y + this.height > mo.y &&
-      this.x < mo.x + mo.width &&
-      this.y < mo.y + mo.height
+      this.x + this.width > obj.x &&
+      this.x < obj.x + obj.width &&
+      this.y + this.height > obj.y &&
+      this.y < obj.y + obj.height
     );
   }
 

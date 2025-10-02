@@ -15,7 +15,7 @@ class Chicken extends MovableObject {
   constructor() {
     super().loadImage("img/3_enemies_chicken/chicken_normal/1_walk/1_w.png");
 
-    this.x = 400 + Math.random() * 2000; 
+    this.x = 400 + Math.random() * 2000;
     this.speed = 0.15 + Math.random() * 0.5;
 
     this.loadImages(this.IMAGES_WALKING);
@@ -29,27 +29,54 @@ class Chicken extends MovableObject {
     this.playAnimation(this.IMAGES_DEAD);
 
     setTimeout(() => {
-      this.remove = true; 
+      this.remove = true;
     }, 500);
   }
 
   getTopHitbox() {
     return {
-      x: this.x,
-      y: this.y - 1, 
-      width: this.width,
-      height: this.height / 2 + 1, 
+      x: this.x + 5,
+      y: this.y, // statt y - 1
+      width: this.width - 10, // etwas schmaler
+      height: this.height / 2 + 5, // etwas größer oben
+    };
+  }
+
+  getTopHitbox() {
+    return {
+      x: this.x + 5, // links etwas verkleinern
+      y: this.y, // exakt oben am Chicken beginnen
+      width: this.width - 10, // rechts auch etwas verkleinern
+      height: this.height / 3 + 10, // größer machen, damit mehr Fläche oben zählt
     };
   }
 
   getBodyHitbox() {
     return {
-      x: this.x,
-      y: this.y + this.height / 2,
-      width: this.width,
-      height: this.height / 2, 
+      x: this.x + 5,
+      y: this.y + this.height / 3, // ab 1/3 der Höhe beginnt der Körper
+      width: this.width - 10,
+      height: (this.height / 3) * 2, // restliche 2/3 sind Körper
     };
   }
+
+  // getTopHitbox() {
+  //   return {
+  //     x: this.x,
+  //     y: this.y - 1,
+  //     width: this.width,
+  //     height: this.height / 2 + 1,
+  //   };
+  // }
+
+  // getBodyHitbox() {
+  //   return {
+  //     x: this.x,
+  //     y: this.y + this.height / 2,
+  //     width: this.width,
+  //     height: this.height / 2,
+  //   };
+  // }
 
   animate() {
     setInterval(() => {

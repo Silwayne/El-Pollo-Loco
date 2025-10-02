@@ -39,31 +39,6 @@ class World {
     }, 200);
   }
 
-  // checkThrowObjects() {
-  //   if (this.keyboard.D && this.bottleCount > 0) {
-  //     let bottle = new ThrowableObject(
-  //       this.character.x + 100,
-  //       this.character.y + 100
-  //     );
-  //     this.throwableObjects.push(bottle);
-  //     this.bottleCount--;
-  //     this.audioManager.play("throw");
-  //     this.bottleBar.setPercentage(this.bottleCount);
-  //   }
-  //   this.throwableObjects.forEach((bottle) => {
-  //     if (bottle && this.level.enemies.find(e => e instanceof Endboss) && bottle.isColliding(this.level.enemies.find(e => e instanceof Endboss))) {
-  //       this.level.enemies.find(e => e instanceof Endboss).hit();
-  //       this.audioManager.play("bottleSmash");
-  //       bottle.shatter();
-  //     }
-  //     if (bottle && bottle.y >350) {
-  //       this.audioManager.play("bottleSmash");
-  //       bottle.shatter();
-  //     }
-  //   });
-  //   this.throwableObjects = this.throwableObjects.filter(b => !b.remove);
-  // }
-
   checkThrowObjects() {
     // 1) Flasche werfen
     if (this.keyboard.D && this.bottleCount > 0) {
@@ -117,62 +92,86 @@ class World {
     }
   }
 
-  // checkCollisions() {
-  //   this.level.enemies.forEach((enemy) => {
-  //     if (this.character.isColliding(enemy)) {
-  //       let topBox = enemy.getTopHitbox();
-
-  //       if (
-  //         this.character.speedY < 0 &&
-  //         this.character.isCollidingBox(topBox)
-  //       ) {
-  //         enemy.die();
-  //         this.audioManager.play("enemyDead");
-  //         this.character.speedY = 15;
-  //       } else if (!enemy.isDead) {
-  //         this.character.hit();
-  //         this.statusBar.setPercentage(this.character.energy);
-  //         this.audioManager.play("hurt");
-  //       }
-  //     }
-  //   });
-
-  //   this.level.enemies = this.level.enemies.filter((e) => !e.remove);
-  // }
-
   checkCollisions() {
-  this.level.enemies.forEach((enemy) => {
-    if (this.character.isColliding(enemy)) {
+    this.level.enemies.forEach((enemy) => {
       if (enemy instanceof Endboss) {
-        // Boss darf NICHT durch Draufspringen sterben
-        if (!enemy.isDead) {
+        // Boss-Logik (wie vorher)
+        if (this.character.isColliding(enemy) && !enemy.isDead) {
           this.character.hit();
           this.statusBar.setPercentage(this.character.energy);
           this.audioManager.play("hurt");
         }
       } else {
-        // Normale Gegner (z. B. Chicken)
+        // Chicken-Logik
         let topBox = enemy.getTopHitbox();
+        let bodyBox = enemy.getBodyHitbox();
 
+        // Zuerst prüfen: fällt Pepe auf die obere Hitbox?
         if (
           this.character.speedY < 0 &&
           this.character.isCollidingBox(topBox)
         ) {
           enemy.die();
           this.audioManager.play("enemyDead");
-          this.character.speedY = 15;
-        } else if (!enemy.isDead) {
+
+          // Bounce nur auslösen, wenn seit dem letzten Bounce etwas Zeit vergangen ist
+          let now = Date.now();
+          if (
+            !this.character.lastBounce ||
+            now - this.character.lastBounce > 200
+          ) {
+            this.character.speedY = 15; // einmaliger Sprung nach oben
+            this.character.lastBounce = now;
+          }
+        }
+        // Wenn nicht, dann prüfen, ob er mit dem Körper kollidiert
+        else if (!enemy.isDead && this.character.isCollidingBox(bodyBox)) {
           this.character.hit();
           this.statusBar.setPercentage(this.character.energy);
           this.audioManager.play("hurt");
         }
       }
-    }
-  });
+    });
 
-  // Entferne tote Gegner aus dem Array
-  this.level.enemies = this.level.enemies.filter((e) => !e.remove);
-}
+    this.level.enemies = this.level.enemies.filter((e) => !e.remove);
+  }
+
+  // checkCollisions() {
+  //   this.level.enemies.forEach((enemy) => {
+  //     if (this.character.isColliding(enemy)) {
+  //       if (enemy instanceof Endboss) {
+  //         // Boss darf NICHT durch Draufspringen sterben
+  //         if (!enemy.isDead) {
+  //           this.character.hit();
+  //           this.statusBar.setPercentage(this.character.energy);
+  //           this.audioManager.play("hurt");
+  //         }
+  //       } else {
+  //         // Normale Gegner (z. B. Chicken)
+  //         let topBox = enemy.getTopHitbox();
+
+  //         if (
+  //           this.character.speedY < 0 &&
+  //           this.character.isCollidingBox(topBox)
+  //         ) {
+  //           enemy.die();
+  //           this.audioManager.play("enemyDead");
+
+  //           if (this.character.speedY < 0) {
+  //             this.character.speedY = 15; // Bounce nur wenn er wirklich fällt
+  //           }
+  //         } else if (!enemy.isDead) {
+  //           this.character.hit();
+  //           this.statusBar.setPercentage(this.character.energy);
+  //           this.audioManager.play("hurt");
+  //         }
+  //       }
+  //     }
+  //   });
+
+  //   // Entferne tote Gegner aus dem Array
+  //   this.level.enemies = this.level.enemies.filter((e) => !e.remove);
+  // }
 
   checkBottleCollisions() {
     this.level.bottles.forEach((bottle, index) => {

@@ -7,6 +7,7 @@ class Endboss extends MovableObject {
   attacking = false; // ist er im Angriffsmodus?
   attackPhase = false; // rennt er gerade oder steht er still?
   isDead = false;
+  isHurt = false;
 
   IMAGES_WALKING = [
     "img/4_enemie_boss_chicken/1_walk/G1.png",
@@ -60,6 +61,8 @@ class Endboss extends MovableObject {
 
   animate() {
     setInterval(() => {
+      if (this.isDead || this.isHurt) return;
+
       if (!this.triggered && world.character.x > 2150) {
         this.startBossSequence();
       }
@@ -82,7 +85,7 @@ class Endboss extends MovableObject {
 
     let walkInterval = setInterval(() => {
       this.x -= 5;
-      this.playAnimation(this.IMAGES_WALKING); // 👉 jetzt animiert er beim Laufen
+      this.playAnimation(this.IMAGES_WALKING);
 
       if (this.x <= 2350) {
         clearInterval(walkInterval);
@@ -95,7 +98,7 @@ class Endboss extends MovableObject {
           this.startAttackPattern();
         }, 1500);
       }
-    }, 120); // 120ms für Animation wirkt besser als 60ms
+    }, 120);
   }
 
   startAttackPattern() {
@@ -103,47 +106,33 @@ class Endboss extends MovableObject {
 
     // Boss hat jetzt einen Rhythmus: laufen – stehen – laufen
     setInterval(() => {
+      if (this.isDead) return; // kein Angriffsverhalten nach Tod
       this.attackPhase = true; // Start: laufen
       setTimeout(() => {
         this.attackPhase = false; // Pause
-      }, 1500); // läuft 1,5 Sekunden, steht dann still
-    }, 3000); // alle 3 Sekunden Rhythmus wechseln
+      }, 1500);
+    }, 3000);
   }
 
-  // hit() {
-  //   if (this.isDead) return;
-  //   let now = new Date().getTime();
+  playHurtAnimation() {
+    if (this.isDead) return; // keine Hurt-Animation mehr wenn tot
+    this.isHurt = true;
 
-  //   if (this.lastHit && now - this.lastHit < 1000) {
-  //     return;
-  //   }
-
-  //   this.lastHit = now;
-  //   this.energy -= 20;
-  //   if (this.energy < 0) this.energy = 0;
-
-  //   this.playAnimation(this.IMAGES_HURT);
-  //   world.bossBar.setPercentage(this.energy);
-
-  //   if (this.energy === 0) {
-  //     this.die();
-  //   } else {
-  //     setTimeout(() => {
-  //       this.attacking = true;
-  //     }, 1000);
-  //   }
-  // }
-
-    playHurtAnimation() {
     let i = 0;
     const interval = setInterval(() => {
+      if (this.isDead) {
+        clearInterval(interval);
+        return;
+      }
+
       this.img = this.imageCache[this.IMAGES_HURT[i]];
       i++;
 
       if (i >= this.IMAGES_HURT.length) {
         clearInterval(interval);
+        this.isHurt = false;
       }
-    }, 300); // langsamer: alle 300ms Bild wechseln
+    }, 400); // etwas langsamer → 400ms pro Frame
   }
 
   hit() {
@@ -151,7 +140,7 @@ class Endboss extends MovableObject {
     let now = new Date().getTime();
 
     if (this.lastHit && now - this.lastHit < 1000) {
-      return;
+      return; // kurze Schutzzeit
     }
 
     this.lastHit = now;
@@ -165,28 +154,24 @@ class Endboss extends MovableObject {
 
     if (this.energy === 0) {
       this.die();
-    } else {
-      setTimeout(() => {
-        this.attacking = true;
-      }, 1000);
     }
   }
 
   die() {
     this.isDead = true;
-    let i = 0;
+    this.isHurt = false; // falls Hurt noch lief → abbrechen
 
+    let i = 0;
     const nextFrame = () => {
       if (i < this.IMAGES_DEAD.length) {
         this.img = this.imageCache[this.IMAGES_DEAD[i]];
         i++;
-        setTimeout(nextFrame, 250); // Dauer pro Frame (hier 250ms)
+        setTimeout(nextFrame, 250); // etwas langsamer → 250ms pro Frame
       } else {
         // Animation fertig -> letztes Bild bleibt eingefroren
         this.img =
           this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
-        world.audioManager.play("win"); // Sieges-Sound
-        // kein this.remove = true -> Boss bleibt liegen
+        world.audioManager.play("win");
       }
     };
 
@@ -197,3 +182,4 @@ class Endboss extends MovableObject {
     return { x: this.x, y: this.y, width: this.width, height: this.height };
   }
 }
+

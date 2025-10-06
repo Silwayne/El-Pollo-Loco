@@ -60,24 +60,6 @@ class Chicken extends MovableObject {
     };
   }
 
-  // getTopHitbox() {
-  //   return {
-  //     x: this.x,
-  //     y: this.y - 1,
-  //     width: this.width,
-  //     height: this.height / 2 + 1,
-  //   };
-  // }
-
-  // getBodyHitbox() {
-  //   return {
-  //     x: this.x,
-  //     y: this.y + this.height / 2,
-  //     width: this.width,
-  //     height: this.height / 2,
-  //   };
-  // }
-
   animate() {
     setInterval(() => {
       if (!this.isDead) {

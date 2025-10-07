@@ -4,6 +4,7 @@ class Character extends MovableObject {
   height = 250;
   width = 150;
   hurtSoundPlayed = false;
+  deathHandled = false;
   world;
 
   IMAGES_WALKING = [
@@ -53,43 +54,48 @@ class Character extends MovableObject {
     this.animate();
   }
 
+  getCollisionBox() {
+    return {
+      x: this.x + 40,
+      y: this.y + 130,
+      width: this.width - 80,
+      height: 120,
+    };
+  }
+
+  isFallingOn(enemy) {
+    return (
+      this.speedY < 0 && this.y < enemy.y && this.y + this.height - enemy.y < 30
+    );
+  }
+
   animate() {
     setInterval(() => {
       if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
         this.moveRight();
         this.otherDirection = false;
       }
-
-      if (this.world.keyboard.LEFT && this.x > -619) {
+      if (this.world.keyboard.LEFT && this.x > -600) {
         this.moveLeft();
         this.otherDirection = true;
       }
-
       if (this.world.keyboard.UP && !this.isAboveGround()) {
         this.jump();
         this.world.audioManager.play("jump");
       }
-
       this.world.camera_x = -this.x + 100;
     }, 1000 / 60);
 
     setInterval(() => {
-      if (!this.isHurt()) {
-        this.hurtSoundPlayed = false;
-      }
-
+      if (!this.isHurt()) this.hurtSoundPlayed = false;
       if (this.isDead()) {
         this.playAnimation(this.IMAGES_DEAD);
-
         if (!this.deathHandled) {
           this.deathHandled = true;
-
           setTimeout(() => {
             let fallInterval = setInterval(() => {
               this.y += 10;
-              if (this.y > 600) {
-                clearInterval(fallInterval);
-              }
+              if (this.y > 600) clearInterval(fallInterval);
             }, 50);
           }, 300);
         }

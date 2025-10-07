@@ -32,7 +32,6 @@ class World {
 
   run() {
     setInterval(() => {
-      this.checkCollisions();
       this.checkBottleCollisions();
       this.checkCoinCollisions();
       this.checkThrowObjects();
@@ -40,15 +39,11 @@ class World {
   }
 
   checkThrowObjects() {
-    // 1) Flasche werfen
     if (this.keyboard.D && this.bottleCount > 0) {
       let bottle = new ThrowableObject(
         this.character.x + 100,
         this.character.y + 100
       );
-
-      // Falls du willst, dass die Flasche in Blickrichtung fliegt:
-      // if (this.character.otherDirection) bottle.speed = -Math.abs(bottle.speed);
 
       this.throwableObjects.push(bottle);
       this.bottleCount--;
@@ -56,36 +51,32 @@ class World {
       this.audioManager.play("throw");
     }
 
-    // 2) Kollisionen prüfen & Flaschen entfernen (rückwärts iterieren -> sicher splicen)
     for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
       let bottle = this.throwableObjects[i];
 
       if (!bottle) continue;
 
-      // a) Boss vorhanden und Flasche trifft Boss?
       const boss =
         this.level.endboss ||
         this.level.enemies.find((e) => e instanceof Endboss);
       if (boss && !bottle.isShattered && bottle.isColliding(boss)) {
-        boss.hit(); // Boss verliert Leben
+        boss.hit();
         this.audioManager.play("bottleSmash");
 
         if (world.bossBar) {
           world.bossBar.setPercentage(boss.energy);
         }
 
-        bottle.shatter(); // startet Shatter-Animation -> setzt remove=true später
-        continue; // weiter zur nächsten Flasche
+        bottle.shatter();
+        continue;
       }
 
-      // b) Flasche trifft den Boden?
       if (!bottle.isShattered && bottle.y > 350) {
         this.audioManager.play("bottleSmash");
         bottle.shatter();
         continue;
       }
 
-      // c) Aufräumen: wenn remove true => aus Array entfernen
       if (bottle.remove) {
         this.throwableObjects.splice(i, 1);
       }
@@ -95,35 +86,28 @@ class World {
   checkCollisions() {
     this.level.enemies.forEach((enemy) => {
       if (enemy instanceof Endboss) {
-        // Boss-Logik
-        if (this.character.isColliding(enemy) && !enemy.isDead) {
+        if (
+          this.character.isColliding(enemy) &&
+          !enemy.isDead &&
+          !this.character.isHurt()
+        ) {
           this.character.hit();
           this.statusBar.setPercentage(this.character.energy);
           this.audioManager.play("hurt");
         }
       } else {
-        // Chicken-Logik
-        let topBox = enemy.getTopHitbox();
-        let bodyBox = enemy.getBodyHitbox();
-
-        // Prüfen: fällt Pepe auf die obere Hitbox?
-        if (
-          this.character.speedY < 0 &&
-          this.character.isCollidingBox(topBox)
-        ) {
-          enemy.die();
-          this.audioManager.play("enemyDead");
-        }
-        // Wenn nicht, dann prüfen, ob er mit dem Körper kollidiert
-        else if (!enemy.isDead && this.character.isCollidingBox(bodyBox)) {
-          this.character.hit();
-          this.statusBar.setPercentage(this.character.energy);
-          this.audioManager.play("hurt");
+        if (!enemy.isDead && this.character.isColliding(enemy)) {
+          if (this.character.isFallingOn(enemy)) {
+            enemy.die();
+            this.audioManager.play("enemyDead");
+          } else if (!this.character.isHurt()) {
+            this.character.hit();
+            this.statusBar.setPercentage(this.character.energy);
+            this.audioManager.play("hurt");
+          }
         }
       }
     });
-
-    // Entfernt tote Gegner aus dem Array
     this.level.enemies = this.level.enemies.filter((e) => !e.remove);
   }
 
@@ -152,6 +136,7 @@ class World {
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+    this.checkCollisions();
     this.ctx.translate(this.camera_x, 0);
 
     this.addObjectToMap(this.level.backgroundObjects);

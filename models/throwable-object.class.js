@@ -29,27 +29,15 @@ class ThrowableObject extends MovableObject {
     this.throw();
   }
 
-  // throw() {
-  //   this.speedY = 30;
-  //   this.applyGravity();
-  //   setInterval(() => {
-  //     this.x += 10;
-  //   }, 25);
-  // }
-
   throw() {
-    // Standardwurf-Geschwindigkeit; passe nach Bedarf an
     this.speedY = 25;
-    this.speed = 10; // horizontale Geschwindigkeit wird über setInterval weiter unten verändert
+    this.speed = 10;
 
     this.applyGravity();
 
-    // Rotation / Vorwärtsbewegung
     this.throwInterval = setInterval(() => {
-      // Nur bewegen, wenn nicht zersprungen
       if (!this.isShattered) {
-        this.x += this.speed;   // bewegt die Flasche nach rechts (wenn du links werfen willst, negative speed)
-        // optional: play rotation animation while flying (falls du Rotation-Sprites hast)
+        this.x += this.speed;
         if (this.IMAGES_ROTATION.length) {
           this.playAnimation(this.IMAGES_ROTATION);
         }
@@ -57,26 +45,21 @@ class ThrowableObject extends MovableObject {
     }, 25);
   }
 
-  // zerschmettern (Animation + Sound) — danach remove = true
   shatter() {
     if (this.isShattered) return;
     this.isShattered = true;
 
-    // Stoppe die Bewegung
     this.speed = 0;
     this.speedY = 0;
     if (this.throwInterval) clearInterval(this.throwInterval);
 
-    // Stelle sicher, dass die Splash-Frames geladen sind und setze das erste Bild
     const firstPath = this.IMAGES_SPLASH[0];
     if (this.imageCache && this.imageCache[firstPath]) {
       this.img = this.imageCache[firstPath];
     }
 
-    // Spiel Animation der Splash-Frames (falls playAnimation in MovableObject richtig damit arbeitet)
     this.playAnimation(this.IMAGES_SPLASH);
 
-    // Nach der Animation entfernen (hier 300ms, anpassen falls Frames langsamer sind)
     setTimeout(() => {
       this.remove = true;
     }, 350);

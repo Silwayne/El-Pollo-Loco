@@ -63,7 +63,7 @@ class Endboss extends MovableObject {
     setInterval(() => {
       if (this.isDead || this.isHurt) return;
 
-      if (!this.triggered && world.character.x > 2150) {
+      if (!this.triggered && this.world.character.x > 2150) {
         this.startBossSequence();
       }
 

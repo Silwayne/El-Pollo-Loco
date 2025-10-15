@@ -24,6 +24,10 @@ class World {
     this.audioManager = new AudioManager();
     this.audioManager.sounds.background.volume = 0.3; // leiser machen
     this.audioManager.sounds.background.play();
+    this.level = level1;
+    this.endboss = new Endboss();
+    this.endboss.world = this;
+    this.level.enemies.push(this.endboss);
   }
 
   setWorld() {
@@ -138,13 +142,14 @@ class World {
 
     this.checkCollisions();
     this.ctx.translate(this.camera_x, 0);
-
     this.addObjectToMap(this.level.backgroundObjects);
     this.ctx.translate(-this.camera_x, 0);
+
     this.addToMap(this.statusBar);
     this.addToMap(this.bottleBar);
     this.addToMap(this.coinBar);
     this.addToMap(this.bossBar);
+
     this.ctx.translate(this.camera_x, 0);
     this.addToMap(this.character);
     this.addObjectToMap(this.level.clouds);
@@ -153,6 +158,7 @@ class World {
     this.addObjectToMap(this.level.coins);
     this.addObjectToMap(this.throwableObjects);
     this.ctx.translate(-this.camera_x, 0);
+    
     let self = this;
     requestAnimationFrame(function () {
       self.draw();

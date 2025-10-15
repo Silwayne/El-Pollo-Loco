@@ -1,21 +1,47 @@
+let mousePos = { x: 0, y: 0 };
 let canvas;
 let world;
 let keyboard = new Keyboard();
+soundOn = localStorage.getItem("soundOn") !== "false";
+
+window.addEventListener("load", function () {
+  canvas = document.getElementById("canvas");
+  ctx = canvas.getContext("2d");
+
+  canvas.addEventListener("mousemove", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mousePos.x = e.clientX - rect.left;
+    mousePos.y = e.clientY - rect.top;
+
+    const hoveringStart =
+      window.startButtonArea &&
+      mousePos.x >= window.startButtonArea.x &&
+      mousePos.x <= window.startButtonArea.x + window.startButtonArea.width &&
+      mousePos.y >= window.startButtonArea.y &&
+      mousePos.y <= window.startButtonArea.y + window.startButtonArea.height;
+
+    const hoveringSound =
+      window.soundButtonArea &&
+      mousePos.x >= window.soundButtonArea.x &&
+      mousePos.x <= window.soundButtonArea.x + window.soundButtonArea.width &&
+      mousePos.y >= window.soundButtonArea.y &&
+      mousePos.y <= window.soundButtonArea.y + window.soundButtonArea.height;
+
+    canvas.style.cursor =
+      hoveringStart || hoveringSound ? "pointer" : "default";
+  });
+
+  canvas.addEventListener("click", handleCanvasClick);
+
+  drawStartScreen();
+});
 
 function init() {
-  canvas = document.getElementById("canvas");
   world = new World(canvas, keyboard);
 
-    document.addEventListener("keydown", startBackgroundMusic, { once: true });
-    document.addEventListener("click", startBackgroundMusic, { once: true });
-}
-
-function startBackgroundMusic() {
-    if (world && world.audioManager) {
-        let music = world.audioManager.sounds.background;
-        music.volume = 0.3;
-        music.play().catch(err => console.log("Autoplay blockiert:", err));
-    }
+  if (!soundOn) {
+    world.audioManager.sounds.background.pause();
+  }
 }
 
 window.addEventListener("keydown", (e) => {
@@ -65,7 +91,7 @@ window.addEventListener("keyup", (e) => {
     keyboard.SPACE = false;
   }
 
-   if (e.keyCode == 68) {
+  if (e.keyCode == 68) {
     keyboard.D = false;
   }
 });

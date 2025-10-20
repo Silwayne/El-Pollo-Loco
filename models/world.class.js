@@ -13,32 +13,57 @@ class World {
   bottleCount = 0;
   coinCount = 0;
   audioManager = new AudioManager();
+  paused = false;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.keyboard = keyboard;
-    this.draw();
-    this.setWorld();
-    this.run();
-    this.audioManager = new AudioManager();
-    this.audioManager.sounds.background.volume = 0.3; // leiser machen
-    this.audioManager.sounds.background.play();
-    this.level = level1;
+
+    if (this.level && Array.isArray(this.level.enemies)) {
+      this.level.enemies = this.level.enemies.filter(
+        (e) => !(e instanceof Endboss)
+      );
+    }
+
     this.endboss = new Endboss();
     this.endboss.world = this;
+    this.level = level1;
     this.level.enemies.push(this.endboss);
+
+    this.ui = new WorldUI(this);
+
+    this.character = new Character();
+    this.setWorld();
+
+    this.statusBar = new StatusBar();
+    this.bottleBar = new BottleBar();
+    this.coinBar = new CoinBar();
+    this.bossBar = new BossBar();
+
+    this.throwableObjects = [];
+    this.bottleCount = 0;
+    this.coinCount = 0;
+    this.audioManager = new AudioManager();
+    this.audioManager.sounds.background.volume = 0.3;
+    this.audioManager.sounds.background.play();
+
+    this.run();
+    this.draw();
   }
 
   setWorld() {
     this.character.world = this;
+    this.character.animate();
   }
 
   run() {
-    setInterval(() => {
-      this.checkBottleCollisions();
-      this.checkCoinCollisions();
-      this.checkThrowObjects();
+    this.logicInterval = setInterval(() => {
+      if (!this.paused) {
+        this.checkBottleCollisions();
+        this.checkCoinCollisions();
+        this.checkThrowObjects();
+      }
     }, 200);
   }
 
@@ -138,31 +163,13 @@ class World {
   }
 
   draw() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (!this.paused) {
+      this.checkCollisions();
+    }
+    this.ui.draw();
 
-    this.checkCollisions();
-    this.ctx.translate(this.camera_x, 0);
-    this.addObjectToMap(this.level.backgroundObjects);
-    this.ctx.translate(-this.camera_x, 0);
-
-    this.addToMap(this.statusBar);
-    this.addToMap(this.bottleBar);
-    this.addToMap(this.coinBar);
-    this.addToMap(this.bossBar);
-
-    this.ctx.translate(this.camera_x, 0);
-    this.addToMap(this.character);
-    this.addObjectToMap(this.level.clouds);
-    this.addObjectToMap(this.level.enemies);
-    this.addObjectToMap(this.level.bottles);
-    this.addObjectToMap(this.level.coins);
-    this.addObjectToMap(this.throwableObjects);
-    this.ctx.translate(-this.camera_x, 0);
-    
     let self = this;
-    requestAnimationFrame(function () {
-      self.draw();
-    });
+    requestAnimationFrame(() => self.draw());
   }
 
   addObjectToMap(objects) {

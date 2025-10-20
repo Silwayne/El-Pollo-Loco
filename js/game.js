@@ -27,8 +27,26 @@ window.addEventListener("load", function () {
       mousePos.y >= window.soundButtonArea.y &&
       mousePos.y <= window.soundButtonArea.y + window.soundButtonArea.height;
 
+    const hoveringRestart =
+      world &&
+      world.restartButtonArea &&
+      mousePos.x >= world.restartButtonArea.x &&
+      mousePos.x <= world.restartButtonArea.x + world.restartButtonArea.width &&
+      mousePos.y >= world.restartButtonArea.y &&
+      mousePos.y <= world.restartButtonArea.y + world.restartButtonArea.height;
+
+    const hoveringHome =
+      world &&
+      world.homeButtonArea &&
+      mousePos.x >= world.homeButtonArea.x &&
+      mousePos.x <= world.homeButtonArea.x + world.homeButtonArea.width &&
+      mousePos.y >= world.homeButtonArea.y &&
+      mousePos.y <= world.homeButtonArea.y + world.homeButtonArea.height;
+
     canvas.style.cursor =
-      hoveringStart || hoveringSound ? "pointer" : "default";
+      hoveringStart || hoveringSound || hoveringRestart || hoveringHome
+        ? "pointer"
+        : "default";
   });
 
   canvas.addEventListener("click", handleCanvasClick);
@@ -37,10 +55,100 @@ window.addEventListener("load", function () {
 });
 
 function init() {
+  // entferne alte click-listener für Startscreen
+  canvas.removeEventListener("click", handleCanvasClick);
+  // setze world neu
+  world = new World(canvas, keyboard);
+  // restore sound
+  if (!soundOn && world && world.audioManager && world.audioManager.sounds) {
+    world.audioManager.sounds.background.pause();
+  } else if (
+    soundOn &&
+    world &&
+    world.audioManager &&
+    world.audioManager.sounds
+  ) {
+    try {
+      world.audioManager.sounds.background.currentTime = 0;
+      world.audioManager.sounds.background.play();
+    } catch (e) {}
+  }
+  // setze den Restart/Overlay handler
+  canvas.removeEventListener("click", handleRestartClick);
+  canvas.addEventListener("click", handleRestartClick);
+}
+
+function handleRestartClick(e) {
+  if (!world) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  // RESTART BUTTON?
+  if (
+    world.restartButtonArea &&
+    x >= world.restartButtonArea.x &&
+    x <= world.restartButtonArea.x + world.restartButtonArea.width &&
+    y >= world.restartButtonArea.y &&
+    y <= world.restartButtonArea.y + world.restartButtonArea.height
+  ) {
+    restartGame();
+    return;
+  }
+
+  // HOME BUTTON?
+  if (
+    world.homeButtonArea &&
+    x >= world.homeButtonArea.x &&
+    x <= world.homeButtonArea.x + world.homeButtonArea.width &&
+    y >= world.homeButtonArea.y &&
+    y <= world.homeButtonArea.y + world.homeButtonArea.height
+  ) {
+    location.reload();
+    return;
+  }
+}
+
+function restartGame() {
+  // 1) Alte Welt aufräumen
+  if (world && world.logicInterval) {
+    clearInterval(world.logicInterval);
+  }
+
+  // 2) Canvas leeren
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 3) Globale World-Referenz zurücksetzen
+  world = null;
+  // frisches Keyboard
+  keyboard = new Keyboard();
+
+  // 4) Soundzustand merken (wird nach Neuanlage wiederhergestellt)
+  const currentSoundState = soundOn;
+
+  // 5) Neue Welt erstellen
   world = new World(canvas, keyboard);
 
-  if (!soundOn) {
-    world.audioManager.sounds.background.pause();
+  // 6) Soundzustand wiederherstellen (z.B. background music pausieren, wenn soundOff)
+  if (!currentSoundState) {
+    // falls du einen AudioManager verwendest:
+    if (
+      world &&
+      world.audioManager &&
+      world.audioManager.sounds &&
+      world.audioManager.sounds.background
+    ) {
+      try {
+        world.audioManager.sounds.background.pause();
+      } catch (e) {}
+    } else {
+      // fallback auf globale Variablen (falls dein alter Code so arbeitet)
+      try {
+        if (window.gameAudio) gameAudio.pause();
+      } catch (e) {}
+    }
   }
 }
 

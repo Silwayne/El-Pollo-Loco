@@ -22,14 +22,8 @@ function drawStartButton() {
   const btnX = canvas.width / 2 - btnWidth / 2;
   const btnY = 40;
 
-  const isHover =
-    mousePos.x >= btnX &&
-    mousePos.x <= btnX + btnWidth &&
-    mousePos.y >= btnY &&
-    mousePos.y <= btnY + btnHeight;
-
   ctx.save();
-  ctx.fillStyle = isHover ? "#754c24" : "#a0220a"; 
+  ctx.fillStyle = "#a0220a";
   ctx.fillRect(btnX, btnY, btnWidth, btnHeight);
   ctx.strokeStyle = "#fff";
   ctx.lineWidth = 3;
@@ -54,13 +48,9 @@ function drawSoundButton() {
   const btnHeight = 40;
   const x = 40;
   const y = canvas.height - 50;
-  const isHover =
-    mousePos.x >= x &&
-    mousePos.x <= x + btnWidth &&
-    mousePos.y >= y &&
-    mousePos.y <= y + btnHeight;
+
   ctx.save();
-  ctx.fillStyle = isHover ? "rgba(200,60,10,0.95)" : "rgba(160,34,10,0.9)";
+  ctx.fillStyle = "rgba(160,34,10,0.9)";
   ctx.fillRect(x, y, btnWidth, btnHeight);
   ctx.fillStyle = "white";
   ctx.font = "20px Arial";
@@ -72,5 +62,6 @@ function drawSoundButton() {
     y + btnHeight / 2
   );
   ctx.restore();
+
   window.soundButtonArea = { x, y, width: btnWidth, height: btnHeight };
 }

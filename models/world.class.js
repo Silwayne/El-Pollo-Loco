@@ -1,6 +1,6 @@
 class World {
   character = new Character();
-  level = level1;
+  level = createNewLevel();
   canvas;
   ctx;
   keyboard;
@@ -31,7 +31,7 @@ class World {
 
     this.endboss = new Endboss();
     this.endboss.world = this;
-    this.level = level1;
+    this.level = createNewLevel();
     this.level.enemies.push(this.endboss);
 
     this.ui = new WorldUI(this);

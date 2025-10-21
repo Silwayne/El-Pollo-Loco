@@ -57,7 +57,7 @@ function drawSoundButton() {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(
-    soundOn ? "Sound Off" : "Sound On",
+    soundOn ? "Sound OFF" : "Sound ON",
     x + btnWidth / 2,
     y + btnHeight / 2
   );

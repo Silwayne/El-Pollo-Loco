@@ -2,7 +2,96 @@ let mousePos = { x: 0, y: 0 };
 let canvas;
 let world;
 let keyboard = new Keyboard();
-soundOn = localStorage.getItem("soundOn") !== "false";
+window.soundOn = localStorage.getItem("soundOn") !== "false";
+
+function stopAllGameSounds() {
+  try {
+    if (
+      window.world &&
+      world.audioManager &&
+      typeof world.audioManager.stopAll === "function"
+    ) {
+      world.audioManager.stopAll();
+    } else if (
+      window.audioManager &&
+      typeof window.audioManager.stopAll === "function"
+    ) {
+      window.audioManager.stopAll();
+    } else {
+      try {
+        if (window.backgroundMusic) {
+          window.backgroundMusic.pause();
+          window.backgroundMusic.currentTime = 0;
+        }
+        if (window.bossSound) {
+          window.bossSound.pause();
+          window.bossSound.currentTime = 0;
+        }
+        if (window.winSound) {
+          window.winSound.pause();
+          window.winSound.currentTime = 0;
+        }
+        if (window.loseSound) {
+          window.loseSound.pause();
+          window.loseSound.currentTime = 0;
+        }
+      } catch (e) {}
+    }
+  } catch (e) {
+    console.warn("stopAllGameSounds failed:", e);
+  }
+}
+
+function toggleSound() {
+  window.soundOn = !window.soundOn;
+  localStorage.setItem("soundOn", window.soundOn);
+
+  try {
+    if (window.world && world.audioManager) {
+      if (window.soundOn) {
+        world.audioManager.play("background");
+      } else {
+        world.audioManager.stopAll();
+      }
+    } else if (window.audioManager) {
+      if (window.soundOn) {
+        window.audioManager.play("background");
+      } else {
+        window.audioManager.stopAll();
+      }
+    } else {
+      if (!window.soundOn) {
+        try {
+          if (window.backgroundMusic) {
+            window.backgroundMusic.pause();
+            window.backgroundMusic.currentTime = 0;
+          }
+          if (window.bossSound) {
+            window.bossSound.pause();
+            window.bossSound.currentTime = 0;
+          }
+        } catch (e) {}
+      } else {
+        try {
+          if (window.backgroundMusic) {
+            window.backgroundMusic.currentTime = 0;
+            window.backgroundMusic.play().catch(() => {});
+          }
+        } catch (e) {}
+      }
+    }
+  } catch (e) {
+    console.warn("toggleSound failed:", e);
+  }
+
+  if (
+    window.world &&
+    world.ui &&
+    typeof world.ui.updateSoundIcon === "function"
+  ) {
+    world.ui.updateSoundIcon(window.soundOn);
+  }
+}
 
 window.addEventListener("load", function () {
   canvas = document.getElementById("canvas");
@@ -55,38 +144,60 @@ window.addEventListener("load", function () {
 });
 
 function init() {
-  // entferne alte click-listener für Startscreen
   canvas.removeEventListener("click", handleCanvasClick);
-  // setze world neu
+  canvas.addEventListener("click", handleCanvasClick);
+
   world = new World(canvas, keyboard);
-  // restore sound
-  if (!soundOn && world && world.audioManager && world.audioManager.sounds) {
-    world.audioManager.sounds.background.pause();
-  } else if (
-    soundOn &&
-    world &&
-    world.audioManager &&
-    world.audioManager.sounds
-  ) {
-    try {
-      world.audioManager.sounds.background.currentTime = 0;
-      world.audioManager.sounds.background.play();
-    } catch (e) {}
+
+  try {
+    if (world && world.audioManager) {
+      if (window.soundOn) {
+        world.audioManager.play("background");
+      } else {
+        world.audioManager.stopAll();
+      }
+    }
+  } catch (e) {
+    console.warn("init audio restore failed:", e);
   }
-  // setze den Restart/Overlay handler
-  canvas.removeEventListener("click", handleRestartClick);
-  canvas.addEventListener("click", handleRestartClick);
 }
 
-function handleRestartClick(e) {
-  if (!world) return;
+function handleCanvasClick(e) {
+  if (!canvas) return;
 
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
 
-  // RESTART BUTTON?
   if (
+    window.soundButtonArea &&
+    x >= window.soundButtonArea.x &&
+    x <= window.soundButtonArea.x + window.soundButtonArea.width &&
+    y >= window.soundButtonArea.y &&
+    y <= window.soundButtonArea.y + window.soundButtonArea.height
+  ) {
+    toggleSound();
+
+    if (typeof drawStartScreen === "function") {
+      drawStartScreen();
+    }
+
+    return;
+  }
+
+  if (
+    window.startButtonArea &&
+    x >= window.startButtonArea.x &&
+    x <= window.startButtonArea.x + window.startButtonArea.width &&
+    y >= window.startButtonArea.y &&
+    y <= window.startButtonArea.y + window.startButtonArea.height
+  ) {
+    init();
+    return;
+  }
+
+  if (
+    world &&
     world.restartButtonArea &&
     x >= world.restartButtonArea.x &&
     x <= world.restartButtonArea.x + world.restartButtonArea.width &&
@@ -97,8 +208,8 @@ function handleRestartClick(e) {
     return;
   }
 
-  // HOME BUTTON?
   if (
+    world &&
     world.homeButtonArea &&
     x >= world.homeButtonArea.x &&
     x <= world.homeButtonArea.x + world.homeButtonArea.width &&
@@ -111,44 +222,50 @@ function handleRestartClick(e) {
 }
 
 function restartGame() {
-  // 1) Alte Welt aufräumen
+  stopAllGameSounds();
+
   if (world && world.logicInterval) {
     clearInterval(world.logicInterval);
   }
 
-  // 2) Canvas leeren
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 3) Globale World-Referenz zurücksetzen
   world = null;
-  // frisches Keyboard
   keyboard = new Keyboard();
 
-  // 4) Soundzustand merken (wird nach Neuanlage wiederhergestellt)
-  const currentSoundState = soundOn;
+  const currentSoundState = window.soundOn;
 
-  // 5) Neue Welt erstellen
   world = new World(canvas, keyboard);
 
-  // 6) Soundzustand wiederherstellen (z.B. background music pausieren, wenn soundOff)
   if (!currentSoundState) {
-    // falls du einen AudioManager verwendest:
-    if (
-      world &&
-      world.audioManager &&
-      world.audioManager.sounds &&
-      world.audioManager.sounds.background
-    ) {
-      try {
+    try {
+      if (
+        world &&
+        world.audioManager &&
+        world.audioManager.sounds &&
+        world.audioManager.sounds.background
+      ) {
         world.audioManager.sounds.background.pause();
-      } catch (e) {}
-    } else {
-      // fallback auf globale Variablen (falls dein alter Code so arbeitet)
-      try {
-        if (window.gameAudio) gameAudio.pause();
-      } catch (e) {}
-    }
+        world.audioManager.sounds.background.currentTime = 0;
+      }
+    } catch (e) {}
+  } else {
+    try {
+      if (
+        world &&
+        world.audioManager &&
+        world.audioManager.sounds &&
+        world.audioManager.sounds.background
+      ) {
+        const bg = world.audioManager.sounds.background;
+        bg.currentTime = 0;
+        bg.play().catch(() => {});
+      } else if (window.backgroundMusic) {
+        window.backgroundMusic.currentTime = 0;
+        window.backgroundMusic.play().catch(() => {});
+      }
+    } catch (e) {}
   }
 }
 

@@ -9,6 +9,22 @@ class Endboss extends MovableObject {
   isDead = false;
   isHurt = false;
 
+  animateInterval = null;
+  walkInterval = null;
+  attackInterval = null;
+
+  constructor() {
+    super().loadImage("img/4_enemie_boss_chicken/1_walk/G1.png");
+    this.loadImages(this.IMAGES_WALKING);
+    this.loadImages(this.IMAGES_SPAWNING);
+    this.loadImages(this.IMAGES_ATTACK);
+    this.loadImages(this.IMAGES_DEAD);
+    this.loadImages(this.IMAGES_HURT);
+    this.speed = 2;
+    this.x = 2500;
+    this.animate();
+  }
+
   IMAGES_WALKING = [
     "img/4_enemie_boss_chicken/1_walk/G1.png",
     "img/4_enemie_boss_chicken/1_walk/G2.png",
@@ -47,20 +63,8 @@ class Endboss extends MovableObject {
     "img/4_enemie_boss_chicken/5_dead/G26.png",
   ];
 
-  constructor() {
-    super().loadImage("img/4_enemie_boss_chicken/1_walk/G1.png");
-    this.loadImages(this.IMAGES_WALKING);
-    this.loadImages(this.IMAGES_SPAWNING);
-    this.loadImages(this.IMAGES_ATTACK);
-    this.loadImages(this.IMAGES_DEAD);
-    this.loadImages(this.IMAGES_HURT);
-    this.speed = 2;
-    this.x = 2500;
-    this.animate();
-  }
-
   animate() {
-    setInterval(() => {
+    this.animateInterval = setInterval(() => {
       if (this.isDead || this.isHurt) return;
 
       if (!this.triggered && this.world.character.x > 2150) {
@@ -81,15 +85,19 @@ class Endboss extends MovableObject {
   startBossSequence() {
     this.triggered = true;
 
-    let walkInterval = setInterval(() => {
+    this.walkInterval = setInterval(() => {
       this.x -= 5;
       this.playAnimation(this.IMAGES_WALKING);
 
       if (this.x <= 2350) {
-        clearInterval(walkInterval);
+        clearInterval(this.walkInterval);
+        this.walkInterval = null;
 
         this.playAnimation(this.IMAGES_SPAWNING);
-        world.audioManager.play("boss");
+
+        if (this.world && this.world.audioManager) {
+          this.world.audioManager.play("boss");
+        }
 
         setTimeout(() => {
           this.startAttackPattern();
@@ -101,7 +109,7 @@ class Endboss extends MovableObject {
   startAttackPattern() {
     this.attacking = true;
 
-    setInterval(() => {
+    this.attackInterval = setInterval(() => {
       if (this.isDead) return;
       this.attackPhase = true;
       setTimeout(() => {
@@ -156,6 +164,23 @@ class Endboss extends MovableObject {
     this.isDead = true;
     this.isHurt = false;
 
+    if (this.animateInterval) {
+      clearInterval(this.animateInterval);
+      this.animateInterval = null;
+    }
+    if (this.walkInterval) {
+      clearInterval(this.walkInterval);
+      this.walkInterval = null;
+    }
+    if (this.attackInterval) {
+      clearInterval(this.attackInterval);
+      this.attackInterval = null;
+    }
+
+    if (this.world && this.world.audioManager) {
+      this.world.audioManager.pause("boss");
+    }
+
     let i = 0;
     const nextFrame = () => {
       if (i < this.IMAGES_DEAD.length) {
@@ -175,4 +200,3 @@ class Endboss extends MovableObject {
     return { x: this.x, y: this.y, width: this.width, height: this.height };
   }
 }
-

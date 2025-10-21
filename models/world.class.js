@@ -12,8 +12,11 @@ class World {
   throwableObjects = [];
   bottleCount = 0;
   coinCount = 0;
-  audioManager = new AudioManager();
   paused = false;
+
+  animateInterval = null;
+  walkInterval = null;
+  attackInterval = null;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -44,9 +47,30 @@ class World {
     this.throwableObjects = [];
     this.bottleCount = 0;
     this.coinCount = 0;
+
     this.audioManager = new AudioManager();
-    this.audioManager.sounds.background.volume = 0.3;
-    this.audioManager.sounds.background.play();
+
+    try {
+      if (
+        window.soundOn &&
+        this.audioManager &&
+        this.audioManager.sounds &&
+        this.audioManager.sounds.background
+      ) {
+        this.audioManager.sounds.background.volume = 0.3;
+        this.audioManager.sounds.background.currentTime = 0;
+        this.audioManager.sounds.background.play().catch(() => {});
+      } else if (
+        this.audioManager &&
+        this.audioManager.sounds &&
+        this.audioManager.sounds.background
+      ) {
+        this.audioManager.sounds.background.pause();
+        this.audioManager.sounds.background.currentTime = 0;
+      }
+    } catch (e) {
+      console.warn("Audio start failed:", e);
+    }
 
     this.run();
     this.draw();

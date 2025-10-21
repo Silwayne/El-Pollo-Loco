@@ -7,6 +7,15 @@ class Character extends MovableObject {
   deathHandled = false;
   world;
 
+  constructor() {
+    super().loadImage("img/2_character_pepe/2_walk/W-21.png");
+    this.loadImages(this.IMAGES_WALKING);
+    this.loadImages(this.IMAGES_JUMPING);
+    this.loadImages(this.IMAGES_DEAD);
+    this.loadImages(this.IMAGES_HURT);
+    this.applyGravity();
+  }
+
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
     "img/2_character_pepe/2_walk/W-22.png",
@@ -43,15 +52,6 @@ class Character extends MovableObject {
     "img/2_character_pepe/4_hurt/H-42.png",
     "img/2_character_pepe/4_hurt/H-43.png",
   ];
-
-  constructor() {
-    super().loadImage("img/2_character_pepe/2_walk/W-21.png");
-    this.loadImages(this.IMAGES_WALKING);
-    this.loadImages(this.IMAGES_JUMPING);
-    this.loadImages(this.IMAGES_DEAD);
-    this.loadImages(this.IMAGES_HURT);
-    this.applyGravity();
-  }
 
   getCollisionBox() {
     return {

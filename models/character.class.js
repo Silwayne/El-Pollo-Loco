@@ -70,15 +70,15 @@ class Character extends MovableObject {
 
   animate() {
     setInterval(() => {
-      if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+      if (this.world.keyboard.D && this.x < this.world.level.level_end_x) {
         this.moveRight();
         this.otherDirection = false;
       }
-      if (this.world.keyboard.LEFT && this.x > -600) {
+      if (this.world.keyboard.A && this.x > -600) {
         this.moveLeft();
         this.otherDirection = true;
       }
-      if (this.world.keyboard.UP && !this.isAboveGround()) {
+      if (this.world.keyboard.W && !this.isAboveGround()) {
         this.jump();
         this.world.audioManager.play("jump");
       }
@@ -107,7 +107,7 @@ class Character extends MovableObject {
       } else if (this.isAboveGround()) {
         this.playAnimation(this.IMAGES_JUMPING);
       } else {
-        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+        if (this.world.keyboard.D || this.world.keyboard.A) {
           this.playAnimation(this.IMAGES_WALKING);
         }
       }

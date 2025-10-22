@@ -92,16 +92,34 @@ class World {
   }
 
   checkThrowObjects() {
-    if (this.keyboard.D && this.bottleCount > 0) {
-      let bottle = new ThrowableObject(
-        this.character.x + 100,
-        this.character.y + 100
-      );
+    // if (this.keyboard.SPACE && this.bottleCount > 0) {
+    //   let bottle = new ThrowableObject(
+    //     this.character.x + 100,
+    //     this.character.y + 100
+    //   );
 
-      this.throwableObjects.push(bottle);
-      this.bottleCount--;
-      this.bottleBar.setPercentage(this.bottleCount);
-      this.audioManager.play("throw");
+    //   this.throwableObjects.push(bottle);
+    //   this.bottleCount--;
+    //   this.bottleBar.setPercentage(this.bottleCount);
+    //   this.audioManager.play("throw");
+    // }
+
+    const now = Date.now();
+    const THROW_COOLDOWN = 50;
+
+    if ((this.keyboard.SPACE || this.keyboard.E) && this.bottleCount > 0) {
+      if (!this.lastThrowTime || now - this.lastThrowTime > THROW_COOLDOWN) {
+        let bottle = new ThrowableObject(
+          this.character.x + 100,
+          this.character.y + 100
+        );
+
+        this.throwableObjects.push(bottle);
+        this.bottleCount--;
+        this.bottleBar.setPercentage(this.bottleCount);
+        this.audioManager.play("throw");
+        this.lastThrowTime = now;
+      }
     }
 
     for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
@@ -191,6 +209,13 @@ class World {
       this.checkCollisions();
     }
     this.ui.draw();
+
+    if (
+      window.innerWidth <= 768 &&
+      typeof this.drawMobileControls === "function"
+    ) {
+      this.drawMobileControls();
+    }
 
     let self = this;
     requestAnimationFrame(() => self.draw());

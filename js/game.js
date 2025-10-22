@@ -116,6 +116,13 @@ window.addEventListener("load", function () {
       mousePos.y >= window.soundButtonArea.y &&
       mousePos.y <= window.soundButtonArea.y + window.soundButtonArea.height;
 
+    const hoveringHelp =
+      window.helpButtonArea &&
+      mousePos.x >= window.helpButtonArea.x &&
+      mousePos.x <= window.helpButtonArea.x + window.helpButtonArea.width &&
+      mousePos.y >= window.helpButtonArea.y &&
+      mousePos.y <= window.helpButtonArea.y + window.helpButtonArea.height;
+
     const hoveringRestart =
       world &&
       world.restartButtonArea &&
@@ -133,7 +140,7 @@ window.addEventListener("load", function () {
       mousePos.y <= world.homeButtonArea.y + world.homeButtonArea.height;
 
     canvas.style.cursor =
-      hoveringStart || hoveringSound || hoveringRestart || hoveringHome
+      hoveringStart || hoveringSound || hoveringHelp || hoveringRestart || hoveringHome
         ? "pointer"
         : "default";
   });
@@ -148,6 +155,10 @@ function init() {
   canvas.addEventListener("click", handleCanvasClick);
 
   world = new World(canvas, keyboard);
+
+  window.world = world; // macht es global referenzierbar
+  Mobile.init(canvas, world); // initialisiert Touch-Handler
+  if (world._setupMobileButtons) world._setupMobileButtons(); // legt Button-Rects an
 
   try {
     if (world && world.audioManager) {
@@ -193,6 +204,17 @@ function handleCanvasClick(e) {
     y <= window.startButtonArea.y + window.startButtonArea.height
   ) {
     init();
+    return;
+  }
+
+  if (
+    window.helpButtonArea &&
+    x >= window.helpButtonArea.x &&
+    x <= window.helpButtonArea.x + window.helpButtonArea.width &&
+    y >= window.helpButtonArea.y &&
+    y <= window.helpButtonArea.y + window.helpButtonArea.height
+  ) {
+    showHelp();
     return;
   }
 
@@ -268,55 +290,3 @@ function restartGame() {
     } catch (e) {}
   }
 }
-
-window.addEventListener("keydown", (e) => {
-  if (e.keyCode == 39) {
-    keyboard.RIGHT = true;
-  }
-
-  if (e.keyCode == 37) {
-    keyboard.LEFT = true;
-  }
-
-  if (e.keyCode == 38) {
-    keyboard.UP = true;
-  }
-
-  if (e.keyCode == 40) {
-    keyboard.DOWN = true;
-  }
-
-  if (e.keyCode == 32) {
-    keyboard.SPACE = true;
-  }
-
-  if (e.keyCode == 68) {
-    keyboard.D = true;
-  }
-});
-
-window.addEventListener("keyup", (e) => {
-  if (e.keyCode == 39) {
-    keyboard.RIGHT = false;
-  }
-
-  if (e.keyCode == 37) {
-    keyboard.LEFT = false;
-  }
-
-  if (e.keyCode == 38) {
-    keyboard.UP = false;
-  }
-
-  if (e.keyCode == 40) {
-    keyboard.DOWN = false;
-  }
-
-  if (e.keyCode == 32) {
-    keyboard.SPACE = false;
-  }
-
-  if (e.keyCode == 68) {
-    keyboard.D = false;
-  }
-});

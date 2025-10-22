@@ -13,6 +13,7 @@ function drawStartScreen() {
     ctx.drawImage(startScreenImg, 0, 0, canvas.width, canvas.height);
     drawStartButton();
     drawSoundButton();
+    drawHelpButton();
   }
 }
 
@@ -50,9 +51,12 @@ function drawSoundButton() {
   const y = canvas.height - 50;
 
   ctx.save();
-  ctx.fillStyle = "rgba(160,34,10,0.9)";
+  ctx.fillStyle = "#a0220a";
   ctx.fillRect(x, y, btnWidth, btnHeight);
-  ctx.fillStyle = "white";
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(x, y, btnWidth, btnHeight);
+  ctx.fillStyle = "#fff";
   ctx.font = "20px Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
@@ -64,4 +68,26 @@ function drawSoundButton() {
   ctx.restore();
 
   window.soundButtonArea = { x, y, width: btnWidth, height: btnHeight };
+}
+
+function drawHelpButton() {
+  const btnWidth = 150;
+  const btnHeight = 40;
+  const helpX = 220;
+  const helpY = canvas.height - 50;
+
+  ctx.save();
+  ctx.fillStyle = "#a0220a";
+  ctx.fillRect(helpX, helpY, btnWidth, btnHeight);
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(helpX, helpY, btnWidth, btnHeight);
+  ctx.fillStyle = "#fff";
+  ctx.font = "20px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("Help", helpX + btnWidth / 2, helpY + btnHeight / 2);
+  ctx.restore();
+
+  window.helpButtonArea = { x: helpX, y: helpY, width: btnWidth, height: btnHeight };
 }

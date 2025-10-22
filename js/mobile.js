@@ -1,161 +1,202 @@
-// mobile.js - komplette Version (ersetze deine aktuelle mobile.js damit)
-
-const Mobile = {
+let Mobile = {
   canvas: null,
   world: null,
-  activeTouches: {}, // touchId -> actionKey
+  activeTouches: {},
   threshold: 768,
 
   init(canvas, world) {
     this.canvas = canvas;
     this.world = world;
 
-    // register listeners (passive:false so preventDefault works)
-    canvas.addEventListener("touchstart", (e) => this._onTouchStart(e), {
+    canvas.addEventListener("touchstart", (e) => this.onTouchStart(e), {
       passive: false,
     });
-    canvas.addEventListener("touchmove", (e) => this._onTouchMove(e), {
+    canvas.addEventListener("touchmove", (e) => this.onTouchMove(e), {
       passive: false,
     });
-    canvas.addEventListener("touchend", (e) => this._onTouchEnd(e), {
+    canvas.addEventListener("touchend", (e) => this.onTouchEnd(e), {
       passive: false,
     });
-    canvas.addEventListener("touchcancel", (e) => this._onTouchEnd(e), {
+    canvas.addEventListener("touchcancel", (e) => this.onTouchEnd(e), {
       passive: false,
     });
 
-    // mouse fallback for desktop testing
-    canvas.addEventListener("mousedown", (e) => this._onMouseDown(e));
-    window.addEventListener("mouseup", (e) => this._onMouseUp(e));
+    canvas.addEventListener("mousedown", (e) => this.onMouseDown(e));
+    window.addEventListener("mouseup", (e) => this.onMouseUp(e));
 
-    console.log("Mobile.init registered");
+    console.log("✅ Mobile.init registered");
   },
 
-  // helper: enabled only if canvas & world exist and screen is small enough
-  _enabled() {
+  enabled() {
     return this.canvas && this.world && window.innerWidth <= this.threshold;
   },
 
-  _toCanvasPos(clientX, clientY) {
-    const rect = this.canvas.getBoundingClientRect();
+  toCanvasPos(clientX, clientY) {
+    let rect = this.canvas.getBoundingClientRect();
     return {
       x: ((clientX - rect.left) / rect.width) * this.canvas.width,
       y: ((clientY - rect.top) / rect.height) * this.canvas.height,
     };
   },
 
-  _findButtonAt(x, y) {
+  findButtonAt(x, y) {
     if (!this.world || !this.world.mobileButtons) return null;
-    return this.world.mobileButtons.find((btn) => {
-      return (
+    return this.world.mobileButtons.find(
+      (btn) =>
         x >= btn.x && x <= btn.x + btn.w && y >= btn.y && y <= btn.y + btn.h
-      );
-    });
+    );
   },
 
-  _onTouchStart(e) {
+  checkUIButtonsAt(x, y) {
+    if (window.soundButtonArea) {
+      let s = window.soundButtonArea;
+      if (x >= s.x && x <= s.x + s.width && y >= s.y && y <= s.y + s.height) {
+        if (typeof toggleSound === "function") toggleSound();
+        if (typeof drawStartScreen === "function") drawStartScreen();
+        return true;
+      }
+    }
+
+    if (window.startButtonArea) {
+      let st = window.startButtonArea;
+      if (
+        x >= st.x &&
+        x <= st.x + st.width &&
+        y >= st.y &&
+        y <= st.y + st.height
+      ) {
+        if (typeof init === "function") init();
+        return true;
+      }
+    }
+
+    if (window.helpButtonArea) {
+      let h = window.helpButtonArea;
+      if (x >= h.x && x <= h.x + h.width && y >= h.y && y <= h.y + h.height) {
+        if (typeof showHelp === "function") showHelp();
+        else {
+          window.showHelpOverlay = true;
+          if (typeof drawStartScreen === "function") drawStartScreen();
+        }
+        return true;
+      }
+    }
+
+    if (window.world && window.world.restartButtonArea) {
+      let r = window.world.restartButtonArea;
+      if (x >= r.x && x <= r.x + r.width && y >= r.y && y <= r.y + r.height) {
+        if (typeof restartGame === "function") restartGame();
+        return true;
+      }
+    }
+
+    if (window.world && window.world.homeButtonArea) {
+      let ho = window.world.homeButtonArea;
+      if (
+        x >= ho.x &&
+        x <= ho.x + ho.width &&
+        y >= ho.y &&
+        y <= ho.y + ho.height
+      ) {
+        location.reload();
+        return true;
+      }
+    }
+
+    if (window.helpCloseButtonArea) {
+      let c = window.helpCloseButtonArea;
+      if (x >= c.x && x <= c.x + c.width && y >= c.y && y <= c.y + c.height) {
+        window.showHelpOverlay = false;
+        if (typeof drawStartScreen === "function") drawStartScreen();
+        return true;
+      }
+    }
+
+    return false;
+  },
+
+  onTouchStart(e) {
     if (e.cancelable) e.preventDefault();
-    if (!this._enabled()) return;
-    for (let i = 0; i < e.changedTouches.length; i++) {
-      const t = e.changedTouches[i];
-      const pos = this._toCanvasPos(t.clientX, t.clientY);
-      const btn = this._findButtonAt(pos.x, pos.y);
+    if (!this.canvas) return;
+
+    for (let t of e.changedTouches) {
+      let pos = this.toCanvasPos(t.clientX, t.clientY);
+
+      if (this.checkUIButtonsAt(pos.x, pos.y)) continue;
+
+      if (this.world && this.enabled()) {
+        let btn = this.findButtonAt(pos.x, pos.y);
+        if (btn) {
+          this.activeTouches[t.identifier] = btn.key;
+          this.setKey(btn.key, true);
+        }
+      }
+    }
+    console.log("📱 Touch detected:", e.changedTouches.length);
+  },
+
+  onMouseDown(e) {
+    if (!this.canvas) return;
+    let pos = this.toCanvasPos(e.clientX, e.clientY);
+
+    if (this.checkUIButtonsAt(pos.x, pos.y)) return;
+
+    if (this.world && this.enabled()) {
+      let btn = this.findButtonAt(pos.x, pos.y);
       if (btn) {
-        this.activeTouches[t.identifier] = btn.key;
-        this._setKey(btn.key, true);
-        console.log("touchstart ->", btn.key);
+        this.activeTouches["mouse"] = btn.key;
+        this.setKey(btn.key, true);
       }
     }
   },
 
-  _onTouchMove(e) {
+  onTouchEnd(e) {
     if (e.cancelable) e.preventDefault();
-    if (!this._enabled()) return;
-    for (let i = 0; i < e.changedTouches.length; i++) {
-      const t = e.changedTouches[i];
-      const pos = this._toCanvasPos(t.clientX, t.clientY);
-      const btn = this._findButtonAt(pos.x, pos.y);
-      const prev = this.activeTouches[t.identifier];
-      if (btn && prev !== btn.key) {
-        if (prev) this._setKey(prev, false);
-        this.activeTouches[t.identifier] = btn.key;
-        this._setKey(btn.key, true);
-        console.log("touchmove enter ->", btn.key);
-      } else if (!btn && prev) {
-        this._setKey(prev, false);
-        delete this.activeTouches[t.identifier];
-        console.log("touchmove leave ->", prev);
-      }
-    }
-  },
+    if (!this.enabled()) return;
 
-  _onTouchEnd(e) {
-    if (e.cancelable) e.preventDefault();
-    if (!this._enabled()) return;
-    for (let i = 0; i < e.changedTouches.length; i++) {
-      const t = e.changedTouches[i];
-      const prev = this.activeTouches[t.identifier];
+    for (let t of e.changedTouches) {
+      let prev = this.activeTouches[t.identifier];
       if (prev) {
-        this._setKey(prev, false);
+        this.setKey(prev, false);
         delete this.activeTouches[t.identifier];
-        console.log("touchend ->", prev);
       }
     }
   },
 
-  _onMouseDown(e) {
-    if (!this._enabled()) return;
-    const pos = this._toCanvasPos(e.clientX, e.clientY);
-    const btn = this._findButtonAt(pos.x, pos.y);
+  onMouseDown(e) {
+    if (!this.canvas || !this.world) return;
+    let pos = this.toCanvasPos(e.clientX, e.clientY);
+    if (this.checkUIButtonsAt(pos.x, pos.y)) return;
+
+    let btn = this.findButtonAt(pos.x, pos.y);
     if (btn) {
       this.activeTouches["mouse"] = btn.key;
-      this._setKey(btn.key, true);
-      console.log("mousedown ->", btn.key);
+      this.setKey(btn.key, true);
     }
   },
 
-  _onMouseUp(e) {
-    if (!this._enabled()) return;
+  onMouseUp(e) {
     if (this.activeTouches["mouse"]) {
-      this._setKey(this.activeTouches["mouse"], false);
+      this.setKey(this.activeTouches["mouse"], false);
       delete this.activeTouches["mouse"];
-      console.log("mouseup -> released");
     }
   },
 
-  /**
-   * _setKey: setzt alle relevanten keyboard-Properties sowohl auf dem
-   * globalen keyboard-Objekt als auch auf world.keyboard (falls vorhanden).
-   * Dadurch decken wir verschiedene Namenskonventionen ab (W/A/D/SPACE vs LEFT/RIGHT/UP).
-   */
-  _setKey(btnKey, pressed) {
-    function trySet(obj, prop, val) {
-      if (!obj) return;
-      if (prop in obj) obj[prop] = val;
-    }
-
-    const kbGlobal = window.keyboard || null;
-    const kbWorld =
-      this.world && this.world.keyboard ? this.world.keyboard : null;
-
-    const mapping = {
-      LEFT: ["A", "LEFT"],
-      RIGHT: ["D", "RIGHT"],
-      JUMP: ["W", "UP"],
-      THROW: ["SPACE"], // passe ggf. an (E oder SPACE)
+  setKey(btnKey, pressed) {
+    let mapping = {
+      LEFT: ["A"],
+      RIGHT: ["D"],
+      JUMP: ["W"],
+      THROW: ["SPACE"],
     };
 
-    let candidates = mapping[btnKey] || [btnKey];
+    let kbGlobal = window.keyboard || null;
+    let kbWorld = this.world?.keyboard || null;
+    let keys = mapping[btnKey] || [btnKey];
 
-    candidates.forEach((p) => {
-      trySet(kbGlobal, p, pressed);
-      trySet(kbWorld, p, pressed);
-    });
-
-    // UI pressed state (für Button-Opazität)
-    if (this.world) {
-      this.world.pressedButtons = this.world.pressedButtons || {};
-      this.world.pressedButtons[btnKey] = pressed;
+    for (let key of keys) {
+      if (kbGlobal && key in kbGlobal) kbGlobal[key] = pressed;
+      if (kbWorld && key in kbWorld) kbWorld[key] = pressed;
     }
   },
 };

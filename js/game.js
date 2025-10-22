@@ -97,33 +97,37 @@ window.addEventListener("load", function () {
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
 
+  if (typeof Mobile !== "undefined") {
+    Mobile.init(canvas, null);
+  }
+
   canvas.addEventListener("mousemove", (e) => {
-    const rect = canvas.getBoundingClientRect();
+    let rect = canvas.getBoundingClientRect();
     mousePos.x = e.clientX - rect.left;
     mousePos.y = e.clientY - rect.top;
 
-    const hoveringStart =
+    let hoveringStart =
       window.startButtonArea &&
       mousePos.x >= window.startButtonArea.x &&
       mousePos.x <= window.startButtonArea.x + window.startButtonArea.width &&
       mousePos.y >= window.startButtonArea.y &&
       mousePos.y <= window.startButtonArea.y + window.startButtonArea.height;
 
-    const hoveringSound =
+    let hoveringSound =
       window.soundButtonArea &&
       mousePos.x >= window.soundButtonArea.x &&
       mousePos.x <= window.soundButtonArea.x + window.soundButtonArea.width &&
       mousePos.y >= window.soundButtonArea.y &&
       mousePos.y <= window.soundButtonArea.y + window.soundButtonArea.height;
 
-    const hoveringHelp =
+    let hoveringHelp =
       window.helpButtonArea &&
       mousePos.x >= window.helpButtonArea.x &&
       mousePos.x <= window.helpButtonArea.x + window.helpButtonArea.width &&
       mousePos.y >= window.helpButtonArea.y &&
       mousePos.y <= window.helpButtonArea.y + window.helpButtonArea.height;
 
-    const hoveringRestart =
+    let hoveringRestart =
       world &&
       world.restartButtonArea &&
       mousePos.x >= world.restartButtonArea.x &&
@@ -131,7 +135,7 @@ window.addEventListener("load", function () {
       mousePos.y >= world.restartButtonArea.y &&
       mousePos.y <= world.restartButtonArea.y + world.restartButtonArea.height;
 
-    const hoveringHome =
+    let hoveringHome =
       world &&
       world.homeButtonArea &&
       mousePos.x >= world.homeButtonArea.x &&
@@ -140,7 +144,11 @@ window.addEventListener("load", function () {
       mousePos.y <= world.homeButtonArea.y + world.homeButtonArea.height;
 
     canvas.style.cursor =
-      hoveringStart || hoveringSound || hoveringHelp || hoveringRestart || hoveringHome
+      hoveringStart ||
+      hoveringSound ||
+      hoveringHelp ||
+      hoveringRestart ||
+      hoveringHome
         ? "pointer"
         : "default";
   });
@@ -155,10 +163,11 @@ function init() {
   canvas.addEventListener("click", handleCanvasClick);
 
   world = new World(canvas, keyboard);
+  window.world = world;
 
-  window.world = world; // macht es global referenzierbar
-  Mobile.init(canvas, world); // initialisiert Touch-Handler
-  if (world._setupMobileButtons) world._setupMobileButtons(); // legt Button-Rects an
+  if (typeof Mobile !== "undefined") Mobile.init(canvas, world);
+  if (typeof world.setupMobileButtons === "function")
+    world.setupMobileButtons();
 
   try {
     if (world && world.audioManager) {
@@ -176,9 +185,21 @@ function init() {
 function handleCanvasClick(e) {
   if (!canvas) return;
 
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+  let rect = canvas.getBoundingClientRect();
+  let x = e.clientX - rect.left;
+  let y = e.clientY - rect.top;
+
+  if (window.showHelpOverlay && window.helpCloseButtonArea) {
+    let c = window.helpCloseButtonArea;
+    if (x >= c.x && x <= c.x + c.width && y >= c.y && y <= c.y + c.height) {
+      window.showHelpOverlay = false;
+      if (typeof drawStartScreen === "function") drawStartScreen();
+      return;
+    }
+    if (window.showHelpOverlay) {
+      return;
+    }
+  }
 
   if (
     window.soundButtonArea &&
@@ -250,13 +271,13 @@ function restartGame() {
     clearInterval(world.logicInterval);
   }
 
-  const ctx = canvas.getContext("2d");
+  let ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   world = null;
   keyboard = new Keyboard();
 
-  const currentSoundState = window.soundOn;
+  let currentSoundState = window.soundOn;
 
   world = new World(canvas, keyboard);
 
@@ -280,7 +301,7 @@ function restartGame() {
         world.audioManager.sounds &&
         world.audioManager.sounds.background
       ) {
-        const bg = world.audioManager.sounds.background;
+        let bg = world.audioManager.sounds.background;
         bg.currentTime = 0;
         bg.play().catch(() => {});
       } else if (window.backgroundMusic) {

@@ -14,14 +14,15 @@ function drawStartScreen() {
     drawStartButton();
     drawSoundButton();
     drawHelpButton();
+    drawHelpOverlay();
   }
 }
 
 function drawStartButton() {
-  const btnWidth = 260;
-  const btnHeight = 60;
-  const btnX = canvas.width / 2 - btnWidth / 2;
-  const btnY = 40;
+  let btnWidth = 260;
+  let btnHeight = 60;
+  let btnX = canvas.width / 2 - btnWidth / 2;
+  let btnY = 40;
 
   ctx.save();
   ctx.fillStyle = "#a0220a";
@@ -45,10 +46,10 @@ function drawStartButton() {
 }
 
 function drawSoundButton() {
-  const btnWidth = 150;
-  const btnHeight = 40;
-  const x = 40;
-  const y = canvas.height - 50;
+  let btnWidth = 150;
+  let btnHeight = 40;
+  let x = 40;
+  let y = canvas.height - 50;
 
   ctx.save();
   ctx.fillStyle = "#a0220a";
@@ -71,10 +72,10 @@ function drawSoundButton() {
 }
 
 function drawHelpButton() {
-  const btnWidth = 150;
-  const btnHeight = 40;
-  const helpX = 220;
-  const helpY = canvas.height - 50;
+  let btnWidth = 150;
+  let btnHeight = 40;
+  let helpX = 220;
+  let helpY = canvas.height - 50;
 
   ctx.save();
   ctx.fillStyle = "#a0220a";
@@ -89,5 +90,101 @@ function drawHelpButton() {
   ctx.fillText("Help", helpX + btnWidth / 2, helpY + btnHeight / 2);
   ctx.restore();
 
-  window.helpButtonArea = { x: helpX, y: helpY, width: btnWidth, height: btnHeight };
+  window.helpButtonArea = {
+    x: helpX,
+    y: helpY,
+    width: btnWidth,
+    height: btnHeight,
+  };
+}
+
+function showHelp() {
+  window.showHelpOverlay = true;
+  if (typeof drawStartScreen === "function") drawStartScreen();
+}
+
+function drawHelpOverlay() {
+  if (!window.showHelpOverlay) return;
+  let margin = 40;
+  let x = margin;
+  let y = margin;
+  let w = canvas.width - margin * 2;
+  let h = canvas.height - margin * 2;
+
+  ctx.save();
+  ctx.globalAlpha = 0.95;
+  ctx.fillStyle = "#111";
+  ctx.fillRect(x, y, w, h);
+  ctx.globalAlpha = 1;
+
+  // Titel
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 36px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("Spielanleitung / Cómo jugar", canvas.width / 2, y + 50);
+
+  // Text-Font
+  ctx.font = "18px Arial";
+  ctx.textAlign = "left";
+
+  // Texte für jede Sprache
+  let de = [
+    "Steuerung:",
+    "• Links bewegen: A",
+    "• Rechts bewegen: D",
+    "• Springen: W",
+    "• Flasche werfen: SPACE",
+    "",
+    "Tippe 'Schließen' um zurückzukehren.",
+  ];
+
+  let es = [
+    "Controles:",
+    "• Mover a la izquierda: A",
+    "• Mover a la derecha: D",
+    "• Saltar: W",
+    "• Lanzar botella: SPACE",
+    "",
+    "Toca 'Cerrar' para volver.",
+  ];
+
+  // Spaltenbreite berechnen
+  let colWidth = w / 3;
+  let baseY = y + 110;
+
+  // Deutsch
+  let ty = baseY;
+  for (let line of de) {
+    ctx.fillText(line, x + 30, ty);
+    ty += 28;
+  }
+
+  // Spanisch
+  ty = baseY;
+  for (let line of es) {
+    ctx.fillText(line, x + colWidth * 2 + 0, ty);
+    ty += 28;
+  }
+
+  // Close-Button
+  let btnW = 180;
+  let btnH = 48;
+  let btnX = canvas.width / 2 - btnW / 2;
+  let btnY = y + h - 80;
+
+  ctx.fillStyle = "#a0220a";
+  ctx.fillRect(btnX, btnY, btnW, btnH);
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(btnX, btnY, btnW, btnH);
+  ctx.fillStyle = "#fff";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "bold 20px Arial";
+  ctx.fillText("Schließen / Cerrar", btnX + btnW / 2, btnY + btnH / 2);
+
+  // Klickbereich speichern
+  window.helpCloseButtonArea = { x: btnX, y: btnY, width: btnW, height: btnH };
+
+  ctx.restore();
 }

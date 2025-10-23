@@ -127,17 +127,29 @@ window.addEventListener("load", function () {
       mousePos.y >= window.helpButtonArea.y &&
       mousePos.y <= window.helpButtonArea.y + window.helpButtonArea.height;
 
+    let hoveringLegal =
+      window.legalButtonArea &&
+      mousePos.x >= window.legalButtonArea.x &&
+      mousePos.x <= window.legalButtonArea.x + window.legalButtonArea.width &&
+      mousePos.y >= window.legalButtonArea.y &&
+      mousePos.y <= window.legalButtonArea.y + window.legalButtonArea.height;
+
+    let hoveringImprint =
+      window.imprintButtonArea &&
+      mousePos.x >= window.imprintButtonArea.x &&
+      mousePos.x <= window.imprintButtonArea.x + window.imprintButtonArea.width &&
+      mousePos.y >= window.imprintButtonArea.y &&
+      mousePos.y <= window.imprintButtonArea.y + window.imprintButtonArea.height;
+
     let hoveringRestart =
-      world &&
-      world.restartButtonArea &&
+      world && world.restartButtonArea &&
       mousePos.x >= world.restartButtonArea.x &&
       mousePos.x <= world.restartButtonArea.x + world.restartButtonArea.width &&
       mousePos.y >= world.restartButtonArea.y &&
       mousePos.y <= world.restartButtonArea.y + world.restartButtonArea.height;
 
     let hoveringHome =
-      world &&
-      world.homeButtonArea &&
+      world && world.homeButtonArea &&
       mousePos.x >= world.homeButtonArea.x &&
       mousePos.x <= world.homeButtonArea.x + world.homeButtonArea.width &&
       mousePos.y >= world.homeButtonArea.y &&
@@ -147,6 +159,8 @@ window.addEventListener("load", function () {
       hoveringStart ||
       hoveringSound ||
       hoveringHelp ||
+      hoveringLegal ||
+      hoveringImprint ||
       hoveringRestart ||
       hoveringHome
         ? "pointer"
@@ -236,6 +250,28 @@ function handleCanvasClick(e) {
     y <= window.helpButtonArea.y + window.helpButtonArea.height
   ) {
     showHelp();
+    return;
+  }
+
+  if (
+    window.legalButtonArea &&
+    x >= window.legalButtonArea.x &&
+    x <= window.legalButtonArea.x + window.legalButtonArea.width &&
+    y >= window.legalButtonArea.y &&
+    y <= window.legalButtonArea.y + window.legalButtonArea.height
+  ) {
+    window.location.href = "./datenschutz.html";
+    return;
+  }
+
+  if (
+    window.imprintButtonArea &&
+    x >= window.imprintButtonArea.x &&
+    x <= window.imprintButtonArea.x + window.imprintButtonArea.width &&
+    y >= window.imprintButtonArea.y &&
+    y <= window.imprintButtonArea.y + window.imprintButtonArea.height
+  ) {
+    window.location.href = "./impressum.html";
     return;
   }
 

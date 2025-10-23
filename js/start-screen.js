@@ -14,6 +14,8 @@ function drawStartScreen() {
     drawStartButton();
     drawSoundButton();
     drawHelpButton();
+    drawLegalButton();
+    drawImprintButton();
     drawHelpOverlay();
   }
 }
@@ -48,7 +50,7 @@ function drawStartButton() {
 function drawSoundButton() {
   let btnWidth = 150;
   let btnHeight = 40;
-  let x = 40;
+  let x = 15;
   let y = canvas.height - 50;
 
   ctx.save();
@@ -74,7 +76,7 @@ function drawSoundButton() {
 function drawHelpButton() {
   let btnWidth = 150;
   let btnHeight = 40;
-  let helpX = 220;
+  let helpX = 195;
   let helpY = canvas.height - 50;
 
   ctx.save();
@@ -93,6 +95,60 @@ function drawHelpButton() {
   window.helpButtonArea = {
     x: helpX,
     y: helpY,
+    width: btnWidth,
+    height: btnHeight,
+  };
+}
+
+function drawLegalButton() {
+  const btnWidth = 150;
+  const btnHeight = 40;
+  const legalX = 375;
+  const legalY = canvas.height - 50;
+
+  ctx.save();
+  ctx.fillStyle = "#a0220a";
+  ctx.fillRect(legalX, legalY, btnWidth, btnHeight);
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(legalX, legalY, btnWidth, btnHeight);
+  ctx.fillStyle = "#fff";
+  ctx.font = "20px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("Legal", legalX + btnWidth / 2, legalY + btnHeight / 2);
+  ctx.restore();
+
+  window.legalButtonArea = {
+    x: legalX,
+    y: legalY,
+    width: btnWidth,
+    height: btnHeight,
+  };
+}
+
+function drawImprintButton() {
+  const btnWidth = 150;
+  const btnHeight = 40;
+  const imprintX = 555;
+  const imprintY = canvas.height - 50;
+
+  ctx.save();
+  ctx.fillStyle = "#a0220a";
+  ctx.fillRect(imprintX, imprintY, btnWidth, btnHeight);
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(imprintX, imprintY, btnWidth, btnHeight);
+  ctx.fillStyle = "#fff";
+  ctx.font = "20px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("Imprint", imprintX + btnWidth / 2, imprintY + btnHeight / 2);
+  ctx.restore();
+
+  window.imprintButtonArea = {
+    x: imprintX,
+    y: imprintY,
     width: btnWidth,
     height: btnHeight,
   };

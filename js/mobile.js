@@ -90,6 +90,22 @@ let Mobile = {
       }
     }
 
+    if (window.legalButtonArea) {
+      const p = window.legalButtonArea;
+      if (x >= p.x && x <= p.x + p.width && y >= p.y && y <= p.y + p.height) {
+        window.location.href = "./datenschutz.html";
+        return true;
+      }
+    }
+
+    if (window.imprintButtonArea) {
+      const i = window.imprintButtonArea;
+      if (x >= i.x && x <= i.x + i.width && y >= i.y && y <= i.y + i.height) {
+        window.location.href = "./impressum.html";
+        return true;
+      }
+    }
+
     if (window.world && window.world.homeButtonArea) {
       let ho = window.world.homeButtonArea;
       if (

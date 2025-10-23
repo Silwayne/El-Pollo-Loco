@@ -2,7 +2,7 @@ let Mobile = {
   canvas: null,
   world: null,
   activeTouches: {},
-  threshold: 768,
+  threshold: 1023,
 
   init(canvas, world) {
     this.canvas = canvas;

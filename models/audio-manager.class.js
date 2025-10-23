@@ -20,16 +20,13 @@ class AudioManager {
     this.sounds.background.loop = true;
     this.sounds.boss.loop = true;
     this.sounds.boss.volume = 1.0;
-
     this.activeClones = {};
-
     this.loopingPlaying = {};
   }
 
   play(name) {
     const sound = this.sounds[name];
     if (!sound) return;
-
     if (sound.loop) {
       if (this.loopingPlaying[name]) return;
       try {

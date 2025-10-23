@@ -3,17 +3,18 @@
   <head>
     <meta charset="UTF-16" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./style/style.css" />
     <link
       rel="icon"
       type="image/x-icon"
-      href="img/3_enemies_chicken/chicken_small/1_walk/2_w.png"
+      href="./img/3_enemies_chicken/chicken_small/1_walk/2_w.png"
     />
     <title>El Pollo Loco</title>
     <script src="./models/audio-manager.class.js"></script>
     <script src="./models/drawable-object.class.js"></script>
     <script src="./models/movable-object.class.js"></script>
     <script src="./models/character.class.js"></script>
+    <script src="./models/little-chicken.class.js"></script>
     <script src="./models/chicken.class.js"></script>
     <script src="./models/cloud.class.js"></script>
     <script src="./models/bottle.class.js"></script>
@@ -31,6 +32,7 @@
     <script src="./models/endboss.class.js"></script>
     <script src="./models/level.class.js"></script>
     <script src="./levels/level1.js"></script>
+    <script src="./js/rotation.js"></script>
     <script src="./js/start-screen.js"></script>
     <script src="./js/start-game.js"></script>
     <script src="./js/world-UI.js"></script>
@@ -40,6 +42,14 @@
   <body>
     <h1>El Pollo Loco</h1>
 
-    <canvas id="canvas" width="720" height="480"></canvas>
+    <div id="game-container">
+      <canvas id="canvas" width="720" height="480"></canvas>
+    </div>
   </body>
+  <div id="rotate-overlay">
+    <div>
+      <p>Drehen Sie Ihr Gerät.</p>
+      <p>Gire su dispositivo.</p>
+    </div>
+  </div>
 </html>

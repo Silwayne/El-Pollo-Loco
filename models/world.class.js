@@ -92,47 +92,51 @@ class World {
   }
 
   checkThrowObjects() {
-  let now = Date.now();
-  let THROW_COOLDOWN = 300; // ms
+    let now = Date.now();
+    let THROW_COOLDOWN = 300; // ms
 
-  if ((this.keyboard && (this.keyboard.SPACE || this.keyboard.E))) {
-    if (this.bottleCount > 0) {
-      if (!this.lastThrowTime || now - this.lastThrowTime > THROW_COOLDOWN) {
-        let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
-        this.throwableObjects.push(bottle);
-        this.bottleCount--;
-        this.bottleBar.setPercentage(this.bottleCount);
-        this.audioManager.play("throw");
-        this.lastThrowTime = now;
+    if (this.keyboard && (this.keyboard.SPACE || this.keyboard.E)) {
+      if (this.bottleCount > 0) {
+        if (!this.lastThrowTime || now - this.lastThrowTime > THROW_COOLDOWN) {
+          let bottle = new ThrowableObject(
+            this.character.x + 100,
+            this.character.y + 100
+          );
+          this.throwableObjects.push(bottle);
+          this.bottleCount--;
+          this.bottleBar.setPercentage(this.bottleCount);
+          this.audioManager.play("throw");
+          this.lastThrowTime = now;
+        }
+      }
+    }
+
+    for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
+      let bottle = this.throwableObjects[i];
+      if (!bottle) continue;
+
+      let boss =
+        this.level.endboss ||
+        this.level.enemies.find((e) => e instanceof Endboss);
+      if (boss && !bottle.isShattered && bottle.isColliding(boss)) {
+        boss.hit();
+        this.audioManager.play("bottleSmash");
+        if (this.bossBar) this.bossBar.setPercentage(boss.energy);
+        bottle.shatter();
+        continue;
+      }
+
+      if (!bottle.isShattered && bottle.y > 350) {
+        this.audioManager.play("bottleSmash");
+        bottle.shatter();
+        continue;
+      }
+
+      if (bottle.remove) {
+        this.throwableObjects.splice(i, 1);
       }
     }
   }
-
-  for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
-    let bottle = this.throwableObjects[i];
-    if (!bottle) continue;
-
-    let boss = this.level.endboss || this.level.enemies.find((e) => e instanceof Endboss);
-    if (boss && !bottle.isShattered && bottle.isColliding(boss)) {
-      boss.hit();
-      this.audioManager.play("bottleSmash");
-      if (this.bossBar) this.bossBar.setPercentage(boss.energy);
-      bottle.shatter();
-      continue;
-    }
-
-    if (!bottle.isShattered && bottle.y > 350) {
-      this.audioManager.play("bottleSmash");
-      bottle.shatter();
-      continue;
-    }
-
-    if (bottle.remove) {
-      this.throwableObjects.splice(i, 1);
-    }
-  }
-}
-
 
   checkCollisions() {
     this.level.enemies.forEach((enemy) => {
@@ -191,7 +195,7 @@ class World {
     this.ui.draw();
 
     if (
-      window.innerWidth <= 768 &&
+      window.innerWidth <= 1023 &&
       typeof this.drawMobileControls === "function"
     ) {
       this.drawMobileControls();

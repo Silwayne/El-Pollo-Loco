@@ -1,0 +1,56 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  background-image: url("/img/body_background.png");
+  background-position: center;
+  background-size: cover;
+  min-height: 100vh;
+}
+
+canvas {
+  background-color: black;
+}
+
+#rotate-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  color: white;
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-size: 2rem;
+  text-align: center;
+}
+
+@media only screen and (max-width: 760px) {
+  canvas {
+    width: 100%;
+  }
+
+  h1 {
+    display: none;
+  }
+}
+
+@media only screen and (max-height: 480px) {
+  canvas {
+    height: 100vh;
+  }
+
+  h1 {
+    display: none;
+  }
+}

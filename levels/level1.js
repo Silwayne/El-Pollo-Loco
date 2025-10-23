@@ -7,7 +7,10 @@ function createNewLevel() {
       new Chicken(),
       new Chicken(),
       new Chicken(),
-    ],
+      new LittleChicken(),
+      new LittleChicken(),
+      new LittleChicken()  
+      ],
 
     [
       new Cloud(), 
@@ -20,7 +23,7 @@ function createNewLevel() {
       new Bottle("ground"),
       new Bottle("air"),
       new Bottle("air"),
-      new Bottle("air"),
+      new Bottle("air")
     ],
 
     [
@@ -28,7 +31,7 @@ function createNewLevel() {
       new Coin("ground"),
       new Coin("air"),
       new Coin("air"),
-      new Coin("air"),
+      new Coin("air")
     ],
 
     [

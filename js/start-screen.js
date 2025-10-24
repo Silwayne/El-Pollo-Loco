@@ -8,6 +8,7 @@ startScreenImg.onload = function () {
 };
 
 function drawStartScreen() {
+  window.showStartScreen = true;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (startScreenImgLoaded) {
     ctx.drawImage(startScreenImg, 0, 0, canvas.width, canvas.height);
@@ -173,17 +174,14 @@ function drawHelpOverlay() {
   ctx.fillRect(x, y, w, h);
   ctx.globalAlpha = 1;
 
-  // Titel
   ctx.fillStyle = "#fff";
   ctx.font = "bold 36px Arial";
   ctx.textAlign = "center";
   ctx.fillText("Spielanleitung / Cómo jugar", canvas.width / 2, y + 50);
 
-  // Text-Font
   ctx.font = "18px Arial";
   ctx.textAlign = "left";
 
-  // Texte für jede Sprache
   let de = [
     "Steuerung:",
     "• Links bewegen: A",
@@ -204,25 +202,21 @@ function drawHelpOverlay() {
     "Toca 'Cerrar' para volver.",
   ];
 
-  // Spaltenbreite berechnen
   let colWidth = w / 3;
   let baseY = y + 110;
 
-  // Deutsch
   let ty = baseY;
   for (let line of de) {
     ctx.fillText(line, x + 30, ty);
     ty += 28;
   }
 
-  // Spanisch
   ty = baseY;
   for (let line of es) {
     ctx.fillText(line, x + colWidth * 2 + 0, ty);
     ty += 28;
   }
 
-  // Close-Button
   let btnW = 180;
   let btnH = 48;
   let btnX = canvas.width / 2 - btnW / 2;
@@ -239,7 +233,6 @@ function drawHelpOverlay() {
   ctx.font = "bold 20px Arial";
   ctx.fillText("Schließen / Cerrar", btnX + btnW / 2, btnY + btnH / 2);
 
-  // Klickbereich speichern
   window.helpCloseButtonArea = { x: btnX, y: btnY, width: btnW, height: btnH };
 
   ctx.restore();

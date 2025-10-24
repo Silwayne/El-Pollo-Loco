@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html translate="no">
   <head>
     <meta charset="UTF-16" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./style/style.css" />
-    <link
-      rel="icon"
-      type="image/x-icon"
-      href="./img/3_enemies_chicken/chicken_small/1_walk/2_w.png"
-    />
+    <link rel="icon" type="image/x-icon" href="./img/3_enemies_chicken/chicken_small/1_walk/2_w.png" />
+
+    <style>
+      @font-face {
+        font-family: "Zabars";
+        src: url("fonts/Zabars.ttf") format("truetype");
+      }
+    </style>
+
     <title>El Pollo Loco</title>
     <script src="./models/audio-manager.class.js"></script>
     <script src="./models/drawable-object.class.js"></script>
@@ -45,11 +49,13 @@
     <div id="game-container">
       <canvas id="canvas" width="720" height="480"></canvas>
     </div>
-  </body>
-  <div id="rotate-overlay">
+
+     <div id="rotate-overlay">
     <div>
       <p>Drehen Sie Ihr Gerät.</p>
       <p>Gire su dispositivo.</p>
     </div>
   </div>
+
+  </body>
 </html>

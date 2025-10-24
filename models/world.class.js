@@ -139,32 +139,55 @@ class World {
   }
 
   checkCollisions() {
-    this.level.enemies.forEach((enemy) => {
-      if (enemy instanceof Endboss) {
-        if (
-          this.character.isColliding(enemy) &&
-          !enemy.isDead &&
-          !this.character.isHurt()
-        ) {
+  this.level.enemies.forEach((enemy) => {
+    if (enemy instanceof Endboss) {
+      if (
+        this.character.isColliding(enemy) &&
+        !enemy.isDead &&
+        !this.character.isHurt()
+      ) {
+        this.character.hit();
+        this.statusBar.setPercentage(this.character.energy);
+        this.audioManager.play("hurt");
+      }
+    } else {
+      if (!enemy.isDead && this.character.isColliding(enemy)) {
+        if (this.character.isFallingOn(enemy)) {
+          enemy.die();
+          this.audioManager.play("enemyDead");
+        } else if (!this.character.isHurt()) {
           this.character.hit();
           this.statusBar.setPercentage(this.character.energy);
           this.audioManager.play("hurt");
         }
-      } else {
-        if (!enemy.isDead && this.character.isColliding(enemy)) {
-          if (this.character.isFallingOn(enemy)) {
-            enemy.die();
-            this.audioManager.play("enemyDead");
-          } else if (!this.character.isHurt()) {
-            this.character.hit();
-            this.statusBar.setPercentage(this.character.energy);
-            this.audioManager.play("hurt");
-          }
-        }
       }
-    });
-    this.level.enemies = this.level.enemies.filter((e) => !e.remove);
+    }
+  });
+
+  this.level.enemies = this.level.enemies.filter((e) => !e.remove);
+
+  const boss = this.level.enemies.find((e) => e instanceof Endboss);
+  const endbossDead = boss ? boss.isDead : false;
+  const characterDead = this.character.isDead && this.character.isDead(); 
+
+  if ((characterDead || endbossDead) && !this.gameEnded) {
+    this.gameEnded = true;     
+    this.paused = true;        
+
+    try {
+      if (this.audioManager && typeof this.audioManager.stopAll === "function") {
+        this.audioManager.stopAll();
+      }
+      if (characterDead && this.audioManager && this.audioManager.play) {
+        this.audioManager.play("lose");   // Name anpassen an deine Audionamen
+      } else if (endbossDead && this.audioManager && this.audioManager.play) {
+        this.audioManager.play("win");
+      }
+    } catch (e) {
+      console.warn("Failed to stop/play end sounds:", e);
+    }
   }
+}
 
   checkBottleCollisions() {
     this.level.bottles.forEach((bottle, index) => {

@@ -4,6 +4,7 @@
 }
 
 body {
+  font-family: "Zabars", Arial, Helvetica, sans-serif;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -11,11 +12,18 @@ body {
   background-image: url("/img/body_background.png");
   background-position: center;
   background-size: cover;
+  background-repeat: no-repeat;
   min-height: 100vh;
 }
 
 canvas {
   background-color: black;
+}
+
+h1 {
+  font-size: 64px;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px 4px #000000;
 }
 
 #rotate-overlay {

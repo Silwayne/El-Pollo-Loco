@@ -7,10 +7,10 @@ class Character extends MovableObject {
   deathHandled = false;
   world;
   lastActionTime = Date.now();
-  isDozing = false; // leichte Eindöser-Phase
-  isSleeping = false; // tiefer Schlaf
-  DOZE_TIMEOUT = 3000; // nach 3s: eindösen
-  SLEEP_TIMEOUT = 5000; // nach 5s: richtig schlafen
+  isDozing = false; 
+  isSleeping = false; 
+  DOZE_TIMEOUT = 3000; 
+  SLEEP_TIMEOUT = 5000; 
 
   constructor() {
     super().loadImage("img/2_character_pepe/2_walk/W-21.png");
@@ -126,34 +126,32 @@ class Character extends MovableObject {
 
   animate() {
     setInterval(() => {
-      if (!this.world || !this.world.keyboard) return;
-
       if (
-        this.world.keyboard.D &&
-        this.x < (this.world.level?.level_end_x ?? Infinity)
+        this.world &&
+        (this.world.paused ||
+          this.world.gameEnded ||
+          (this.isDead && this.isDead()))
       ) {
-        this.moveRight();
-        this.otherDirection = false;
-        this.updateLastAction();
+        return; 
       }
 
+      if (this.world.keyboard.D && this.x < this.world.level.level_end_x) {
+        this.moveRight();
+        this.otherDirection = false;
+        this.updateLastAction && this.updateLastAction();
+      }
       if (this.world.keyboard.A && this.x > -600) {
         this.moveLeft();
         this.otherDirection = true;
-        this.updateLastAction();
+        this.updateLastAction && this.updateLastAction();
       }
-
       if (this.world.keyboard.W && !this.isAboveGround()) {
         this.jump();
-        if (
-          this.world.audioManager &&
-          typeof this.world.audioManager.play === "function"
-        ) {
+        this.world.audioManager &&
+          this.world.audioManager.play &&
           this.world.audioManager.play("jump");
-        }
-        this.updateLastAction();
+        this.updateLastAction && this.updateLastAction();
       }
-
       if (this.world) this.world.camera_x = -this.x + 100;
     }, 1000 / 60);
 

@@ -47,18 +47,27 @@ let Mobile = {
     );
   },
 
-  checkUIButtonsAt(x, y) {
+checkUIButtonsAt(x, y) {
+  if (window.helpCloseButtonArea && window.showHelpOverlay) {
+    const c = window.helpCloseButtonArea;
+    if (x >= c.x && x <= c.x + c.width && y >= c.y && y <= c.y + c.height) {
+      window.showHelpOverlay = false;
+      if (typeof drawStartScreen === "function") drawStartScreen();
+      return true;
+    }
+  }
+
+  if (window.showStartScreen) {
     if (window.soundButtonArea) {
-      let s = window.soundButtonArea;
+      const s = window.soundButtonArea;
       if (x >= s.x && x <= s.x + s.width && y >= s.y && y <= s.y + s.height) {
         if (typeof toggleSound === "function") toggleSound();
         if (typeof drawStartScreen === "function") drawStartScreen();
         return true;
       }
     }
-
     if (window.startButtonArea) {
-      let st = window.startButtonArea;
+      const st = window.startButtonArea;
       if (
         x >= st.x &&
         x <= st.x + st.width &&
@@ -69,10 +78,14 @@ let Mobile = {
         return true;
       }
     }
-
     if (window.helpButtonArea) {
-      let h = window.helpButtonArea;
-      if (x >= h.x && x <= h.x + h.width && y >= h.y && y <= h.y + h.height) {
+      const h = window.helpButtonArea;
+      if (
+        x >= h.x &&
+        x <= h.x + h.width &&
+        y >= h.y &&
+        y <= h.y + h.height
+      ) {
         if (typeof showHelp === "function") showHelp();
         else {
           window.showHelpOverlay = true;
@@ -81,88 +94,85 @@ let Mobile = {
         return true;
       }
     }
-
-    if (window.world && window.world.restartButtonArea) {
-      let r = window.world.restartButtonArea;
-      if (x >= r.x && x <= r.x + r.width && y >= r.y && y <= r.y + r.height) {
-        if (typeof restartGame === "function") restartGame();
-        return true;
-      }
-    }
-
     if (window.legalButtonArea) {
       const p = window.legalButtonArea;
-      if (x >= p.x && x <= p.x + p.width && y >= p.y && y <= p.y + p.height) {
-        window.location.href = "./datenschutz.html";
+      if (
+        x >= p.x &&
+        x <= p.x + p.width &&
+        y >= p.y &&
+        y <= p.y + p.height
+      ) {
+        window.location.href = "datenschutz.html";
         return true;
       }
     }
-
     if (window.imprintButtonArea) {
       const i = window.imprintButtonArea;
-      if (x >= i.x && x <= i.x + i.width && y >= i.y && y <= i.y + i.height) {
-        window.location.href = "./impressum.html";
-        return true;
-      }
-    }
-
-    if (window.world && window.world.homeButtonArea) {
-      let ho = window.world.homeButtonArea;
       if (
-        x >= ho.x &&
-        x <= ho.x + ho.width &&
-        y >= ho.y &&
-        y <= ho.y + ho.height
+        x >= i.x &&
+        x <= i.x + i.width &&
+        y >= i.y &&
+        y <= i.y + i.height
       ) {
-        location.reload();
+        window.location.href = "impressum.html";
         return true;
       }
     }
+  }
 
-    if (window.helpCloseButtonArea) {
-      let c = window.helpCloseButtonArea;
-      if (x >= c.x && x <= c.x + c.width && y >= c.y && y <= c.y + c.height) {
-        window.showHelpOverlay = false;
-        if (typeof drawStartScreen === "function") drawStartScreen();
-        return true;
-      }
+  if (this.world && this.world.restartButtonArea) {
+    const r = this.world.restartButtonArea;
+    if (x >= r.x && x <= r.x + r.width && y >= r.y && y <= r.y + r.height) {
+      if (typeof restartGame === "function") restartGame();
+      return true;
     }
+  }
 
-    return false;
-  },
+  if (this.world && this.world.homeButtonArea) {
+    const ho = this.world.homeButtonArea;
+    if (
+      x >= ho.x &&
+      x <= ho.x + ho.width &&
+      y >= ho.y &&
+      y <= ho.y + ho.height
+    ) {
+      location.reload();
+      return true;
+    }
+  }
+
+  return false;
+},
 
   onTouchStart(e) {
     if (e.cancelable) e.preventDefault();
     if (!this.canvas) return;
 
     for (let t of e.changedTouches) {
-      let pos = this.toCanvasPos(t.clientX, t.clientY);
+      const pos = this.toCanvasPos(t.clientX, t.clientY);
 
       if (this.checkUIButtonsAt(pos.x, pos.y)) continue;
 
-      if (this.world && this.enabled()) {
-        let btn = this.findButtonAt(pos.x, pos.y);
-        if (btn) {
-          this.activeTouches[t.identifier] = btn.key;
-          this.setKey(btn.key, true);
-        }
+      if (!this.world) continue;
+      const btn = this.findButtonAt(pos.x, pos.y);
+      if (btn) {
+        this.activeTouches[t.identifier] = btn.key;
+        this.setKey(btn.key, true);
       }
     }
-    console.log("📱 Touch detected:", e.changedTouches.length);
   },
 
   onMouseDown(e) {
     if (!this.canvas) return;
-    let pos = this.toCanvasPos(e.clientX, e.clientY);
+    const pos = this.toCanvasPos(e.clientX, e.clientY);
 
     if (this.checkUIButtonsAt(pos.x, pos.y)) return;
 
-    if (this.world && this.enabled()) {
-      let btn = this.findButtonAt(pos.x, pos.y);
-      if (btn) {
-        this.activeTouches["mouse"] = btn.key;
-        this.setKey(btn.key, true);
-      }
+    if (!this.world) return;
+    const btn = this.findButtonAt(pos.x, pos.y);
+    if (btn) {
+      this.activeTouches["mouse"] = btn.key;
+      this.setKey(btn.key, true);
     }
   },
 

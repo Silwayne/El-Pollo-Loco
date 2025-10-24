@@ -101,71 +101,67 @@ window.addEventListener("load", function () {
     Mobile.init(canvas, null);
   }
 
-  canvas.addEventListener("mousemove", (e) => {
-    let rect = canvas.getBoundingClientRect();
-    mousePos.x = e.clientX - rect.left;
-    mousePos.y = e.clientY - rect.top;
+canvas.addEventListener("mousemove", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  mousePos.x = e.clientX - rect.left;
+  mousePos.y = e.clientY - rect.top;
 
-    let hoveringStart =
-      window.startButtonArea &&
-      mousePos.x >= window.startButtonArea.x &&
-      mousePos.x <= window.startButtonArea.x + window.startButtonArea.width &&
-      mousePos.y >= window.startButtonArea.y &&
-      mousePos.y <= window.startButtonArea.y + window.startButtonArea.height;
+  let hovering = false;
 
-    let hoveringSound =
-      window.soundButtonArea &&
-      mousePos.x >= window.soundButtonArea.x &&
-      mousePos.x <= window.soundButtonArea.x + window.soundButtonArea.width &&
-      mousePos.y >= window.soundButtonArea.y &&
-      mousePos.y <= window.soundButtonArea.y + window.soundButtonArea.height;
+  if (window.showHelpOverlay && window.helpCloseButtonArea) {
+    const c = window.helpCloseButtonArea;
+    hovering =
+      mousePos.x >= c.x &&
+      mousePos.x <= c.x + c.width &&
+      mousePos.y >= c.y &&
+      mousePos.y <= c.y + c.height;
+  }
 
-    let hoveringHelp =
-      window.helpButtonArea &&
-      mousePos.x >= window.helpButtonArea.x &&
-      mousePos.x <= window.helpButtonArea.x + window.helpButtonArea.width &&
-      mousePos.y >= window.helpButtonArea.y &&
-      mousePos.y <= window.helpButtonArea.y + window.helpButtonArea.height;
+  if (!hovering && window.showStartScreen) {
+    hovering =
+      (window.startButtonArea &&
+        mousePos.x >= window.startButtonArea.x &&
+        mousePos.x <= window.startButtonArea.x + window.startButtonArea.width &&
+        mousePos.y >= window.startButtonArea.y &&
+        mousePos.y <= window.startButtonArea.y + window.startButtonArea.height) ||
+      (window.soundButtonArea &&
+        mousePos.x >= window.soundButtonArea.x &&
+        mousePos.x <= window.soundButtonArea.x + window.soundButtonArea.width &&
+        mousePos.y >= window.soundButtonArea.y &&
+        mousePos.y <= window.soundButtonArea.y + window.soundButtonArea.height) ||
+      (window.helpButtonArea &&
+        mousePos.x >= window.helpButtonArea.x &&
+        mousePos.x <= window.helpButtonArea.x + window.helpButtonArea.width &&
+        mousePos.y >= window.helpButtonArea.y &&
+        mousePos.y <= window.helpButtonArea.y + window.helpButtonArea.height) ||
+      (window.legalButtonArea &&
+        mousePos.x >= window.legalButtonArea.x &&
+        mousePos.x <= window.legalButtonArea.x + window.legalButtonArea.width &&
+        mousePos.y >= window.legalButtonArea.y &&
+        mousePos.y <= window.legalButtonArea.y + window.legalButtonArea.height) ||
+      (window.imprintButtonArea &&
+        mousePos.x >= window.imprintButtonArea.x &&
+        mousePos.x <= window.imprintButtonArea.x + window.imprintButtonArea.width &&
+        mousePos.y >= window.imprintButtonArea.y &&
+        mousePos.y <= window.imprintButtonArea.y + window.imprintButtonArea.height);
+  }
 
-    let hoveringLegal =
-      window.legalButtonArea &&
-      mousePos.x >= window.legalButtonArea.x &&
-      mousePos.x <= window.legalButtonArea.x + window.legalButtonArea.width &&
-      mousePos.y >= window.legalButtonArea.y &&
-      mousePos.y <= window.legalButtonArea.y + window.legalButtonArea.height;
+  if (!hovering && !window.showStartScreen) {
+    hovering =
+      (world && world.restartButtonArea &&
+        mousePos.x >= world.restartButtonArea.x &&
+        mousePos.x <= world.restartButtonArea.x + world.restartButtonArea.width &&
+        mousePos.y >= world.restartButtonArea.y &&
+        mousePos.y <= world.restartButtonArea.y + world.restartButtonArea.height) ||
+      (world && world.homeButtonArea &&
+        mousePos.x >= world.homeButtonArea.x &&
+        mousePos.x <= world.homeButtonArea.x + world.homeButtonArea.width &&
+        mousePos.y >= world.homeButtonArea.y &&
+        mousePos.y <= world.homeButtonArea.y + world.homeButtonArea.height);
+  }
 
-    let hoveringImprint =
-      window.imprintButtonArea &&
-      mousePos.x >= window.imprintButtonArea.x &&
-      mousePos.x <= window.imprintButtonArea.x + window.imprintButtonArea.width &&
-      mousePos.y >= window.imprintButtonArea.y &&
-      mousePos.y <= window.imprintButtonArea.y + window.imprintButtonArea.height;
-
-    let hoveringRestart =
-      world && world.restartButtonArea &&
-      mousePos.x >= world.restartButtonArea.x &&
-      mousePos.x <= world.restartButtonArea.x + world.restartButtonArea.width &&
-      mousePos.y >= world.restartButtonArea.y &&
-      mousePos.y <= world.restartButtonArea.y + world.restartButtonArea.height;
-
-    let hoveringHome =
-      world && world.homeButtonArea &&
-      mousePos.x >= world.homeButtonArea.x &&
-      mousePos.x <= world.homeButtonArea.x + world.homeButtonArea.width &&
-      mousePos.y >= world.homeButtonArea.y &&
-      mousePos.y <= world.homeButtonArea.y + world.homeButtonArea.height;
-
-    canvas.style.cursor =
-      hoveringStart ||
-      hoveringSound ||
-      hoveringHelp ||
-      hoveringLegal ||
-      hoveringImprint ||
-      hoveringRestart ||
-      hoveringHome
-        ? "pointer"
-        : "default";
-  });
+  canvas.style.cursor = hovering ? "pointer" : "default";
+});
 
   canvas.addEventListener("click", handleCanvasClick);
 
@@ -178,6 +174,8 @@ function init() {
 
   world = new World(canvas, keyboard);
   window.world = world;
+
+  window.showStartScreen = false;
 
   if (typeof Mobile !== "undefined") Mobile.init(canvas, world);
   if (typeof world.setupMobileButtons === "function")
@@ -215,63 +213,67 @@ function handleCanvasClick(e) {
     }
   }
 
-  if (
-    window.soundButtonArea &&
-    x >= window.soundButtonArea.x &&
-    x <= window.soundButtonArea.x + window.soundButtonArea.width &&
-    y >= window.soundButtonArea.y &&
-    y <= window.soundButtonArea.y + window.soundButtonArea.height
-  ) {
-    toggleSound();
+  if (window.showStartScreen) {
+    if (
+      window.soundButtonArea &&
+      x >= window.soundButtonArea.x &&
+      x <= window.soundButtonArea.x + window.soundButtonArea.width &&
+      y >= window.soundButtonArea.y &&
+      y <= window.soundButtonArea.y + window.soundButtonArea.height
+    ) {
+      toggleSound();
 
-    if (typeof drawStartScreen === "function") {
-      drawStartScreen();
+      if (typeof drawStartScreen === "function") {
+        drawStartScreen();
+      }
+
+      return;
     }
 
-    return;
-  }
+    if (
+      window.startButtonArea &&
+      x >= window.startButtonArea.x &&
+      x <= window.startButtonArea.x + window.startButtonArea.width &&
+      y >= window.startButtonArea.y &&
+      y <= window.startButtonArea.y + window.startButtonArea.height
+    ) {
+      init();
+      return;
+    }
 
-  if (
-    window.startButtonArea &&
-    x >= window.startButtonArea.x &&
-    x <= window.startButtonArea.x + window.startButtonArea.width &&
-    y >= window.startButtonArea.y &&
-    y <= window.startButtonArea.y + window.startButtonArea.height
-  ) {
-    init();
-    return;
-  }
+    if (
+      window.helpButtonArea &&
+      x >= window.helpButtonArea.x &&
+      x <= window.helpButtonArea.x + window.helpButtonArea.width &&
+      y >= window.helpButtonArea.y &&
+      y <= window.helpButtonArea.y + window.helpButtonArea.height
+    ) {
+      showHelp();
+      return;
+    }
 
-  if (
-    window.helpButtonArea &&
-    x >= window.helpButtonArea.x &&
-    x <= window.helpButtonArea.x + window.helpButtonArea.width &&
-    y >= window.helpButtonArea.y &&
-    y <= window.helpButtonArea.y + window.helpButtonArea.height
-  ) {
-    showHelp();
-    return;
-  }
+    if (
+      window.legalButtonArea &&
+      x >= window.legalButtonArea.x &&
+      x <= window.legalButtonArea.x + window.legalButtonArea.width &&
+      y >= window.legalButtonArea.y &&
+      y <= window.legalButtonArea.y + window.legalButtonArea.height
+    ) {
+      window.location.href = "./datenschutz.html";
+      return;
+    }
 
-  if (
-    window.legalButtonArea &&
-    x >= window.legalButtonArea.x &&
-    x <= window.legalButtonArea.x + window.legalButtonArea.width &&
-    y >= window.legalButtonArea.y &&
-    y <= window.legalButtonArea.y + window.legalButtonArea.height
-  ) {
-    window.location.href = "./datenschutz.html";
-    return;
-  }
+    if (
+      window.imprintButtonArea &&
+      x >= window.imprintButtonArea.x &&
+      x <= window.imprintButtonArea.x + window.imprintButtonArea.width &&
+      y >= window.imprintButtonArea.y &&
+      y <= window.imprintButtonArea.y + window.imprintButtonArea.height
+    ) {
+      window.location.href = "./impressum.html";
+      return;
+    }
 
-  if (
-    window.imprintButtonArea &&
-    x >= window.imprintButtonArea.x &&
-    x <= window.imprintButtonArea.x + window.imprintButtonArea.width &&
-    y >= window.imprintButtonArea.y &&
-    y <= window.imprintButtonArea.y + window.imprintButtonArea.height
-  ) {
-    window.location.href = "./impressum.html";
     return;
   }
 

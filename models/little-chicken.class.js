@@ -4,15 +4,6 @@ class LittleChicken extends MovableObject {
   width = 70;
   isDead = false;
 
-  constructor() {
-    super().loadImage("img/3_enemies_chicken/chicken_small/1_walk/1_w.png");
-    this.x = (typeof x === "number") ? x : (400 + Math.random() * 2000);
-    this.speed = 0.25 + Math.random() * 0.5;
-    this.loadImages(this.IMAGES_WALKING);
-    this.loadImages(this.IMAGES_DEAD);
-    this.animate();
-  }
-
   IMAGES_WALKING = [
     "img/3_enemies_chicken/chicken_small/1_walk/1_w.png",
     "img/3_enemies_chicken/chicken_small/1_walk/2_w.png",
@@ -21,17 +12,54 @@ class LittleChicken extends MovableObject {
 
   IMAGES_DEAD = ["img/3_enemies_chicken/chicken_small/2_dead/dead.png"];
 
+  constructor() {
+    super().loadImage("img/3_enemies_chicken/chicken_small/1_walk/1_w.png");
+    this.initializeChicken();
+    this.animate();
+  }
+
+  initializeChicken() {
+    this.setPosition();
+    this.setSpeed();
+    this.loadAllImages();
+  }
+
+  setPosition() {
+    this.x = typeof x === "number" ? x : 400 + Math.random() * 2000;
+  }
+
+  setSpeed() {
+    this.speed = 0.25 + Math.random() * 0.5;
+  }
+
+  loadAllImages() {
+    this.loadImages(this.IMAGES_WALKING);
+    this.loadImages(this.IMAGES_DEAD);
+  }
+
   die() {
     if (this.isDead) return;
+
+    this.setDeadState();
+    this.playDeathAnimation();
+    this.scheduleRemoval();
+  }
+
+  setDeadState() {
     this.isDead = true;
+  }
+
+  playDeathAnimation() {
     this.playAnimation(this.IMAGES_DEAD);
+  }
+
+  scheduleRemoval() {
     setTimeout(() => {
-      this.remove = true; // wird später vom World-Filter entfernt
+      this.remove = true;
     }, 500);
   }
 
   getCollisionBox() {
-    // etwas schmalere Hitbox als das Bild, damit Kollision realistischer ist
     return {
       x: this.x + 10,
       y: this.y + 10,
@@ -41,14 +69,31 @@ class LittleChicken extends MovableObject {
   }
 
   animate() {
-    // Bewegung (60 FPS)
-    this.walkInterval = setInterval(() => {
-      if (!this.isDead) this.moveLeft();
-    }, 1000 / 60);
+    this.startMovement();
+    this.startAnimation();
+  }
 
-    // Sprite-Animation (Animation-Takt)
+  startMovement() {
+    this.walkInterval = setInterval(() => {
+      this.handleMovement();
+    }, 1000 / 60);
+  }
+
+  handleMovement() {
+    if (!this.isDead) {
+      this.moveLeft();
+    }
+  }
+
+  startAnimation() {
     this.animInterval = setInterval(() => {
-      if (!this.isDead) this.playAnimation(this.IMAGES_WALKING);
+      this.handleAnimation();
     }, 200);
+  }
+
+  handleAnimation() {
+    if (!this.isDead) {
+      this.playAnimation(this.IMAGES_WALKING);
+    }
   }
 }

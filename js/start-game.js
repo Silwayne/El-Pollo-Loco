@@ -1,52 +1,97 @@
 function handleCanvasClick(event) {
-  let rect = canvas.getBoundingClientRect();
-  let x = event.clientX - rect.left;
-  let y = event.clientY - rect.top;
+  const clickPosition = getClickPosition(event);
 
-  if (
-    window.soundButtonArea &&
-    x >= window.soundButtonArea.x &&
-    x <= window.soundButtonArea.x + window.soundButtonArea.width &&
-    y >= window.soundButtonArea.y &&
-    y <= window.soundButtonArea.y + window.soundButtonArea.height
-  ) {
-    toggleSound();
-    drawStartScreen();
+  if (this.isSoundButtonClicked(clickPosition)) {
+    this.handleSoundButtonClick();
     return;
   }
 
-  if (
-    window.startButtonArea &&
-    x >= window.startButtonArea.x &&
-    x <= window.startButtonArea.x + window.startButtonArea.width &&
-    y >= window.startButtonArea.y &&
-    y <= window.startButtonArea.y + window.startButtonArea.height
-  ) {
-    startGame();
+  if (this.isStartButtonClicked(clickPosition)) {
+    this.handleStartButtonClick();
     return;
   }
+}
+
+function getClickPosition(event) {
+  const rect = canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+
+  return { x, y };
+}
+
+function isSoundButtonClicked(clickPosition) {
+  return this.isButtonClicked(clickPosition, window.soundButtonArea);
+}
+
+function isStartButtonClicked(clickPosition) {
+  return this.isButtonClicked(clickPosition, window.startButtonArea);
+}
+
+function isButtonClicked(clickPosition, buttonArea) {
+  if (!buttonArea) return false;
+
+  return (
+    clickPosition.x >= buttonArea.x &&
+    clickPosition.x <= buttonArea.x + buttonArea.width &&
+    clickPosition.y >= buttonArea.y &&
+    clickPosition.y <= buttonArea.y + buttonArea.height
+  );
+}
+
+function handleSoundButtonClick() {
+  this.toggleSound();
+  drawStartScreen();
+}
+
+function handleStartButtonClick() {
+  this.startGame();
 }
 
 function toggleSound() {
   soundOn = !soundOn;
+  this.saveSoundPreference();
+  this.handleBackgroundMusic();
+  drawStartScreen();
+}
+
+function saveSoundPreference() {
   localStorage.setItem("soundOn", soundOn);
+}
+
+function handleBackgroundMusic() {
+  if (!world) return;
 
   if (soundOn) {
-    if (world) world.audioManager.sounds.background.play();
+    this.playBackgroundMusic();
   } else {
-    if (world) world.audioManager.sounds.background.pause();
+    this.pauseBackgroundMusic();
   }
+}
 
-  drawStartScreen();
+function playBackgroundMusic() {
+  world.audioManager.sounds.background.play();
+}
+
+function pauseBackgroundMusic() {
+  world.audioManager.sounds.background.pause();
 }
 
 function handleSoundToggle() {
   if (soundOn) {
-    gameAudio.currentTime = 0;
-    gameAudio.play().catch(() => {});
+    this.startGameAudio();
   } else {
-    gameAudio.pause();
+    this.stopGameAudio();
   }
+}
+
+function startGameAudio() {
+  gameAudio.currentTime = 0;
+  gameAudio.play().catch(() => {});
+}
+
+function stopGameAudio() {
+  gameAudio.pause();
 }
 
 function startGame() {

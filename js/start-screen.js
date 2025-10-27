@@ -10,148 +10,112 @@ startScreenImg.onload = function () {
 function drawStartScreen() {
   window.showStartScreen = true;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   if (startScreenImgLoaded) {
-    ctx.drawImage(startScreenImg, 0, 0, canvas.width, canvas.height);
-    drawStartButton();
-    drawSoundButton();
-    drawHelpButton();
-    drawLegalButton();
-    drawImprintButton();
-    drawHelpOverlay();
+    this.drawBackgroundImage();
+    this.drawAllButtons();
+    this.drawHelpOverlay();
   }
 }
 
+function drawBackgroundImage() {
+  ctx.drawImage(startScreenImg, 0, 0, canvas.width, canvas.height);
+}
+
+function drawAllButtons() {
+  drawStartButton();
+  drawSoundButton();
+  drawHelpButton();
+  drawLegalButton();
+  drawImprintButton();
+}
+
 function drawStartButton() {
-  let btnWidth = 260;
-  let btnHeight = 60;
-  let btnX = canvas.width / 2 - btnWidth / 2;
-  let btnY = 40;
-
-  ctx.save();
-  ctx.fillStyle = "#a0220a";
-  ctx.fillRect(btnX, btnY, btnWidth, btnHeight);
-  ctx.strokeStyle = "#fff";
-  ctx.lineWidth = 3;
-  ctx.strokeRect(btnX, btnY, btnWidth, btnHeight);
-  ctx.fillStyle = "#fff";
-  ctx.font = "bold 32px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("Start game", btnX + btnWidth / 2, btnY + btnHeight / 2);
-  ctx.restore();
-
-  window.startButtonArea = {
-    x: btnX,
-    y: btnY,
-    width: btnWidth,
-    height: btnHeight,
-  };
+  const buttonConfig = getButtonConfig(260, 60, 40);
+  drawButton(buttonConfig, "Start game");
+  setButtonArea("startButtonArea", buttonConfig);
 }
 
 function drawSoundButton() {
-  let btnWidth = 150;
-  let btnHeight = 40;
-  let x = 15;
-  let y = canvas.height - 50;
-
-  ctx.save();
-  ctx.fillStyle = "#a0220a";
-  ctx.fillRect(x, y, btnWidth, btnHeight);
-  ctx.strokeStyle = "#fff";
-  ctx.lineWidth = 3;
-  ctx.strokeRect(x, y, btnWidth, btnHeight);
-  ctx.fillStyle = "#fff";
-  ctx.font = "20px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(
-    soundOn ? "Sound OFF" : "Sound ON",
-    x + btnWidth / 2,
-    y + btnHeight / 2
-  );
-  ctx.restore();
-
-  window.soundButtonArea = { x, y, width: btnWidth, height: btnHeight };
+  const buttonConfig = getBottomButtonConfig(0);
+  const label = soundOn ? "Sound OFF" : "Sound ON";
+  drawButton(buttonConfig, label);
+  setButtonArea("soundButtonArea", buttonConfig);
 }
 
 function drawHelpButton() {
-  let btnWidth = 150;
-  let btnHeight = 40;
-  let helpX = 195;
-  let helpY = canvas.height - 50;
-
-  ctx.save();
-  ctx.fillStyle = "#a0220a";
-  ctx.fillRect(helpX, helpY, btnWidth, btnHeight);
-  ctx.strokeStyle = "#fff";
-  ctx.lineWidth = 3;
-  ctx.strokeRect(helpX, helpY, btnWidth, btnHeight);
-  ctx.fillStyle = "#fff";
-  ctx.font = "20px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("Help", helpX + btnWidth / 2, helpY + btnHeight / 2);
-  ctx.restore();
-
-  window.helpButtonArea = {
-    x: helpX,
-    y: helpY,
-    width: btnWidth,
-    height: btnHeight,
-  };
+  const buttonConfig = getBottomButtonConfig(1);
+  drawButton(buttonConfig, "Help");
+  setButtonArea("helpButtonArea", buttonConfig);
 }
 
 function drawLegalButton() {
-  const btnWidth = 150;
-  const btnHeight = 40;
-  const legalX = 375;
-  const legalY = canvas.height - 50;
-
-  ctx.save();
-  ctx.fillStyle = "#a0220a";
-  ctx.fillRect(legalX, legalY, btnWidth, btnHeight);
-  ctx.strokeStyle = "#fff";
-  ctx.lineWidth = 3;
-  ctx.strokeRect(legalX, legalY, btnWidth, btnHeight);
-  ctx.fillStyle = "#fff";
-  ctx.font = "20px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("Legal", legalX + btnWidth / 2, legalY + btnHeight / 2);
-  ctx.restore();
-
-  window.legalButtonArea = {
-    x: legalX,
-    y: legalY,
-    width: btnWidth,
-    height: btnHeight,
-  };
+  const buttonConfig = getBottomButtonConfig(2);
+  drawButton(buttonConfig, "Legal");
+  setButtonArea("legalButtonArea", buttonConfig);
 }
 
 function drawImprintButton() {
+  const buttonConfig = getBottomButtonConfig(3);
+  drawButton(buttonConfig, "Imprint");
+  setButtonArea("imprintButtonArea", buttonConfig);
+}
+
+function getButtonConfig(width, height, yOffset) {
+  return {
+    x: canvas.width / 2 - width / 2,
+    y: yOffset,
+    width: width,
+    height: height,
+  };
+}
+
+function getBottomButtonConfig(index) {
   const btnWidth = 150;
   const btnHeight = 40;
-  const imprintX = 555;
-  const imprintY = canvas.height - 50;
+  const x = 15 + index * 180;
+  const y = canvas.height - 50;
 
+  return { x, y, width: btnWidth, height: btnHeight };
+}
+
+function drawButton(config, label) {
   ctx.save();
+  drawButtonBackground(config);
+  drawButtonBorder(config);
+  drawButtonText(config, label);
+  ctx.restore();
+}
+
+function drawButtonBackground(config) {
   ctx.fillStyle = "#a0220a";
-  ctx.fillRect(imprintX, imprintY, btnWidth, btnHeight);
+  ctx.fillRect(config.x, config.y, config.width, config.height);
+}
+
+function drawButtonBorder(config) {
   ctx.strokeStyle = "#fff";
   ctx.lineWidth = 3;
-  ctx.strokeRect(imprintX, imprintY, btnWidth, btnHeight);
+  ctx.strokeRect(config.x, config.y, config.width, config.height);
+}
+
+function drawButtonText(config, label) {
+  const centerX = config.x + config.width / 2;
+  const centerY = config.y + config.height / 2;
+  const fontSize = config.width > 200 ? "bold 32px" : "20px";
+
   ctx.fillStyle = "#fff";
-  ctx.font = "20px Arial";
+  ctx.font = `${fontSize} Arial`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("Imprint", imprintX + btnWidth / 2, imprintY + btnHeight / 2);
-  ctx.restore();
+  ctx.fillText(label, centerX, centerY);
+}
 
-  window.imprintButtonArea = {
-    x: imprintX,
-    y: imprintY,
-    width: btnWidth,
-    height: btnHeight,
+function setButtonArea(areaName, config) {
+  window[areaName] = {
+    x: config.x,
+    y: config.y,
+    width: config.width,
+    height: config.height,
   };
 }
 
@@ -162,78 +126,111 @@ function showHelp() {
 
 function drawHelpOverlay() {
   if (!window.showHelpOverlay) return;
-  let margin = 40;
-  let x = margin;
-  let y = margin;
-  let w = canvas.width - margin * 2;
-  let h = canvas.height - margin * 2;
 
+  const overlayConfig = getOverlayConfig();
+  drawOverlayBackground(overlayConfig);
+  drawHelpContent(overlayConfig);
+  drawCloseButton(overlayConfig);
+}
+
+function getOverlayConfig() {
+  const margin = 40;
+  return {
+    x: margin,
+    y: margin,
+    width: canvas.width - margin * 2,
+    height: canvas.height - margin * 2,
+  };
+}
+
+function drawOverlayBackground(config) {
   ctx.save();
   ctx.globalAlpha = 0.95;
   ctx.fillStyle = "#111";
-  ctx.fillRect(x, y, w, h);
+  ctx.fillRect(config.x, config.y, config.width, config.height);
   ctx.globalAlpha = 1;
+}
 
+function drawHelpContent(config) {
+  this.drawHelpTitle(config);
+  this.drawHelpInstructions(config);
+}
+
+function drawHelpTitle(config) {
   ctx.fillStyle = "#fff";
   ctx.font = "bold 36px Arial";
   ctx.textAlign = "center";
-  ctx.fillText("Spielanleitung / Cómo jugar", canvas.width / 2, y + 50);
+  ctx.fillText("Spielanleitung / Cómo jugar", canvas.width / 2, config.y + 50);
+}
 
+function drawHelpInstructions(config) {
+  const instructions = getHelpInstructions();
+  const colWidth = config.width / 3;
+  const baseY = config.y + 110;
+
+  drawGermanInstructions(instructions.german, config.x, baseY);
+  drawSpanishInstructions(instructions.spanish, config.x, colWidth, baseY);
+}
+
+function getHelpInstructions() {
+  return {
+    german: [
+      "Steuerung:",
+      "• Links bewegen: A",
+      "• Rechts bewegen: D",
+      "• Springen: W",
+      "• Flasche werfen: E",
+      "",
+      "Tippe 'Schließen' um zurückzukehren.",
+    ],
+    spanish: [
+      "Controles:",
+      "• Mover a la izquierda: A",
+      "• Mover a la derecha: D",
+      "• Saltar: W",
+      "• Lanzar botella: E",
+      "",
+      "Toca 'Cerrar' para volver.",
+    ],
+  };
+}
+
+function drawGermanInstructions(lines, x, baseY) {
   ctx.font = "18px Arial";
   ctx.textAlign = "left";
-
-  let de = [
-    "Steuerung:",
-    "• Links bewegen: A",
-    "• Rechts bewegen: D",
-    "• Springen: W",
-    "• Flasche werfen: SPACE",
-    "",
-    "Tippe 'Schließen' um zurückzukehren.",
-  ];
-
-  let es = [
-    "Controles:",
-    "• Mover a la izquierda: A",
-    "• Mover a la derecha: D",
-    "• Saltar: W",
-    "• Lanzar botella: SPACE",
-    "",
-    "Toca 'Cerrar' para volver.",
-  ];
-
-  let colWidth = w / 3;
-  let baseY = y + 110;
-
-  let ty = baseY;
-  for (let line of de) {
-    ctx.fillText(line, x + 30, ty);
-    ty += 28;
-  }
-
-  ty = baseY;
-  for (let line of es) {
-    ctx.fillText(line, x + colWidth * 2 + 0, ty);
-    ty += 28;
-  }
-
-  let btnW = 180;
-  let btnH = 48;
-  let btnX = canvas.width / 2 - btnW / 2;
-  let btnY = y + h - 80;
-
-  ctx.fillStyle = "#a0220a";
-  ctx.fillRect(btnX, btnY, btnW, btnH);
-  ctx.strokeStyle = "#fff";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(btnX, btnY, btnW, btnH);
   ctx.fillStyle = "#fff";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.font = "bold 20px Arial";
-  ctx.fillText("Schließen / Cerrar", btnX + btnW / 2, btnY + btnH / 2);
 
-  window.helpCloseButtonArea = { x: btnX, y: btnY, width: btnW, height: btnH };
+  let currentY = baseY;
+  for (let line of lines) {
+    ctx.fillText(line, x + 30, currentY);
+    currentY += 28;
+  }
+}
 
-  ctx.restore();
+function drawSpanishInstructions(lines, x, colWidth, baseY) {
+  ctx.font = "18px Arial";
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#fff";
+
+  let currentY = baseY;
+  for (let line of lines) {
+    ctx.fillText(line, x + colWidth * 2, currentY);
+    currentY += 28;
+  }
+}
+
+function drawCloseButton(overlayConfig) {
+  const buttonConfig = getCloseButtonConfig(overlayConfig);
+  drawButton(buttonConfig, "Schließen / Cerrar");
+  setButtonArea("helpCloseButtonArea", buttonConfig);
+  ctx.restore(); // Close the save from drawOverlayBackground
+}
+
+function getCloseButtonConfig(overlayConfig) {
+  const btnWidth = 180;
+  const btnHeight = 48;
+  const btnX = canvas.width / 2 - btnWidth / 2;
+  const btnY = overlayConfig.y + overlayConfig.height - 80;
+
+  return { x: btnX, y: btnY, width: btnWidth, height: btnHeight };
 }

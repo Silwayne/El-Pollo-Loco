@@ -2,7 +2,7 @@ class Keyboard {
   W = false;
   A = false;
   D = false;
-  SPACE = false;
+  E = false;
 }
 
 window.addEventListener("keydown", (e) => {
@@ -18,8 +18,8 @@ window.addEventListener("keydown", (e) => {
     keyboard.D = true;
   }
 
-  if (e.keyCode == 32) {
-    keyboard.SPACE = true;
+  if (e.keyCode == 69) {
+    keyboard.E = true;
   }
 });
 
@@ -36,7 +36,7 @@ window.addEventListener("keyup", (e) => {
     keyboard.D = false;
   }
 
-  if (e.keyCode == 32) {
-    keyboard.SPACE = false;
+  if (e.keyCode == 69) {
+    keyboard.E = false;
   }
 });

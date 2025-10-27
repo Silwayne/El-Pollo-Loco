@@ -17,35 +17,49 @@ class DrawableObject {
   }
 
   drawFrame(ctx) {
-    if (
+    if (this.shouldDrawFrame()) {
+      this.drawCollisionBox(ctx);
+    }
+  }
+
+  shouldDrawFrame() {
+    return (
       this instanceof Character ||
       this instanceof Chicken ||
       this instanceof Endboss
-    ) {
-      ctx.beginPath();
-      // Hitbox Start
-      ctx.lineWidth = "2";
-      ctx.strokeStyle = "blue";
-      ctx.rect(this.x, this.y, this.width, this.height);
-      // Hitbox Ende
-      ctx.stroke();
-    }
+    );
+  }
 
+  drawCollisionBox(ctx) {
     if (this.getCollisionBox) {
       const box = this.getCollisionBox();
-      ctx.beginPath();
-      ctx.lineWidth = "2";
-      ctx.strokeStyle = "red";
-      ctx.rect(box.x, box.y, box.width, box.height);
-      ctx.stroke();
+      this.setupCollisionBox(ctx);
+      this.drawCollisionPath(ctx, box);
     }
+  }
+
+  setupCollisionBox(ctx) {
+    ctx.beginPath();
+    // Zum Debuggen Kollisionsboxen anzeigen:
+    // ctx.lineWidth = "2";
+    // ctx.strokeStyle = "red";
+  }
+
+  drawCollisionPath(ctx, box) {
+    // Zum Debuggen Kollisionsboxen anzeigen:
+    // ctx.rect(box.x, box.y, box.width, box.height);
+    ctx.stroke();
   }
 
   loadImages(arr) {
     arr.forEach((path) => {
-      let img = new Image();
-      img.src = path;
-      this.imageCache[path] = img;
+      this.loadSingleImage(path);
     });
+  }
+
+  loadSingleImage(path) {
+    let img = new Image();
+    img.src = path;
+    this.imageCache[path] = img;
   }
 }

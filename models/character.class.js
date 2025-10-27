@@ -7,21 +7,10 @@ class Character extends MovableObject {
   deathHandled = false;
   world;
   lastActionTime = Date.now();
-  isDozing = false; 
-  isSleeping = false; 
-  DOZE_TIMEOUT = 3000; 
-  SLEEP_TIMEOUT = 5000; 
-
-  constructor() {
-    super().loadImage("img/2_character_pepe/2_walk/W-21.png");
-    this.loadImages(this.IMAGES_WALKING);
-    this.loadImages(this.IMAGES_JUMPING);
-    this.loadImages(this.IMAGES_DEAD);
-    this.loadImages(this.IMAGES_HURT);
-    this.loadImages(this.IMAGES_DOZE);
-    this.loadImages(this.IMAGES_SLEEP);
-    this.applyGravity();
-  }
+  isDozing = false;
+  isSleeping = false;
+  DOZE_TIMEOUT = 3000;
+  SLEEP_TIMEOUT = 5000;
 
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
@@ -83,6 +72,21 @@ class Character extends MovableObject {
     "img/2_character_pepe/1_idle/long_idle/I-20.png",
   ];
 
+  constructor() {
+    super().loadImage("img/2_character_pepe/2_walk/W-21.png");
+    this.loadAllCharacterImages();
+    this.applyGravity();
+  }
+
+  loadAllCharacterImages() {
+    this.loadImages(this.IMAGES_WALKING);
+    this.loadImages(this.IMAGES_JUMPING);
+    this.loadImages(this.IMAGES_DEAD);
+    this.loadImages(this.IMAGES_HURT);
+    this.loadImages(this.IMAGES_DOZE);
+    this.loadImages(this.IMAGES_SLEEP);
+  }
+
   getCollisionBox() {
     return {
       x: this.x + 40,
@@ -125,81 +129,152 @@ class Character extends MovableObject {
   }
 
   animate() {
-    setInterval(() => {
-      if (
-        this.world &&
-        (this.world.paused ||
-          this.world.gameEnded ||
-          (this.isDead && this.isDead()))
-      ) {
-        return; 
-      }
+    this.startMovementLoop();
+    this.startAnimationLoop();
+  }
 
-      if (this.world.keyboard.D && this.x < this.world.level.level_end_x) {
-        this.moveRight();
-        this.otherDirection = false;
-        this.updateLastAction && this.updateLastAction();
-      }
-      if (this.world.keyboard.A && this.x > -600) {
-        this.moveLeft();
-        this.otherDirection = true;
-        this.updateLastAction && this.updateLastAction();
-      }
-      if (this.world.keyboard.W && !this.isAboveGround()) {
-        this.jump();
-        this.world.audioManager &&
-          this.world.audioManager.play &&
-          this.world.audioManager.play("jump");
-        this.updateLastAction && this.updateLastAction();
-      }
-      if (this.world) this.world.camera_x = -this.x + 100;
+  startMovementLoop() {
+    setInterval(() => {
+      this.handleMovement();
     }, 1000 / 60);
+  }
 
+  handleMovement() {
+    if (this.shouldSkipMovement()) return;
+
+    this.handleRightMovement();
+    this.handleLeftMovement();
+    this.handleJumpMovement();
+    this.updateCameraPosition();
+  }
+
+  shouldSkipMovement() {
+    return (
+      this.world &&
+      (this.world.paused ||
+        this.world.gameEnded ||
+        (this.isDead && this.isDead()))
+    );
+  }
+
+  handleRightMovement() {
+    if (this.world.keyboard.D && this.x < this.world.level.level_end_x) {
+      this.moveRight();
+      this.otherDirection = false;
+      this.updateLastAction();
+    }
+  }
+
+  handleLeftMovement() {
+    if (this.world.keyboard.A && this.x > -600) {
+      this.moveLeft();
+      this.otherDirection = true;
+      this.updateLastAction();
+    }
+  }
+
+  handleJumpMovement() {
+    if (this.world.keyboard.W && !this.isAboveGround()) {
+      this.jump();
+      this.playJumpSound();
+      this.updateLastAction();
+    }
+  }
+
+  playJumpSound() {
+    if (this.world.audioManager && this.world.audioManager.play) {
+      this.world.audioManager.play("jump");
+    }
+  }
+
+  updateCameraPosition() {
+    if (this.world) this.world.camera_x = -this.x + 100;
+  }
+
+  startAnimationLoop() {
     setInterval(() => {
-      if (this.isDead && this.isDead()) {
-        this.playAnimation(this.IMAGES_DEAD);
-        return;
-      }
-
-      if (this.isHurt && this.isHurt()) {
-        this.playAnimation(this.IMAGES_HURT);
-        return;
-      }
-
-      const now = Date.now();
-      const idle = now - (this.lastActionTime || now);
-
-      if (!this.isDozing && !this.isSleeping && idle >= this.DOZE_TIMEOUT) {
-        this.startDoze();
-      }
-      if (!this.isSleeping && idle >= this.SLEEP_TIMEOUT) {
-        this.startSleep();
-      }
-
-      if (this.isSleeping) {
-        if (this.IMAGES_SLEEP && this.IMAGES_SLEEP.length) {
-          this.playAnimation(this.IMAGES_SLEEP);
-        }
-        return;
-      }
-
-      if (this.isDozing) {
-        if (this.IMAGES_DOZE && this.IMAGES_DOZE.length) {
-          this.playAnimation(this.IMAGES_DOZE);
-        }
-        return;
-      }
-
-      if (this.isAboveGround && this.isAboveGround()) {
-        this.playAnimation(this.IMAGES_JUMPING);
-        return;
-      }
-
-      if (this.world && (this.world.keyboard.D || this.world.keyboard.A)) {
-        this.playAnimation(this.IMAGES_WALKING);
-        return;
-      }
+      this.handleAnimation();
     }, 150);
+  }
+
+  handleAnimation() {
+    if (this.isDead && this.isDead()) {
+      this.playDeadAnimation();
+      return;
+    }
+
+    if (this.isHurt && this.isHurt()) {
+      this.playHurtAnimation();
+      return;
+    }
+
+    this.handleIdleAnimations();
+    this.handleMovementAnimations();
+  }
+
+  playDeadAnimation() {
+    this.playAnimation(this.IMAGES_DEAD);
+  }
+
+  playHurtAnimation() {
+    this.playAnimation(this.IMAGES_HURT);
+  }
+
+  handleIdleAnimations() {
+    const idleTime = this.getIdleTime();
+
+    if (!this.isDozing && !this.isSleeping && idleTime >= this.DOZE_TIMEOUT) {
+      this.startDoze();
+    }
+    if (!this.isSleeping && idleTime >= this.SLEEP_TIMEOUT) {
+      this.startSleep();
+    }
+
+    if (this.isSleeping) {
+      this.playSleepAnimation();
+      return;
+    }
+
+    if (this.isDozing) {
+      this.playDozeAnimation();
+      return;
+    }
+  }
+
+  getIdleTime() {
+    return Date.now() - (this.lastActionTime || Date.now());
+  }
+
+  playSleepAnimation() {
+    if (this.IMAGES_SLEEP && this.IMAGES_SLEEP.length) {
+      this.playAnimation(this.IMAGES_SLEEP);
+    }
+  }
+
+  playDozeAnimation() {
+    if (this.IMAGES_DOZE && this.IMAGES_DOZE.length) {
+      this.playAnimation(this.IMAGES_DOZE);
+    }
+  }
+
+  handleMovementAnimations() {
+    if (this.isAboveGround && this.isAboveGround()) {
+      this.playJumpAnimation();
+      return;
+    }
+
+    if (this.world && (this.world.keyboard.D || this.world.keyboard.A)) {
+      this.playWalkAnimation();
+      return;
+    }
+  }
+
+  playJumpAnimation() {
+    this.playAnimation(this.IMAGES_JUMPING);
+  }
+
+  playWalkAnimation() {
+    this.playAnimation(this.IMAGES_WALKING);
   }
 
   isCollidingBox(box) {

@@ -1,3 +1,8 @@
+/**
+ * Checks device orientation and displays rotation overlay on mobile devices
+ * in portrait mode to prompt users to rotate to landscape for better experience
+ * @returns {void}
+ */
 function checkOrientation() {
   const overlay = document.getElementById("rotate-overlay");
   const isMobile =
@@ -11,6 +16,7 @@ function checkOrientation() {
   }
 }
 
+// Set up orientation change listeners
 window.addEventListener("load", checkOrientation);
 window.addEventListener("resize", checkOrientation);
 window.addEventListener("orientationchange", checkOrientation);

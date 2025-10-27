@@ -1,4 +1,16 @@
+/**
+ * Represents the bottle collection status bar for the player
+ * Extends StatusBar to visualize the current bottle inventory
+ * Displays bottle count as a percentage-based orange status bar
+ * Tracks collection progress from 0 to 5 bottles maximum
+ * @class
+ * @extends StatusBar
+ */
 class BottleBar extends StatusBar {
+  /**
+   * Creates a BottleBar instance
+   * Initializes position, size, and sets initial bottle count to 0
+   */
   constructor() {
     super();
     this.loadImages(this.IMAGES);
@@ -9,6 +21,12 @@ class BottleBar extends StatusBar {
     this.setPercentage(0);
   }
 
+  /**
+   * Array of image paths representing different bottle collection states
+   * Orange-colored bottle status bar images in 20% increments
+   * Corresponds to 0-5 bottles in inventory
+   * @type {string[]}
+   */
   IMAGES = [
     "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/0.png",
     "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/20.png",
@@ -18,6 +36,12 @@ class BottleBar extends StatusBar {
     "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/100.png",
   ];
 
+  /**
+   * Updates the bottle count and refreshes the displayed image
+   * Converts bottle count to percentage based on maximum of 5 bottles
+   * @param {number} bottleCount - Current number of bottles collected (0-5)
+   * @returns {void}
+   */
   setPercentage(bottleCount) {
     this.percentage = (bottleCount / 5) * 100;
 
@@ -25,6 +49,11 @@ class BottleBar extends StatusBar {
     this.img = this.imageCache[path];
   }
 
+  /**
+   * Resolves the appropriate image index based on current bottle percentage
+   * Uses discrete thresholds for visual state transitions
+   * @returns {number} Index of the image in IMAGES array (0-5)
+   */
   resolveImageIndex() {
     if (this.percentage == 100) return 5;
     if (this.percentage > 80) return 4;

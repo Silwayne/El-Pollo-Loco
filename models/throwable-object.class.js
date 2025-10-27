@@ -1,4 +1,16 @@
+/**
+ * Represents a throwable bottle projectile with physics and animation
+ * Handles bottle rotation during flight and splash effects on impact
+ * Extends MovableObject to inherit physics and collision capabilities
+ * @class
+ * @extends MovableObject
+ */
 class ThrowableObject extends MovableObject {
+  /**
+   * Rotation animation frames for bottle in flight
+   * Shows bottle spinning during trajectory
+   * @type {string[]}
+   */
   IMAGES_ROTATION = [
     "img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png",
     "img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png",
@@ -6,6 +18,11 @@ class ThrowableObject extends MovableObject {
     "img/6_salsa_bottle/bottle_rotation/4_bottle_rotation.png",
   ];
 
+  /**
+   * Splash animation frames for bottle impact
+   * Shows bottle breaking and liquid splashing
+   * @type {string[]}
+   */
   IMAGES_SPLASH = [
     "img/6_salsa_bottle/bottle_rotation/bottle_splash/1_bottle_splash.png",
     "img/6_salsa_bottle/bottle_rotation/bottle_splash/2_bottle_splash.png",
@@ -15,6 +32,11 @@ class ThrowableObject extends MovableObject {
     "img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png",
   ];
 
+  /**
+   * Creates a ThrowableObject instance at specified position
+   * @param {number} x - Initial x-coordinate for throwing position
+   * @param {number} y - Initial y-coordinate for throwing position
+   */
   constructor(x, y) {
     super();
     this.loadImage("img/6_salsa_bottle/salsa_bottle.png");
@@ -29,23 +51,39 @@ class ThrowableObject extends MovableObject {
     this.throw();
   }
 
+  /**
+   * Initiates the throwing sequence with physics and animation
+   * @returns {void}
+   */
   throw() {
     this.setThrowPhysics();
     this.applyGravity();
     this.startThrowAnimation();
   }
 
+  /**
+   * Sets initial physics parameters for throwing motion
+   * @returns {void}
+   */
   setThrowPhysics() {
     this.speedY = 25;
     this.speed = 10;
   }
 
+  /**
+   * Starts the throw animation loop
+   * @returns {void}
+   */
   startThrowAnimation() {
     this.throwInterval = setInterval(() => {
       this.updateThrow();
     }, 25);
   }
 
+  /**
+   * Updates throwable object state each frame
+   * @returns {void}
+   */
   updateThrow() {
     if (!this.isShattered) {
       this.moveBottle();
@@ -53,16 +91,29 @@ class ThrowableObject extends MovableObject {
     }
   }
 
+  /**
+   * Moves bottle horizontally based on current speed
+   * @returns {void}
+   */
   moveBottle() {
     this.x += this.speed;
   }
 
+  /**
+   * Animates bottle rotation during flight
+   * @returns {void}
+   */
   animateRotation() {
     if (this.IMAGES_ROTATION.length) {
       this.playAnimation(this.IMAGES_ROTATION);
     }
   }
 
+  /**
+   * Handles bottle shattering on impact
+   * Stops movement, plays splash animation, and schedules removal
+   * @returns {void}
+   */
   shatter() {
     if (this.isShattered) return;
 
@@ -74,17 +125,29 @@ class ThrowableObject extends MovableObject {
     this.scheduleRemoval();
   }
 
+  /**
+   * Stops all bottle movement physics
+   * @returns {void}
+   */
   stopMovement() {
     this.speed = 0;
     this.speedY = 0;
   }
 
+  /**
+   * Clears the throw animation interval
+   * @returns {void}
+   */
   clearThrowInterval() {
     if (this.throwInterval) {
       clearInterval(this.throwInterval);
     }
   }
 
+  /**
+   * Sets the first splash animation frame immediately
+   * @returns {void}
+   */
   setFirstSplashImage() {
     const firstPath = this.IMAGES_SPLASH[0];
     if (this.imageCache && this.imageCache[firstPath]) {
@@ -92,10 +155,18 @@ class ThrowableObject extends MovableObject {
     }
   }
 
+  /**
+   * Plays the complete splash animation sequence
+   * @returns {void}
+   */
   playSplashAnimation() {
     this.playAnimation(this.IMAGES_SPLASH);
   }
 
+  /**
+   * Schedules removal of the bottle from the game world
+   * @returns {void}
+   */
   scheduleRemoval() {
     setTimeout(() => {
       this.remove = true;

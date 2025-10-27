@@ -1,20 +1,53 @@
+/**
+ * Mobile touch and mouse input handler for game controls
+ * Provides unified input handling for both touch devices and desktop
+ * @namespace Mobile
+ */
 let Mobile = {
+  /** @type {HTMLCanvasElement} */
   canvas: null,
+  
+  /** @type {World} */
   world: null,
+  
+  /** 
+   * Active touch points and their associated button keys
+   * @type {Object<number|string, string>}
+   */
   activeTouches: {},
+  
+  /** 
+   * Maximum screen width threshold for mobile controls (1023px)
+   * @type {number}
+   */
   threshold: 1023,
 
+  /**
+   * Initializes the mobile controller with canvas and world reference
+   * @param {HTMLCanvasElement} canvas - The game canvas element
+   * @param {World} world - The game world instance
+   * @returns {void}
+   */
   init(canvas, world) {
     this.canvas = canvas;
     this.world = world;
     this.setupEventListeners();
   },
 
+  /**
+   * Sets up all input event listeners (touch and mouse)
+   * @returns {void}
+   */
   setupEventListeners() {
     this.setupTouchEvents();
     this.setupMouseEvents();
   },
 
+  /**
+   * Sets up touch event listeners for mobile devices
+   * Uses passive: false to allow preventDefault() for better scrolling control
+   * @returns {void}
+   */
   setupTouchEvents() {
     const options = { passive: false };
 
@@ -40,15 +73,32 @@ let Mobile = {
     );
   },
 
+  /**
+   * Sets up mouse event listeners for desktop devices
+   * Uses window for mouseup to capture release outside canvas
+   * @returns {void}
+   */
   setupMouseEvents() {
     this.canvas.addEventListener("mousedown", (e) => this.onMouseDown(e));
     window.addEventListener("mouseup", (e) => this.onMouseUp(e));
   },
 
+  /**
+   * Checks if mobile controls should be active
+   * Requires canvas, world, and screen width below threshold
+   * @returns {boolean} True if mobile controls should be enabled
+   */
   enabled() {
     return this.canvas && this.world && window.innerWidth <= this.threshold;
   },
 
+  /**
+   * Converts client coordinates to canvas-relative coordinates
+   * Accounts for canvas scaling and positioning
+   * @param {number} clientX - Client X coordinate
+   * @param {number} clientY - Client Y coordinate
+   * @returns {{x: number, y: number}} Canvas-relative coordinates
+   */
   toCanvasPos(clientX, clientY) {
     let rect = this.canvas.getBoundingClientRect();
     return {
@@ -57,6 +107,12 @@ let Mobile = {
     };
   },
 
+  /**
+   * Finds a mobile button at the given canvas coordinates
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @returns {Object|null} Button object or null if no button found
+   */
   findButtonAt(x, y) {
     if (!this.world || !this.world.mobileButtons) return null;
 
@@ -66,6 +122,13 @@ let Mobile = {
     );
   },
 
+  /**
+   * Checks and handles UI button clicks at given coordinates
+   * Processes help, start screen, and game end buttons
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @returns {boolean} True if a UI button was clicked and handled
+   */
   checkUIButtonsAt(x, y) {
     if (this.handleHelpCloseButton(x, y)) return true;
     if (this.handleStartScreenButtons(x, y)) return true;
@@ -74,6 +137,12 @@ let Mobile = {
     return false;
   },
 
+  /**
+   * Handles clicks on the help overlay close button
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @returns {boolean} True if help close button was clicked
+   */
   handleHelpCloseButton(x, y) {
     if (!window.helpCloseButtonArea || !window.showHelpOverlay) return false;
 
@@ -86,6 +155,12 @@ let Mobile = {
     return false;
   },
 
+  /**
+   * Handles clicks on any start screen button
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @returns {boolean} True if any start screen button was clicked
+   */
   handleStartScreenButtons(x, y) {
     if (!window.showStartScreen) return false;
 
@@ -98,6 +173,12 @@ let Mobile = {
     );
   },
 
+  /**
+   * Handles clicks on the sound toggle button
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @returns {boolean} True if sound button was clicked
+   */
   handleSoundButton(x, y) {
     return this.handleGenericButton(x, y, "soundButtonArea", () => {
       if (typeof toggleSound === "function") toggleSound();
@@ -105,12 +186,24 @@ let Mobile = {
     });
   },
 
+  /**
+   * Handles clicks on the start game button
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @returns {boolean} True if start button was clicked
+   */
   handleStartButton(x, y) {
     return this.handleGenericButton(x, y, "startButtonArea", () => {
       if (typeof init === "function") init();
     });
   },
 
+  /**
+   * Handles clicks on the help button
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @returns {boolean} True if help button was clicked
+   */
   handleHelpButton(x, y) {
     return this.handleGenericButton(x, y, "helpButtonArea", () => {
       if (typeof showHelp === "function") {
@@ -122,18 +215,38 @@ let Mobile = {
     });
   },
 
+  /**
+   * Handles clicks on the legal/privacy button
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @returns {boolean} True if legal button was clicked
+   */
   handleLegalButton(x, y) {
     return this.handleGenericButton(x, y, "legalButtonArea", () => {
       window.location.href = "datenschutz.html";
     });
   },
 
+  /**
+   * Handles clicks on the imprint button
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @returns {boolean} True if imprint button was clicked
+   */
   handleImprintButton(x, y) {
     return this.handleGenericButton(x, y, "imprintButtonArea", () => {
       window.location.href = "impressum.html";
     });
   },
 
+  /**
+   * Generic handler for UI button clicks
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @param {string} areaName - Name of the button area in window object
+   * @param {Function} callback - Function to execute when button is clicked
+   * @returns {boolean} True if button was clicked and callback executed
+   */
   handleGenericButton(x, y, areaName, callback) {
     if (!window[areaName]) return false;
 
@@ -145,10 +258,22 @@ let Mobile = {
     return false;
   },
 
+  /**
+   * Handles clicks on game end buttons (restart and home)
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @returns {boolean} True if any game end button was clicked
+   */
   handleGameEndButtons(x, y) {
     return this.handleRestartButton(x, y) || this.handleHomeButton(x, y);
   },
 
+  /**
+   * Handles clicks on the restart game button
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @returns {boolean} True if restart button was clicked
+   */
   handleRestartButton(x, y) {
     if (!this.world || !this.world.restartButtonArea) return false;
 
@@ -160,6 +285,12 @@ let Mobile = {
     return false;
   },
 
+  /**
+   * Handles clicks on the home/return button
+   * @param {number} x - Canvas X coordinate
+   * @param {number} y - Canvas Y coordinate
+   * @returns {boolean} True if home button was clicked
+   */
   handleHomeButton(x, y) {
     if (!this.world || !this.world.homeButtonArea) return false;
 
@@ -171,6 +302,13 @@ let Mobile = {
     return false;
   },
 
+  /**
+   * Checks if a point is within a rectangular area
+   * @param {number} x - X coordinate of the point
+   * @param {number} y - Y coordinate of the point
+   * @param {{x: number, y: number, width: number, height: number}} area - The area to check against
+   * @returns {boolean} True if point is within the area
+   */
   isPointInArea(x, y, area) {
     return (
       x >= area.x &&
@@ -180,6 +318,12 @@ let Mobile = {
     );
   },
 
+  /**
+   * Handles touch start events
+   * Processes multiple touches and checks for UI interactions
+   * @param {TouchEvent} e - Touch event object
+   * @returns {void}
+   */
   onTouchStart(e) {
     if (e.cancelable) e.preventDefault();
     if (!this.canvas) return;
@@ -194,6 +338,12 @@ let Mobile = {
     }
   },
 
+  /**
+   * Handles mobile game button touches
+   * @param {number} touchId - Unique identifier for the touch
+   * @param {{x: number, y: number}} pos - Canvas coordinates of the touch
+   * @returns {void}
+   */
   handleMobileButtonTouch(touchId, pos) {
     const btn = this.findButtonAt(pos.x, pos.y);
     if (btn) {
@@ -206,6 +356,12 @@ let Mobile = {
   //   // Optional: Handle touch move if needed
   // },
 
+  /**
+   * Handles touch end and cancel events
+   * Releases associated button keys
+   * @param {TouchEvent} e - Touch event object
+   * @returns {void}
+   */
   onTouchEnd(e) {
     if (e.cancelable) e.preventDefault();
     if (!this.enabled()) return;
@@ -215,6 +371,11 @@ let Mobile = {
     }
   },
 
+  /**
+   * Releases a specific touch and its associated button key
+   * @param {number} touchId - Unique identifier for the touch to release
+   * @returns {void}
+   */
   releaseTouch(touchId) {
     let prev = this.activeTouches[touchId];
     if (prev) {
@@ -223,6 +384,11 @@ let Mobile = {
     }
   },
 
+  /**
+   * Handles mouse down events for desktop controls
+   * @param {MouseEvent} e - Mouse event object
+   * @returns {void}
+   */
   onMouseDown(e) {
     if (!this.canvas || !this.world) return;
 
@@ -232,6 +398,11 @@ let Mobile = {
     this.handleMobileButtonMouse(pos);
   },
 
+  /**
+   * Handles mobile game button mouse clicks
+   * @param {{x: number, y: number}} pos - Canvas coordinates of the mouse click
+   * @returns {void}
+   */
   handleMobileButtonMouse(pos) {
     let btn = this.findButtonAt(pos.x, pos.y);
     if (btn) {
@@ -240,10 +411,19 @@ let Mobile = {
     }
   },
 
+  /**
+   * Handles mouse up events for desktop controls
+   * @param {MouseEvent} e - Mouse event object
+   * @returns {void}
+   */
   onMouseUp(e) {
     this.releaseMouse();
   },
 
+  /**
+   * Releases the mouse button and its associated key
+   * @returns {void}
+   */
   releaseMouse() {
     if (this.activeTouches["mouse"]) {
       this.setKey(this.activeTouches["mouse"], false);
@@ -251,12 +431,19 @@ let Mobile = {
     }
   },
 
+  /**
+   * Sets keyboard state based on mobile button interactions
+   * Maps mobile button keys to keyboard keys for unified input handling
+   * @param {string} btnKey - Mobile button key (LEFT, RIGHT, JUMP, THROW)
+   * @param {boolean} pressed - Whether the key is pressed or released
+   * @returns {void}
+   */
   setKey(btnKey, pressed) {
     let mapping = {
       LEFT: ["A"],
       RIGHT: ["D"],
       JUMP: ["W"],
-      THROW: ["SPACE"],
+      THROW: ["E"],
     };
 
     let kbGlobal = window.keyboard || null;

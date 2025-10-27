@@ -1,17 +1,28 @@
+/**
+ * Main player character class representing the playable hero
+ * Handles movement, animations, physics, and character states
+ * Includes advanced features like idle animations and collision detection
+ * @class
+ * @extends MovableObject
+ */
 class Character extends MovableObject {
-  y = 180;
-  speed = 10;
-  height = 250;
-  width = 150;
-  hurtSoundPlayed = false;
-  deathHandled = false;
-  world;
-  lastActionTime = Date.now();
-  isDozing = false;
-  isSleeping = false;
-  DOZE_TIMEOUT = 3000;
-  SLEEP_TIMEOUT = 5000;
+  /** @type {number} */ y = 180;
+  /** @type {number} */ speed = 10;
+  /** @type {number} */ height = 250;
+  /** @type {number} */ width = 150;
+  /** @type {boolean} */ hurtSoundPlayed = false;
+  /** @type {boolean} */ deathHandled = false;
+  /** @type {World} */ world;
+  /** @type {number} */ lastActionTime = Date.now();
+  /** @type {boolean} */ isDozing = false;
+  /** @type {boolean} */ isSleeping = false;
+  /** @type {number} */ DOZE_TIMEOUT = 3000;
+  /** @type {number} */ SLEEP_TIMEOUT = 5000;
 
+  /**
+   * Walking animation frames
+   * @type {string[]}
+   */
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
     "img/2_character_pepe/2_walk/W-22.png",
@@ -21,6 +32,10 @@ class Character extends MovableObject {
     "img/2_character_pepe/2_walk/W-26.png",
   ];
 
+  /**
+   * Jumping animation frames
+   * @type {string[]}
+   */
   IMAGES_JUMPING = [
     "img/2_character_pepe/3_jump/J-31.png",
     "img/2_character_pepe/3_jump/J-32.png",
@@ -33,6 +48,10 @@ class Character extends MovableObject {
     "img/2_character_pepe/3_jump/J-39.png",
   ];
 
+  /**
+   * Death animation frames
+   * @type {string[]}
+   */
   IMAGES_DEAD = [
     "img/2_character_pepe/5_dead/D-51.png",
     "img/2_character_pepe/5_dead/D-52.png",
@@ -43,12 +62,20 @@ class Character extends MovableObject {
     "img/2_character_pepe/5_dead/D-57.png",
   ];
 
+  /**
+   * Hurt animation frames
+   * @type {string[]}
+   */
   IMAGES_HURT = [
     "img/2_character_pepe/4_hurt/H-41.png",
     "img/2_character_pepe/4_hurt/H-42.png",
     "img/2_character_pepe/4_hurt/H-43.png",
   ];
 
+  /**
+   * Dozing/idle animation frames
+   * @type {string[]}
+   */
   IMAGES_DOZE = [
     "img/2_character_pepe/1_idle/idle/I-3.png",
     "img/2_character_pepe/1_idle/idle/I-5.png",
@@ -59,6 +86,10 @@ class Character extends MovableObject {
     "img/2_character_pepe/1_idle/idle/I-10.png",
   ];
 
+  /**
+   * Sleeping animation frames
+   * @type {string[]}
+   */
   IMAGES_SLEEP = [
     "img/2_character_pepe/1_idle/long_idle/I-11.png",
     "img/2_character_pepe/1_idle/long_idle/I-12.png",
@@ -72,12 +103,20 @@ class Character extends MovableObject {
     "img/2_character_pepe/1_idle/long_idle/I-20.png",
   ];
 
+  /**
+   * Creates a Character instance
+   * Loads all animations and applies gravity physics
+   */
   constructor() {
     super().loadImage("img/2_character_pepe/2_walk/W-21.png");
     this.loadAllCharacterImages();
     this.applyGravity();
   }
 
+  /**
+   * Preloads all character animation images for smooth playback
+   * @returns {void}
+   */
   loadAllCharacterImages() {
     this.loadImages(this.IMAGES_WALKING);
     this.loadImages(this.IMAGES_JUMPING);
@@ -87,6 +126,11 @@ class Character extends MovableObject {
     this.loadImages(this.IMAGES_SLEEP);
   }
 
+  /**
+   * Defines the collision box for character interactions
+   * Smaller than visual bounds for better gameplay feel
+   * @returns {{x: number, y: number, width: number, height: number}} Collision box
+   */
   getCollisionBox() {
     return {
       x: this.x + 40,
@@ -96,12 +140,21 @@ class Character extends MovableObject {
     };
   }
 
+  /**
+   * Checks if character is falling onto an enemy (for stomp attacks)
+   * @param {MovableObject} enemy - The enemy to check against
+   * @returns {boolean} True if character is falling onto enemy
+   */
   isFallingOn(enemy) {
     return (
       this.speedY < 0 && this.y < enemy.y && this.y + this.height - enemy.y < 30
     );
   }
 
+  /**
+   * Updates the last action timestamp and wakes up from idle states
+   * @returns {void}
+   */
   updateLastAction() {
     this.lastActionTime = Date.now();
     if (this.isDozing || this.isSleeping) {
@@ -109,12 +162,20 @@ class Character extends MovableObject {
     }
   }
 
+  /**
+   * Starts the dozing animation state
+   * @returns {void}
+   */
   startDoze() {
     if (this.isDozing || this.isSleeping) return;
     this.isDozing = true;
     this.currentImage = 0;
   }
 
+  /**
+   * Starts the sleeping animation state
+   * @returns {void}
+   */
   startSleep() {
     if (this.isSleeping) return;
     this.isDozing = false;
@@ -122,23 +183,39 @@ class Character extends MovableObject {
     this.currentImage = 0;
   }
 
+  /**
+   * Wakes up from dozing or sleeping states
+   * @returns {void}
+   */
   wakeUp() {
     this.isDozing = false;
     if (this.isSleeping) this.isSleeping = false;
     this.currentImage = 0;
   }
 
+  /**
+   * Starts all animation and movement loops
+   * @returns {void}
+   */
   animate() {
     this.startMovementLoop();
     this.startAnimationLoop();
   }
 
+  /**
+   * Starts the movement processing loop (60 FPS)
+   * @returns {void}
+   */
   startMovementLoop() {
     setInterval(() => {
       this.handleMovement();
     }, 1000 / 60);
   }
 
+  /**
+   * Handles all character movement based on keyboard input
+   * @returns {void}
+   */
   handleMovement() {
     if (this.shouldSkipMovement()) return;
 
@@ -148,6 +225,10 @@ class Character extends MovableObject {
     this.updateCameraPosition();
   }
 
+  /**
+   * Checks if movement should be skipped due to game state
+   * @returns {boolean} True if movement should be skipped
+   */
   shouldSkipMovement() {
     return (
       this.world &&
@@ -157,6 +238,10 @@ class Character extends MovableObject {
     );
   }
 
+  /**
+   * Handles right movement with boundary checking
+   * @returns {void}
+   */
   handleRightMovement() {
     if (this.world.keyboard.D && this.x < this.world.level.level_end_x) {
       this.moveRight();
@@ -165,6 +250,10 @@ class Character extends MovableObject {
     }
   }
 
+  /**
+   * Handles left movement with boundary checking
+   * @returns {void}
+   */
   handleLeftMovement() {
     if (this.world.keyboard.A && this.x > -600) {
       this.moveLeft();
@@ -173,6 +262,10 @@ class Character extends MovableObject {
     }
   }
 
+  /**
+   * Handles jump movement with ground check
+   * @returns {void}
+   */
   handleJumpMovement() {
     if (this.world.keyboard.W && !this.isAboveGround()) {
       this.jump();
@@ -181,22 +274,38 @@ class Character extends MovableObject {
     }
   }
 
+  /**
+   * Plays jump sound effect
+   * @returns {void}
+   */
   playJumpSound() {
     if (this.world.audioManager && this.world.audioManager.play) {
       this.world.audioManager.play("jump");
     }
   }
 
+  /**
+   * Updates camera position to follow character
+   * @returns {void}
+   */
   updateCameraPosition() {
     if (this.world) this.world.camera_x = -this.x + 100;
   }
 
+  /**
+   * Starts the animation rendering loop (150ms interval)
+   * @returns {void}
+   */
   startAnimationLoop() {
     setInterval(() => {
       this.handleAnimation();
     }, 150);
   }
 
+  /**
+   * Handles all character animations based on state
+   * @returns {void}
+   */
   handleAnimation() {
     if (this.isDead && this.isDead()) {
       this.playDeadAnimation();
@@ -212,14 +321,26 @@ class Character extends MovableObject {
     this.handleMovementAnimations();
   }
 
+  /**
+   * Plays death animation
+   * @returns {void}
+   */
   playDeadAnimation() {
     this.playAnimation(this.IMAGES_DEAD);
   }
 
+  /**
+   * Plays hurt animation
+   * @returns {void}
+   */
   playHurtAnimation() {
     this.playAnimation(this.IMAGES_HURT);
   }
 
+  /**
+   * Handles idle state animations (dozing and sleeping)
+   * @returns {void}
+   */
   handleIdleAnimations() {
     const idleTime = this.getIdleTime();
 
@@ -241,22 +362,38 @@ class Character extends MovableObject {
     }
   }
 
+  /**
+   * Calculates time since last character action
+   * @returns {number} Idle time in milliseconds
+   */
   getIdleTime() {
     return Date.now() - (this.lastActionTime || Date.now());
   }
 
+  /**
+   * Plays sleeping animation
+   * @returns {void}
+   */
   playSleepAnimation() {
     if (this.IMAGES_SLEEP && this.IMAGES_SLEEP.length) {
       this.playAnimation(this.IMAGES_SLEEP);
     }
   }
 
+  /**
+   * Plays dozing animation
+   * @returns {void}
+   */
   playDozeAnimation() {
     if (this.IMAGES_DOZE && this.IMAGES_DOZE.length) {
       this.playAnimation(this.IMAGES_DOZE);
     }
   }
 
+  /**
+   * Handles movement-based animations (walking and jumping)
+   * @returns {void}
+   */
   handleMovementAnimations() {
     if (this.isAboveGround && this.isAboveGround()) {
       this.playJumpAnimation();
@@ -269,14 +406,27 @@ class Character extends MovableObject {
     }
   }
 
+  /**
+   * Plays jumping animation
+   * @returns {void}
+   */
   playJumpAnimation() {
     this.playAnimation(this.IMAGES_JUMPING);
   }
 
+  /**
+   * Plays walking animation
+   * @returns {void}
+   */
   playWalkAnimation() {
     this.playAnimation(this.IMAGES_WALKING);
   }
 
+  /**
+   * Checks collision with a rectangular box
+   * @param {{x: number, y: number, width: number, height: number}} box - The box to check collision with
+   * @returns {boolean} True if colliding with the box
+   */
   isCollidingBox(box) {
     return (
       this.x + this.width > box.x &&
@@ -286,6 +436,10 @@ class Character extends MovableObject {
     );
   }
 
+  /**
+   * Makes the character jump with specified vertical speed
+   * @returns {void}
+   */
   jump() {
     this.speedY = 30;
     this.updateLastAction();

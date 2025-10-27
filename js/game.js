@@ -1,3 +1,8 @@
+/**
+ * Initializes the entire game application
+ * Sets up event listeners, world, UI and audio
+ * @returns {void}
+ */
 function init() {
   setupGameEventListeners();
   initializeWorld();
@@ -6,20 +11,39 @@ function init() {
   restoreAudioState();
 }
 
+/**
+ * Sets up canvas click event listener for game interactions
+ * Removes existing listener before adding new one to prevent duplicates
+ * @returns {void}
+ */
 function setupGameEventListeners() {
   canvas.removeEventListener("click", handleCanvasClick);
   canvas.addEventListener("click", handleCanvasClick);
 }
 
+/**
+ * Creates and initializes the game world
+ * Makes world globally accessible via window object
+ * @returns {void}
+ */
 function initializeWorld() {
-  world = new World(canvas, keyboard);
+  world = window.innerWidth <= 1023 ? new MobileWorld(canvas, keyboard) : new World(canvas, keyboard);
   window.world = world;
 }
 
+/**
+ * Hides the start screen to reveal the game canvas
+ * @returns {void}
+ */
 function hideStartScreen() {
   window.showStartScreen = false;
 }
 
+/**
+ * Initializes mobile-specific game controls if available
+ * Sets up touch controls and mobile UI buttons
+ * @returns {void}
+ */
 function setupMobileGameControls() {
   if (typeof Mobile !== "undefined") Mobile.init(canvas, world);
   if (typeof world.setupMobileButtons === "function") {
@@ -27,6 +51,11 @@ function setupMobileGameControls() {
   }
 }
 
+/**
+ * Restores audio state based on user preferences
+ * Plays background music if sound is enabled, stops all if muted
+ * @returns {void}
+ */
 function restoreAudioState() {
   try {
     if (world && world.audioManager) {
@@ -41,12 +70,22 @@ function restoreAudioState() {
   }
 }
 
+/**
+ * Completely restarts the game
+ * Performs cleanup, reinitialization and audio restoration
+ * @returns {void}
+ */
 function restartGame() {
   cleanupGame();
   reinitializeGame();
   restoreGameAudio();
 }
 
+/**
+ * Cleans up game resources before restart
+ * Stops audio, clears intervals and cleans canvas
+ * @returns {void}
+ */
 function cleanupGame() {
   if (world && world.audioManager) {
     world.audioManager.stopAll();
@@ -60,12 +99,22 @@ function cleanupGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+/**
+ * Reinitializes the game world and keyboard controls
+ * Creates fresh instances for a clean restart
+ * @returns {void}
+ */
 function reinitializeGame() {
   world = null;
   keyboard = new Keyboard();
   world = new World(canvas, keyboard);
 }
 
+/**
+ * Restores audio settings after game restart
+ * Applies user's sound preference (muted/unmuted)
+ * @returns {void}
+ */
 function restoreGameAudio() {
   if (!window.soundOn) {
     muteBackgroundMusic();
@@ -74,6 +123,11 @@ function restoreGameAudio() {
   }
 }
 
+/**
+ * Mutes and resets the background music
+ * Fails silently if audio is not available
+ * @returns {void}
+ */
 function muteBackgroundMusic() {
   try {
     if (
@@ -90,6 +144,12 @@ function muteBackgroundMusic() {
   }
 }
 
+/**
+ * Plays background music from the beginning
+ * Attempts multiple audio sources if available
+ * Fails silently if audio playback fails
+ * @returns {void}
+ */
 function playBackgroundMusic() {
   try {
     if (

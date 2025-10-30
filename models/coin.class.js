@@ -78,12 +78,25 @@ class Coin extends DrawableObject {
   }
 
   /**
+   * Defines the collision box for coin interactions
+   * @returns {{x: number, y: number, width: number, height: number}} Collision box
+   */
+  getCollisionBox() {
+  return {
+    x: this.x + 30,    
+    y: this.y + 30,    
+    width: this.width - 60,  
+    height: this.height - 60 
+  };
+}
+
+  /**
    * Sets a random horizontal position for the coin
    * Positions between 400 and 2400 pixels from the start
    * Creates varied coin placement throughout the level
    * @returns {void}
    */
   setRandomPosition() {
-    this.x = 400 + Math.random() * 2000;
+    this.x = 400 + Math.random() * 1900;
   }
 }

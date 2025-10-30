@@ -24,6 +24,29 @@ class DrawableObject {
   }
 
   /**
+   * Preloads multiple images into the image cache
+   * Essential for smooth animation playback
+   * @param {string[]} arr - Array of image paths to load
+   * @returns {void}
+   */
+  loadImages(arr) {
+    arr.forEach((path) => {
+      this.loadSingleImage(path);
+    });
+  }
+
+  /**
+   * Loads a single image into the image cache
+   * @param {string} path - The file path to the image
+   * @returns {void}
+   */
+  loadSingleImage(path) {
+    let img = new Image();
+    img.src = path;
+    this.imageCache[path] = img;
+  }
+
+  /**
    * Draws the object onto the canvas context
    * @param {CanvasRenderingContext2D} ctx - The canvas rendering context
    * @returns {void}
@@ -53,7 +76,10 @@ class DrawableObject {
     return (
       this instanceof Character ||
       this instanceof Chicken ||
-      this instanceof Endboss
+      this instanceof LittleChicken ||
+      this instanceof Endboss ||
+      this instanceof Bottle ||
+      this instanceof Coin
     );
   }
 
@@ -71,19 +97,6 @@ class DrawableObject {
   }
 
   /**
-   * Sets up the collision box rendering context
-   * Currently commented out but ready for debug activation
-   * @param {CanvasRenderingContext2D} ctx - The canvas rendering context
-   * @returns {void}
-   */
-  setupCollisionBox(ctx) {
-    ctx.beginPath();
-    // Zum Debuggen Kollisionsboxen anzeigen:
-    // ctx.lineWidth = "2";
-    // ctx.strokeStyle = "red";
-  }
-
-  /**
    * Draws the collision path for visualization
    * Currently commented out but ready for debug activation
    * @param {CanvasRenderingContext2D} ctx - The canvas rendering context
@@ -96,26 +109,19 @@ class DrawableObject {
     ctx.stroke();
   }
 
-  /**
-   * Preloads multiple images into the image cache
-   * Essential for smooth animation playback
-   * @param {string[]} arr - Array of image paths to load
-   * @returns {void}
-   */
-  loadImages(arr) {
-    arr.forEach((path) => {
-      this.loadSingleImage(path);
-    });
-  }
+  setupCollisionBox(ctx) {
+    ctx.beginPath();
+    ctx.lineWidth = "2";
 
-  /**
-   * Loads a single image into the image cache
-   * @param {string} path - The file path to the image
-   * @returns {void}
-   */
-  loadSingleImage(path) {
-    let img = new Image();
-    img.src = path;
-    this.imageCache[path] = img;
+    if (this instanceof Coin || this instanceof Bottle) {
+      ctx.strokeStyle = "yellow";
+    } else if (
+      this instanceof Character ||
+      this instanceof Chicken ||
+      this instanceof LittleChicken ||
+      this instanceof Endboss
+    ) {
+      ctx.strokeStyle = "red";
+    }
   }
 }

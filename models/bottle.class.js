@@ -80,12 +80,25 @@ class Bottle extends DrawableObject {
   }
 
   /**
+   * Defines the collision box for bottle interactions
+   * @returns {{x: number, y: number, width: number, height: number}} Collision box
+   */
+  getCollisionBox() {
+    return {
+      x: this.x + 30,
+      y: this.y + 10,
+      width: this.width - 60,
+      height: this.height - 20,
+    };
+  }
+
+  /**
    * Sets a random horizontal position for the bottle
    * Positions between 400 and 2400 pixels from the start
    * Creates varied bottle placement throughout the level
    * @returns {void}
    */
   setRandomPosition() {
-    this.x = 400 + Math.random() * 2000;
+    this.x = 400 + Math.random() * 1900;
   }
 }

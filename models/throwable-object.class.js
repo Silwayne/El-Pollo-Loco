@@ -172,4 +172,17 @@ class ThrowableObject extends MovableObject {
       this.remove = true;
     }, 350);
   }
+
+  /**
+   * Defines the collision box for bottle interactions
+   * @returns {{x: number, y: number, width: number, height: number}} Collision box
+   */
+  getCollisionBox() {
+    return {
+      x: this.x + 30,
+      y: this.y + 10,
+      width: this.width - 60,
+      height: this.height - 20,
+    };
+  }
 }

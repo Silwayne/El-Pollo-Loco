@@ -21,64 +21,6 @@ class Endboss extends MovableObject {
   /** @type {number} */ attackInterval = null;
 
   /**
-   * Walking animation frames for the boss
-   * @type {string[]}
-   */
-  IMAGES_WALKING = [
-    "img/4_enemie_boss_chicken/1_walk/G1.png",
-    "img/4_enemie_boss_chicken/1_walk/G2.png",
-    "img/4_enemie_boss_chicken/1_walk/G3.png",
-    "img/4_enemie_boss_chicken/1_walk/G4.png",
-  ];
-
-  /**
-   * Spawning/alert animation frames
-   * @type {string[]}
-   */
-  IMAGES_SPAWNING = [
-    "img/4_enemie_boss_chicken/2_alert/G8.png",
-    "img/4_enemie_boss_chicken/2_alert/G9.png",
-    "img/4_enemie_boss_chicken/2_alert/G11.png",
-    "img/4_enemie_boss_chicken/2_alert/G10.png",
-    "img/4_enemie_boss_chicken/2_alert/G12.png",
-  ];
-
-  /**
-   * Attack animation frames
-   * @type {string[]}
-   */
-  IMAGES_ATTACK = [
-    "img/4_enemie_boss_chicken/3_attack/G13.png",
-    "img/4_enemie_boss_chicken/3_attack/G14.png",
-    "img/4_enemie_boss_chicken/3_attack/G15.png",
-    "img/4_enemie_boss_chicken/3_attack/G16.png",
-    "img/4_enemie_boss_chicken/3_attack/G17.png",
-    "img/4_enemie_boss_chicken/3_attack/G18.png",
-    "img/4_enemie_boss_chicken/3_attack/G19.png",
-    "img/4_enemie_boss_chicken/3_attack/G20.png",
-  ];
-
-  /**
-   * Hurt animation frames
-   * @type {string[]}
-   */
-  IMAGES_HURT = [
-    "img/4_enemie_boss_chicken/4_hurt/G21.png",
-    "img/4_enemie_boss_chicken/4_hurt/G22.png",
-    "img/4_enemie_boss_chicken/4_hurt/G23.png",
-  ];
-
-  /**
-   * Death animation frames
-   * @type {string[]}
-   */
-  IMAGES_DEAD = [
-    "img/4_enemie_boss_chicken/5_dead/G24.png",
-    "img/4_enemie_boss_chicken/5_dead/G25.png",
-    "img/4_enemie_boss_chicken/5_dead/G26.png",
-  ];
-
-  /**
    * Creates an Endboss instance
    * Initializes properties, loads images, and starts animation
    */
@@ -94,11 +36,11 @@ class Endboss extends MovableObject {
    * @returns {void}
    */
   loadAllImages() {
-    this.loadImages(this.IMAGES_WALKING);
-    this.loadImages(this.IMAGES_SPAWNING);
-    this.loadImages(this.IMAGES_ATTACK);
-    this.loadImages(this.IMAGES_DEAD);
-    this.loadImages(this.IMAGES_HURT);
+    this.loadImages(Endboss.IMAGES_WALKING);
+    this.loadImages(Endboss.IMAGES_SPAWNING);
+    this.loadImages(Endboss.IMAGES_ATTACK);
+    this.loadImages(Endboss.IMAGES_DEAD);
+    this.loadImages(Endboss.IMAGES_HURT);
   }
 
   /**
@@ -156,23 +98,6 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Plays walking animation and moves boss left
-   * @returns {void}
-   */
-  playWalkingAnimation() {
-    this.playAnimation(this.IMAGES_WALKING);
-    this.moveLeft();
-  }
-
-  /**
-   * Plays attack animation
-   * @returns {void}
-   */
-  playAttackAnimation() {
-    this.playAnimation(this.IMAGES_ATTACK);
-  }
-
-  /**
    * Starts the complete boss encounter sequence
    * @returns {void}
    */
@@ -197,7 +122,7 @@ class Endboss extends MovableObject {
    */
   updateWalkSequence() {
     this.x -= 5;
-    this.playAnimation(this.IMAGES_WALKING);
+    this.playAnimation(Endboss.IMAGES_WALKING);
 
     if (this.x <= 2350) {
       this.completeWalkSequence();
@@ -212,7 +137,7 @@ class Endboss extends MovableObject {
     clearInterval(this.walkInterval);
     this.walkInterval = null;
 
-    this.playAnimation(this.IMAGES_SPAWNING);
+    this.playAnimation(Endboss.IMAGES_SPAWNING);
     this.playBossSound();
     this.scheduleAttackStart();
   }
@@ -275,49 +200,6 @@ class Endboss extends MovableObject {
     setTimeout(() => {
       this.attackPhase = false;
     }, 1500);
-  }
-
-  /**
-   * Plays hurt animation when boss takes damage
-   * @returns {void}
-   */
-  playHurtAnimation() {
-    if (this.isDead) return;
-
-    this.isHurt = true;
-    this.startHurtAnimation();
-  }
-
-  /**
-   * Starts the hurt animation sequence
-   * @returns {void}
-   */
-  startHurtAnimation() {
-    let i = 0;
-    const interval = setInterval(() => {
-      this.updateHurtAnimation(i, interval);
-      i++;
-    }, 400);
-  }
-
-  /**
-   * Updates hurt animation frame and manages completion
-   * @param {number} index - Current animation frame index
-   * @param {number} interval - The interval ID to clear when complete
-   * @returns {void}
-   */
-  updateHurtAnimation(index, interval) {
-    if (this.isDead) {
-      clearInterval(interval);
-      return;
-    }
-
-    this.img = this.imageCache[this.IMAGES_HURT[index]];
-
-    if (index >= this.IMAGES_HURT.length - 1) {
-      clearInterval(interval);
-      this.isHurt = false;
-    }
   }
 
   /**
@@ -423,51 +305,15 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Plays boss death animation sequence
-   * @returns {void}
-   */
-  playDeathAnimation() {
-    let i = 0;
-    const nextFrame = () => {
-      this.updateDeathFrame(i, nextFrame);
-      i++;
-    };
-    nextFrame();
-  }
-
-  /**
-   * Updates death animation frame using recursive timeout
-   * @param {number} index - Current death animation frame index
-   * @param {Function} callback - Callback function for next frame
-   * @returns {void}
-   */
-  updateDeathFrame(index, callback) {
-    if (index < this.IMAGES_DEAD.length) {
-      this.img = this.imageCache[this.IMAGES_DEAD[index]];
-      setTimeout(callback, 250, index, callback);
-    } else {
-      this.setFinalDeathFrame();
-    }
-  }
-
-  /**
-   * Sets the final death animation frame
-   * @returns {void}
-   */
-  setFinalDeathFrame() {
-    this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
-  }
-
-  /**
    * Defines the collision box for boss interactions
    * @returns {{x: number, y: number, width: number, height: number}} Collision box
    */
-  getTopHitbox() {
+  getCollisionBox() {
     return {
-      x: this.x,
-      y: this.y,
-      width: this.width,
-      height: this.height,
+      x: this.x + 20,
+      y: this.y + 80,
+      width: this.width - 30,
+      height: this.height - 150,
     };
   }
 }

@@ -70,7 +70,7 @@ function drawStartButton() {
  */
 function drawSoundButton() {
   const buttonConfig = getBottomButtonConfig(0);
-  const label = soundOn ? "Sound OFF" : "Sound ON";
+  const label = soundOn ? "Sound ON" : "Sound OFF";
   drawButton(buttonConfig, label);
   setButtonArea("soundButtonArea", buttonConfig);
 }

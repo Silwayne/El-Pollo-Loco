@@ -39,8 +39,6 @@ let Mobile = {
 
     this.canvas.addEventListener("touchstart", (e) => this.onTouchStart(e), options);
 
-    this.canvas.addEventListener("touchmove", (e) => this.onTouchMove(e), options);
-
     this.canvas.addEventListener("touchend", (e) => this.onTouchEnd(e), options);
 
     this.canvas.addEventListener("touchcancel", (e) => this.onTouchEnd(e), options);

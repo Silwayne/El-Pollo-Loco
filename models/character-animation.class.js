@@ -130,16 +130,43 @@ class CharacterAnimation {
     }, 1000);
   }
 
-  /** Plays jumping animation **/
-  playJumpAnimation() {
-    const c = this.character;
-    const frames = Character.IMAGES_JUMPING;
-    if (frames && frames.length > 0) {
-      let frameIndex = Math.floor(Date.now() / 100) % frames.length;
-      let imagePath = frames[frameIndex];
-      if (c.imageCache[imagePath]) c.img = c.imageCache[imagePath];
+  // /** Plays jumping animation **/
+  // playJumpAnimation() {
+  //   const c = this.character;
+  //   const frames = Character.IMAGES_JUMPING;
+  //   if (frames && frames.length > 0) {
+  //     let frameIndex = Math.floor(Date.now() / 100) % frames.length;
+  //     let imagePath = frames[frameIndex];
+  //     if (c.imageCache[imagePath]) c.img = c.imageCache[imagePath];
+  //   }
+  // }
+
+/** Plays jumping animation - super simple based on speedY */
+playJumpAnimation() {
+  const c = this.character;
+  const frames = Character.IMAGES_JUMPING;
+  
+  if (frames && frames.length > 0) {
+    let frameIndex = 0;
+    
+    if (c.isAboveGround()) {
+      if (c.speedY > 20) frameIndex = 1;   
+      else if (c.speedY > 10) frameIndex = 2;  
+      else if (c.speedY > 0) frameIndex = 3;
+      else if (c.speedY > -10) frameIndex = 4; 
+      else if (c.speedY > -20) frameIndex = 5; 
+      else if (c.speedY > -30) frameIndex = 6; 
+      else frameIndex = 7;                     
+    }
+    
+    frameIndex = Math.min(frameIndex, frames.length - 1);
+    
+    let imagePath = frames[frameIndex];
+    if (c.imageCache[imagePath]) {
+      c.img = c.imageCache[imagePath];
     }
   }
+}
 
   /** Plays walking animation **/
   playWalkAnimation() {

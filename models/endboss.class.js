@@ -47,7 +47,7 @@ class Endboss extends MovableObject {
    * @returns {void}
    */
   setInitialProperties() {
-    this.speed = 20;
+    this.speed = 40;
     this.x = 2500;
   }
 
@@ -114,7 +114,7 @@ class Endboss extends MovableObject {
   startWalkSequence() {
     this.walkInterval = setInterval(() => {
       this.updateWalkSequence();
-    }, 120);
+    }, 60);
   }
 
   /**

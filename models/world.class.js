@@ -11,10 +11,10 @@ class World {
   ctx;
   keyboard;
   camera_x = 0;
-  statusBar = new StatusBar();
-  bottleBar = new BottleBar();
-  coinBar = new CoinBar();
-  bossBar = new BossBar();
+  statusBar = new StatusBar("health", 10, 0, 100);
+  bottleBar = new StatusBar("bottle", 10, 50, 0);
+  coinBar = new StatusBar("coin", 10, 100, 0);
+  bossBar = new StatusBar("boss", 500, 20, 100);
   throwableObjects = [];
   bottleCount = 0;
   coinCount = 0;
@@ -90,10 +90,10 @@ class World {
    * @returns {void}
    */
   setupBars() {
-    this.statusBar = new StatusBar();
-    this.bottleBar = new BottleBar();
-    this.coinBar = new CoinBar();
-    this.bossBar = new BossBar();
+    this.statusBar = new StatusBar("health", 10, 0, 100);
+    this.bottleBar = new StatusBar("bottle", 10, 50, 0);
+    this.coinBar = new StatusBar("coin", 10, 100, 0);
+    this.bossBar = new StatusBar("boss", 500, 20, 100);
   }
 
   /**

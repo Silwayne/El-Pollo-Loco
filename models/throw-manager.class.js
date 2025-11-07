@@ -59,20 +59,15 @@ class ThrowManager {
    * @returns {void}
    */
   throwBottle(now) {
-    const throwX = this.world.character.otherDirection
-      ? this.world.character.x - 50
-      : this.world.character.x + 100;
-
+    const throwX = this.world.character.otherDirection ? this.world.character.x - 50 : this.world.character.x + 100;
     const throwY = this.world.character.y + 100;
     const bottle = new ThrowableObject(throwX, throwY);
     bottle.speed = this.world.character.otherDirection ? -10 : 10;
-
     this.world.throwableObjects.push(bottle);
     this.world.bottleCount--;
     this.world.bottleBar.setPercentage(this.world.bottleCount);
     this.world.audioManager.play("throw");
     this.lastThrowTime = now;
-
     if (this.world.character && this.world.character.updateLastAction) {
       this.world.character.updateLastAction();
     }

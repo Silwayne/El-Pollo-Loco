@@ -6,33 +6,32 @@
  * @extends MovableObject
  */
 class Endboss extends MovableObject {
-  /** @type {number} */ y = 55;
-  /** @type {number} */ height = 400;
-  /** @type {number} */ width = 250;
-  /** @type {number} */ energy = 100;
-  /** @type {boolean} */ triggered = false;
-  /** @type {boolean} */ attacking = false;
-  /** @type {boolean} */ attackPhase = false;
-  /** @type {boolean} */ isDead = false;
-  /** @type {boolean} */ isHurt = false;
+  y = 55;
+  height = 400;
+  width = 250;
+  energy = 100;
+  triggered = false;
+  attacking = false;
+  attackPhase = false;
+  isDead = false;
+  isHurt = false;
 
-  /** @type {number} */ animateInterval = null;
-  /** @type {number} */ walkInterval = null;
-  /** @type {number} */ attackInterval = null;
+  animateInterval = null;
+  walkInterval = null;
+  attackInterval = null;
 
-  /**
-   * Creates an Endboss instance
-   * Initializes properties, loads images, and starts animation
-   */
   constructor() {
     super().loadImage("img/4_enemie_boss_chicken/1_walk/G1.png");
     this.loadAllImages();
     this.setInitialProperties();
+
+    this.animation = new EndbossAnimation(this);
+
     this.animate();
   }
 
   /**
-   * Preloads all boss animation images
+   * Loads all image sets used by the boss.
    * @returns {void}
    */
   loadAllImages() {
@@ -44,26 +43,27 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Sets initial boss properties including position and speed
+   * Sets starting position and movement speed.
    * @returns {void}
    */
   setInitialProperties() {
-    this.speed = 2;
+    this.speed = 20;
     this.x = 2500;
   }
 
   /**
-   * Starts the main boss animation loop
+   * Starts the main animation interval.
+   * Updates boss logic periodically.
    * @returns {void}
    */
   animate() {
     this.animateInterval = setInterval(() => {
       this.handleAnimationFrame();
-    }, 200);
+    }, 150);
   }
 
   /**
-   * Handles each animation frame based on boss state
+   * Determines which boss state to process on each frame.
    * @returns {void}
    */
   handleAnimationFrame() {
@@ -74,7 +74,8 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Checks if player has reached boss trigger area
+   * Checks if player has entered the boss trigger zone.
+   * Starts the boss encounter if condition met.
    * @returns {void}
    */
   checkTriggerCondition() {
@@ -84,21 +85,21 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Handles attack behavior when boss is in attacking state
+   * Controls attack/walk animations depending on attack phase.
    * @returns {void}
    */
   handleAttackBehavior() {
     if (this.attacking) {
       if (this.attackPhase) {
-        this.playWalkingAnimation();
+        this.animation.playWalkingAnimation();
       } else {
-        this.playAttackAnimation();
+        this.animation.playAttackAnimation();
       }
     }
   }
 
   /**
-   * Starts the complete boss encounter sequence
+   * Starts the complete boss sequence when triggered.
    * @returns {void}
    */
   startBossSequence() {
@@ -107,7 +108,7 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Starts the boss walk sequence towards player
+   * Begins walking sequence toward player.
    * @returns {void}
    */
   startWalkSequence() {
@@ -117,11 +118,11 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Updates walk sequence by moving boss and playing animation
+   * Updates walking movement and checks for spawn transition.
    * @returns {void}
    */
   updateWalkSequence() {
-    this.x -= 5;
+    this.x -= 24;
     this.playAnimation(Endboss.IMAGES_WALKING);
 
     if (this.x <= 2350) {
@@ -130,20 +131,20 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Completes walk sequence and transitions to spawn animation
+   * Completes walking sequence, plays spawning animation, and triggers attack setup.
    * @returns {void}
    */
   completeWalkSequence() {
     clearInterval(this.walkInterval);
     this.walkInterval = null;
 
-    this.playAnimation(Endboss.IMAGES_SPAWNING);
+    this.animation.playSpawningAnimation();
     this.playBossSound();
     this.scheduleAttackStart();
   }
 
   /**
-   * Plays boss sound effect
+   * Plays the boss background sound.
    * @returns {void}
    */
   playBossSound() {
@@ -153,7 +154,7 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Schedules the start of attack pattern after spawn animation
+   * Waits briefly after spawning before beginning attack cycles.
    * @returns {void}
    */
   scheduleAttackStart() {
@@ -163,7 +164,7 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Starts the boss attack pattern
+   * Starts attack behavior and schedules repeated attack cycles.
    * @returns {void}
    */
   startAttackPattern() {
@@ -172,17 +173,17 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Starts attack interval for regular attack cycles
+   * Repeatedly executes attack cycles in intervals.
    * @returns {void}
    */
   startAttackIntervals() {
     this.attackInterval = setInterval(() => {
       this.executeAttackCycle();
-    }, 3000);
+    }, 1500);
   }
 
   /**
-   * Executes a single attack cycle
+   * Executes a single attack phase.
    * @returns {void}
    */
   executeAttackCycle() {
@@ -193,17 +194,18 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Schedules the end of current attack phase
+   * Ends the attack phase after a short duration.
    * @returns {void}
    */
   scheduleAttackEnd() {
     setTimeout(() => {
       this.attackPhase = false;
-    }, 1500);
+    }, 800);
   }
 
   /**
-   * Handles boss taking damage from player attacks
+   * Handles boss getting hit by player's attacks.
+   * Applies cooldown and plays hurt animation.
    * @returns {void}
    */
   hit() {
@@ -211,7 +213,7 @@ class Endboss extends MovableObject {
 
     this.registerHit();
     this.reduceEnergy();
-    this.playHurtAnimation();
+    this.animation.playHurtAnimation();
     this.updateBossBar();
 
     if (this.energy === 0) {
@@ -220,16 +222,16 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Checks if boss is on hit cooldown to prevent rapid damage
-   * @returns {boolean} True if boss cannot take damage yet
+   * Returns true if boss is on hit cooldown.
+   * @returns {boolean}
    */
   isOnCooldown() {
-    let now = new Date().getTime();
+    const now = new Date().getTime();
     return this.lastHit && now - this.lastHit < 1000;
   }
 
   /**
-   * Registers the time of last hit for cooldown tracking
+   * Stores timestamp of last hit to track cooldown.
    * @returns {void}
    */
   registerHit() {
@@ -237,7 +239,7 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Reduces boss energy by fixed amount
+   * Reduces energy by 20 per hit and prevents negative values.
    * @returns {void}
    */
   reduceEnergy() {
@@ -246,7 +248,7 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Updates boss health bar display
+   * Updates the boss health bar to reflect current energy.
    * @returns {void}
    */
   updateBossBar() {
@@ -254,18 +256,18 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Handles boss death sequence
+   * Handles full death sequence, animations, and cleanup.
    * @returns {void}
    */
   die() {
     this.setDeathState();
     this.clearAllIntervals();
     this.stopBossSound();
-    this.playDeathAnimation();
+    this.animation.playDeathAnimation();
   }
 
   /**
-   * Sets boss death state flags
+   * Sets flags for dead state.
    * @returns {void}
    */
   setDeathState() {
@@ -274,7 +276,7 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Clears all active intervals to stop boss behavior
+   * Clears all intervals safely to stop ongoing behaviors.
    * @returns {void}
    */
   clearAllIntervals() {
@@ -284,8 +286,8 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Safely clears an interval if it exists
-   * @param {number} interval - The interval ID to clear
+   * Helper function for clearing a given interval.
+   * @param {number} interval - ID of the interval to clear.
    * @returns {void}
    */
   clearInterval(interval) {
@@ -295,7 +297,7 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Stops boss sound effect
+   * Pauses the boss sound when defeated.
    * @returns {void}
    */
   stopBossSound() {
@@ -305,8 +307,8 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Defines the collision box for boss interactions
-   * @returns {{x: number, y: number, width: number, height: number}} Collision box
+   * Returns the collision box for boss hit detection.
+   * @returns {{x: number, y: number, width: number, height: number}}
    */
   getCollisionBox() {
     return {

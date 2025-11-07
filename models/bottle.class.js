@@ -6,30 +6,12 @@
  * @extends DrawableObject
  */
 class Bottle extends DrawableObject {
-  /**
-   * Fixed height of the bottle in pixels
-   * @type {number}
-   */
   height = 100;
 
-  /**
-   * Image path for bottles placed on the ground
-   * Shows bottle lying horizontally as if placed on surface
-   * @type {string[]}
-   */
   IMAGES_GROUND = ["img/6_salsa_bottle/1_salsa_bottle_on_ground.png"];
 
-  /**
-   * Image path for bottles floating in the air
-   * Shows bottle standing upright as if hovering
-   * @type {string[]}
-   */
   IMAGES_AIR = ["img/6_salsa_bottle/salsa_bottle.png"];
 
-  /**
-   * Creates a Bottle instance with specified type
-   * @param {string} type - The bottle type: "ground" or "air"
-   */
   constructor(type) {
     super();
     this.initializeBottle(type);

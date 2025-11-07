@@ -5,15 +5,7 @@
  * @class
  */
 class CollisionManager {
-  /**
-   * Creates a CollisionManager instance
-   * @param {World} world - Reference to the game world instance
-   */
   constructor(world) {
-    /**
-     * Reference to the game world for accessing game objects and state
-     * @type {World}
-     */
     this.world = world;
   }
 

@@ -7,27 +7,13 @@
  * @extends DrawableObject
  */
 class Coin extends DrawableObject {
-  /** @type {number} */ width = 100;
-  /** @type {number} */ height = 100;
+  width = 100;
+  height = 100;
 
-  /**
-   * Image path for coins placed on the ground
-   * Uses the same coin image but positioned at ground level
-   * @type {string[]}
-   */
   IMAGES_GROUND = ["img/8_coin/coin_1.png"];
 
-  /**
-   * Image path for coins floating in the air
-   * Uses the same coin image but positioned at floating height
-   * @type {string[]}
-   */
   IMAGES_AIR = ["img/8_coin/coin_1.png"];
 
-  /**
-   * Creates a Coin instance with specified type
-   * @param {string} type - The coin type: "ground" or "air"
-   */
   constructor(type) {
     super();
     this.initializeCoin(type);
@@ -82,13 +68,13 @@ class Coin extends DrawableObject {
    * @returns {{x: number, y: number, width: number, height: number}} Collision box
    */
   getCollisionBox() {
-  return {
-    x: this.x + 30,    
-    y: this.y + 30,    
-    width: this.width - 60,  
-    height: this.height - 60 
-  };
-}
+    return {
+      x: this.x + 30,
+      y: this.y + 30,
+      width: this.width - 60,
+      height: this.height - 60,
+    };
+  }
 
   /**
    * Sets a random horizontal position for the coin

@@ -27,7 +27,14 @@ function setupGameEventListeners() {
  * @returns {void}
  */
 function initializeWorld() {
-  world = window.innerWidth <= 1023 ? new MobileWorld(canvas, keyboard) : new World(canvas, keyboard);
+  const isTouchDevice =
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0;
+
+  world = isTouchDevice
+    ? new MobileWorld(canvas, keyboard)
+    : new World(canvas, keyboard);
   window.world = world;
 }
 
@@ -78,6 +85,7 @@ function restoreAudioState() {
 function restartGame() {
   cleanupGame();
   reinitializeGame();
+  setupMobileGameControls();
   restoreGameAudio();
 }
 
@@ -100,6 +108,14 @@ function cleanupGame() {
 }
 
 /**
+ * Checks if the current device is a mobile/touch-enabled device
+ * @returns {boolean} True if mobile device detected
+ */
+function isMobileDevice() {
+  return navigator.maxTouchPoints > 0;
+}
+
+/**
  * Reinitializes the game world and keyboard controls
  * Creates fresh instances for a clean restart
  * @returns {void}
@@ -107,7 +123,15 @@ function cleanupGame() {
 function reinitializeGame() {
   world = null;
   keyboard = new Keyboard();
-  world = new World(canvas, keyboard);
+
+  if (isMobileDevice()) {
+    world = new MobileWorld(canvas, keyboard);
+    if (typeof world.setupMobileButtons === "function") {
+      world.setupMobileButtons();
+    }
+  } else {
+    world = new World(canvas, keyboard);
+  }
 }
 
 /**
@@ -139,9 +163,7 @@ function muteBackgroundMusic() {
       world.audioManager.sounds.background.pause();
       world.audioManager.sounds.background.currentTime = 0;
     }
-  } catch (e) {
-    // Silent fail for audio
-  }
+  } catch (e) {}
 }
 
 /**
@@ -165,7 +187,5 @@ function playBackgroundMusic() {
       window.backgroundMusic.currentTime = 0;
       window.backgroundMusic.play().catch(() => {});
     }
-  } catch (e) {
-    // Silent fail for audio
-  }
+  } catch (e) {}
 }

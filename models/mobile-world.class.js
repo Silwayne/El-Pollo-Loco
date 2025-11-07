@@ -6,17 +6,41 @@
  * @extends World
  */
 class MobileWorld extends World {
-  /**
-   * Array of mobile control button configurations
-   * @type {Array}
-   */
   mobileButtons = [];
+  pressedButtons = {};
+
+  shouldShowTouchControls() {
+    return this.isTouchDevice();
+  }
 
   /**
-   * Tracks pressed state of mobile buttons for visual feedback
-   * @type {Object}
+   * Determines whether touch control buttons should be displayed
+   * Detects touch-capable devices by checking multiple browser touch APIs
+   * This method provides comprehensive touch device detection covering:
+   * - Modern browsers (ontouchstart)
+   * - Standardized touch points API (maxTouchPoints)
+   * - Microsoft legacy API (msMaxTouchPoints)
    */
-  pressedButtons = {};
+  isTouchDevice() {
+    return (
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0 ||
+      navigator.msMaxTouchPoints > 0
+    );
+  }
+
+  /**
+   * Conditionally draws mobile controls on touch devices
+   * @returns {void}
+   */
+  drawMobileControlsIfNeeded() {
+    if (
+      this.shouldShowTouchControls() &&
+      typeof this.drawMobileControls === "function"
+    ) {
+      this.drawMobileControls();
+    }
+  }
 
   /**
    * Sets up mobile control buttons for touch devices
@@ -37,10 +61,7 @@ class MobileWorld extends World {
    * @returns {{w: number, h: number}} Object containing canvas width and height
    */
   getCanvasDimensions() {
-    return {
-      w: this.canvas.width,
-      h: this.canvas.height,
-    };
+    return { w: this.canvas.width, h: this.canvas.height };
   }
 
   /**
@@ -64,32 +85,15 @@ class MobileWorld extends World {
   getButtonConfigs(canvasWidth, canvasHeight, btnSize) {
     const margin = 20;
     const gap = 20;
-    const totalHeight = btnSize * 2 + gap;
-    const startY = (canvasHeight - totalHeight) / 2;
+
+    const bottomY = canvasHeight - btnSize - margin;
 
     return [
-      { key: "LEFT", x: margin, y: startY, size: btnSize, label: "←" },
-      {
-        key: "THROW",
-        x: margin,
-        y: startY + btnSize + gap,
-        size: btnSize,
-        label: "🧴",
-      },
-      {
-        key: "RIGHT",
-        x: canvasWidth - btnSize - margin,
-        y: startY,
-        size: btnSize,
-        label: "→",
-      },
-      {
-        key: "JUMP",
-        x: canvasWidth - btnSize - margin,
-        y: startY + btnSize + gap,
-        size: btnSize,
-        label: "⤒",
-      },
+      { key: "THROW", x: margin, y: bottomY, size: btnSize, label: "🧴" },
+      { key: "JUMP", x: margin + btnSize + gap, y: bottomY, size: btnSize, label: "⤒" },
+
+      { key: "LEFT", x: canvasWidth - (btnSize * 2 + gap + margin), y: bottomY, size: btnSize, label: "←" },
+      { key: "RIGHT", x: canvasWidth - (btnSize + margin), y: bottomY, size: btnSize, label: "→" },
     ];
   }
 
@@ -120,14 +124,7 @@ class MobileWorld extends World {
    * @returns {{key: string, x: number, y: number, w: number, h: number, label: string}} Button object
    */
   createMobileButton(key, x, y, size, label) {
-    return {
-      key,
-      x,
-      y,
-      w: size,
-      h: size,
-      label,
-    };
+    return { key, x, y, w: size, h: size, label };
   }
 
   /**
@@ -156,7 +153,7 @@ class MobileWorld extends World {
     const radius = btn.w / 2;
 
     ctx.globalAlpha = opacity;
-    ctx.fillStyle = "#a0220a";
+    ctx.fillStyle = "#000000";
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
     ctx.fill();
@@ -183,7 +180,7 @@ class MobileWorld extends World {
     const centerX = btn.x + btn.w / 2;
     const centerY = btn.y + btn.h / 2;
 
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = "#ffffffff";
     ctx.font = "bold 28px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";

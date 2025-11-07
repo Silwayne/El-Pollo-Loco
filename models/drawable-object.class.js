@@ -5,13 +5,13 @@
  * @class
  */
 class DrawableObject {
-  /** @type {HTMLImageElement} */ img;
-  /** @type {Object<string, HTMLImageElement>} */ imageCache = {};
-  /** @type {number} */ currentImage = 0;
-  /** @type {number} */ x = 120;
-  /** @type {number} */ y = 280;
-  /** @type {number} */ height = 150;
-  /** @type {number} */ width = 100;
+  img;
+  imageCache = {};
+  currentImage = 0;
+  x = 120;
+  y = 280;
+  height = 150;
+  width = 100;
 
   /**
    * Loads a single image from the specified path

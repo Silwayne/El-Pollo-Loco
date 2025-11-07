@@ -3,20 +3,22 @@
  * in portrait mode to prompt users to rotate to landscape for better experience
  * @returns {void}
  */
-function checkOrientation() {
+document.addEventListener("DOMContentLoaded", () => {
   const overlay = document.getElementById("rotate-overlay");
-  const isMobile =
-    /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent) ||
-    (navigator.userAgent.includes("Macintosh") && "ontouchend" in document);
 
-  if (isMobile && window.innerHeight > window.innerWidth) {
-    overlay.style.display = "flex";
-  } else {
-    overlay.style.display = "none";
-  }
-}
+  if (!overlay) return;
 
-// Set up orientation change listeners
-window.addEventListener("load", checkOrientation);
-window.addEventListener("resize", checkOrientation);
-window.addEventListener("orientationchange", checkOrientation);
+  const landscapeQuery = window.matchMedia("(orientation: landscape)");
+
+  const updateOverlay = () => {
+    if (landscapeQuery.matches) {
+      overlay.style.display = "none";
+    } else {
+      overlay.style.display = "flex";
+    }
+  };
+
+  landscapeQuery.addEventListener("change", updateOverlay);
+
+  updateOverlay();
+});

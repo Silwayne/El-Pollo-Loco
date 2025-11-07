@@ -5,10 +5,10 @@
  * @class
  */
 class Keyboard {
-  /** @type {boolean} */ W = false;
-  /** @type {boolean} */ A = false;
-  /** @type {boolean} */ D = false;
-  /** @type {boolean} */ E = false;
+  W = false;
+  A = false;
+  D = false;
+  E = false;
 }
 
 /**

@@ -6,14 +6,10 @@
  * @extends MovableObject
  */
 class Cloud extends MovableObject {
-  /** @type {number} */ y = 20;
-  /** @type {number} */ width = 500;
-  /** @type {number} */ height = 250;
+  y = 20;
+  width = 500;
+  height = 250;
 
-  /**
-   * Creates a Cloud instance with random position
-   * Automatically starts movement animation
-   */
   constructor() {
     super().loadImage("img/5_background/layers/4_clouds/1.png");
     this.initializeCloud();

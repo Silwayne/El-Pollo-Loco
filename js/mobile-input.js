@@ -4,23 +4,9 @@
  * @namespace Mobile
  */
 let Mobile = {
-  /** @type {HTMLCanvasElement} */
   canvas: null,
-
-  /** @type {World} */
   world: null,
-
-  /**
-   * Active touch points and their associated button keys
-   * @type {Object<number|string, string>}
-   */
   activeTouches: {},
-
-  /**
-   * Maximum screen width threshold for mobile controls (1023px)
-   * @type {number}
-   */
-  threshold: 1023,
 
   /**
    * Initializes the mobile controller with canvas and world reference
@@ -51,26 +37,13 @@ let Mobile = {
   setupTouchEvents() {
     const options = { passive: false };
 
-    this.canvas.addEventListener(
-      "touchstart",
-      (e) => this.onTouchStart(e),
-      options
-    );
-    this.canvas.addEventListener(
-      "touchmove",
-      (e) => this.onTouchMove(e),
-      options
-    );
-    this.canvas.addEventListener(
-      "touchend",
-      (e) => this.onTouchEnd(e),
-      options
-    );
-    this.canvas.addEventListener(
-      "touchcancel",
-      (e) => this.onTouchEnd(e),
-      options
-    );
+    this.canvas.addEventListener("touchstart", (e) => this.onTouchStart(e), options);
+
+    this.canvas.addEventListener("touchmove", (e) => this.onTouchMove(e), options);
+
+    this.canvas.addEventListener("touchend", (e) => this.onTouchEnd(e), options);
+
+    this.canvas.addEventListener("touchcancel", (e) => this.onTouchEnd(e), options);
   },
 
   /**
@@ -166,9 +139,15 @@ let Mobile = {
    */
   handleMobileButtonTouch(touchId, pos) {
     const btn = this.findButtonAt(pos.x, pos.y);
-    if (btn) {
+    if (btn && !this.activeTouches[touchId]) {
       this.activeTouches[touchId] = btn.key;
+
       this.setKey(btn.key, true);
+
+      setTimeout(() => {
+        this.setKey(btn.key, false);
+        delete this.activeTouches[touchId];
+      }, 150);
     }
   },
 
@@ -255,12 +234,7 @@ let Mobile = {
    * @returns {void}
    */
   setKey(btnKey, pressed) {
-    let mapping = {
-      LEFT: ["A"],
-      RIGHT: ["D"],
-      JUMP: ["W"],
-      THROW: ["E"],
-    };
+    let mapping = { LEFT: ["A"], RIGHT: ["D"], JUMP: ["W"], THROW: ["E"] };
 
     let kbGlobal = window.keyboard || null;
     let kbWorld = this.world?.keyboard || null;

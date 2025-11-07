@@ -7,10 +7,16 @@
  * @extends StatusBar
  */
 class BottleBar extends StatusBar {
-  /**
-   * Creates a BottleBar instance
-   * Initializes position, size, and sets initial bottle count to 0
-   */
+  
+  IMAGES = [
+    "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/0.png",
+    "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/20.png",
+    "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/40.png",
+    "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/60.png",
+    "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/80.png",
+    "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/100.png",
+  ];
+  
   constructor() {
     super();
     this.loadImages(this.IMAGES);
@@ -20,22 +26,7 @@ class BottleBar extends StatusBar {
     this.height = 60;
     this.setPercentage(0);
   }
-
-  /**
-   * Array of image paths representing different bottle collection states
-   * Orange-colored bottle status bar images in 20% increments
-   * Corresponds to 0-5 bottles in inventory
-   * @type {string[]}
-   */
-  IMAGES = [
-    "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/0.png",
-    "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/20.png",
-    "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/40.png",
-    "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/60.png",
-    "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/80.png",
-    "img/7_statusbars/1_statusbar/3_statusbar_bottle/orange/100.png",
-  ];
-
+  
   /**
    * Updates the bottle count and refreshes the displayed image
    * Converts bottle count to percentage based on maximum of 5 bottles

@@ -5,21 +5,8 @@
  * @class
  */
 class ThrowManager {
-  /**
-   * Creates a ThrowManager instance
-   * @param {World} world - Reference to the game world instance
-   */
   constructor(world) {
-    /**
-     * Reference to the game world for accessing game objects and state
-     * @type {World}
-     */
     this.world = world;
-    
-    /**
-     * Timestamp of the last throw for cooldown management
-     * @type {number}
-     */
     this.lastThrowTime = 0;
   }
 
@@ -85,6 +72,10 @@ class ThrowManager {
     this.world.bottleBar.setPercentage(this.world.bottleCount);
     this.world.audioManager.play("throw");
     this.lastThrowTime = now;
+
+    if (this.world.character && this.world.character.updateLastAction) {
+      this.world.character.updateLastAction();
+    }
   }
 
   /**

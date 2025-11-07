@@ -6,12 +6,12 @@
  * @extends DrawableObject
  */
 class MovableObject extends DrawableObject {
-  /** @type {number} */ speed = 0.15;
-  /** @type {boolean} */ otherDirection = false;
-  /** @type {number} */ speedY = 0;
-  /** @type {number} */ acceleration = 2.5;
-  /** @type {number} */ energy = 100;
-  /** @type {number} */ lastHit = 0;
+  speed = 0.15;
+  otherDirection = false;
+  speedY = 0;
+  acceleration = 2.5;
+  energy = 100;
+  lastHit = 0;
 
   /**
    * Applies gravity physics to the object

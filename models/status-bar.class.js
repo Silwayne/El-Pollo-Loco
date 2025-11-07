@@ -6,17 +6,8 @@
  * @extends DrawableObject
  */
 class StatusBar extends DrawableObject {
-  /**
-   * Current percentage value displayed by the status bar (0-100)
-   * @type {number}
-   */
   percentage = 100;
 
-  /**
-   * Array of image paths representing different percentage states
-   * Green-colored health bar images in 20% increments
-   * @type {string[]}
-   */
   IMAGES = [
     "img/7_statusbars/1_statusbar/2_statusbar_health/green/0.png",
     "img/7_statusbars/1_statusbar/2_statusbar_health/green/20.png",
@@ -26,10 +17,6 @@ class StatusBar extends DrawableObject {
     "img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png",
   ];
 
-  /**
-   * Creates a StatusBar instance with default position and full percentage
-   * Preloads all status bar images for smooth visual updates
-   */
   constructor() {
     super();
     this.loadImages(this.IMAGES);

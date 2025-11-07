@@ -5,33 +5,10 @@
  * @class
  */
 class WorldUI {
-  /**
-   * Creates a WorldUI instance
-   * @param {World} world - The game world instance
-   */
   constructor(world) {
-    /**
-     * Reference to the game world instance
-     * @type {World}
-     */
     this.world = world;
-    
-    /**
-     * Canvas 2D rendering context
-     * @type {CanvasRenderingContext2D}
-     */
     this.ctx = world.ctx;
-    
-    /**
-     * Canvas element for rendering
-     * @type {HTMLCanvasElement}
-     */
     this.canvas = world.canvas;
-    
-    /**
-     * Game over and win screen handler
-     * @type {WorldUIGameOver}
-     */
     this.gameOverUI = new WorldUIGameOver(this);
   }
 
@@ -43,6 +20,18 @@ class WorldUI {
   draw() {
     this.clearAndDrawBackground();
     this.drawMainOrOverlay();
+  }
+
+  /**
+   * Checks if touch buttons should be displayed
+   * @returns {boolean} True if touch buttons should be shown
+   */
+  shouldShowTouchButtons() {
+    return (
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0 ||
+      navigator.msMaxTouchPoints > 0
+    );
   }
 
   /**

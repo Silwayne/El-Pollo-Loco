@@ -1,9 +1,3 @@
-/**
- * Endboss animation methods
- * All animation-related functionality for the Endboss class
- */
-
-// Static image arrays
 Endboss.IMAGES_WALKING = [
   "img/4_enemie_boss_chicken/1_walk/G1.png",
   "img/4_enemie_boss_chicken/1_walk/G2.png",
@@ -43,98 +37,92 @@ Endboss.IMAGES_DEAD = [
 ];
 
 /**
- * Plays walking animation and moves boss left
- * @returns {void}
+ * Handles all animation logic for the Endboss class.
+ * Controls walking, attacking, hurt, spawning, and death animations.
+ * @class
  */
-Endboss.prototype.playWalkingAnimation = function () {
-  this.playAnimation(Endboss.IMAGES_WALKING);
-  this.moveLeft();
-};
-
-/**
- * Plays attack animation
- * @returns {void}
- */
-Endboss.prototype.playAttackAnimation = function () {
-  this.playAnimation(Endboss.IMAGES_ATTACK);
-};
-
-/**
- * Plays hurt animation when boss takes damage
- * @returns {void}
- */
-Endboss.prototype.playHurtAnimation = function () {
-  if (this.isDead) return;
-
-  this.isHurt = true;
-  this.startHurtAnimation();
-};
-
-/**
- * Starts the hurt animation sequence
- * @returns {void}
- */
-Endboss.prototype.startHurtAnimation = function () {
-  let i = 0;
-  const interval = setInterval(() => {
-    this.updateHurtAnimation(i, interval);
-    i++;
-  }, 400);
-};
-
-/**
- * Updates hurt animation frame and manages completion
- * @param {number} index - Current animation frame index
- * @param {number} interval - The interval ID to clear when complete
- * @returns {void}
- */
-Endboss.prototype.updateHurtAnimation = function (index, interval) {
-  if (this.isDead) {
-    clearInterval(interval);
-    return;
+class EndbossAnimation {
+  constructor(endboss) {
+    this.endboss = endboss;
   }
 
-  this.img = this.imageCache[Endboss.IMAGES_HURT[index]];
-
-  if (index >= Endboss.IMAGES_HURT.length - 1) {
-    clearInterval(interval);
-    this.isHurt = false;
+  /**
+   * Plays walking animation and moves boss slightly to the left.
+   * Called during walking or chase phases.
+   * @returns {void}
+   */
+  playWalkingAnimation() {
+    const e = this.endboss;
+    e.playAnimation(Endboss.IMAGES_WALKING);
+    e.x -= 40;
   }
-};
 
-/**
- * Plays boss death animation sequence
- * @returns {void}
- */
-Endboss.prototype.playDeathAnimation = function () {
-  let i = 0;
-  const nextFrame = () => {
-    this.updateDeathFrame(i, nextFrame);
-    i++;
-  };
-  nextFrame();
-};
-
-/**
- * Updates death animation frame using recursive timeout
- * @param {number} index - Current death animation frame index
- * @param {Function} callback - Callback function for next frame
- * @returns {void}
- */
-Endboss.prototype.updateDeathFrame = function (index, callback) {
-  if (index < Endboss.IMAGES_DEAD.length) {
-    this.img = this.imageCache[Endboss.IMAGES_DEAD[index]];
-    setTimeout(callback, 250, index, callback);
-  } else {
-    this.setFinalDeathFrame();
+  /**
+   * Plays the attack animation.
+   * Called when the boss enters its attack phase.
+   * @returns {void}
+   */
+  playAttackAnimation() {
+    this.endboss.playAnimation(Endboss.IMAGES_ATTACK);
   }
-};
 
-/**
- * Sets the final death animation frame
- * @returns {void}
- */
-Endboss.prototype.setFinalDeathFrame = function () {
-  this.img =
-    this.imageCache[Endboss.IMAGES_DEAD[Endboss.IMAGES_DEAD.length - 1]];
-};
+  /**
+   * Plays the hurt animation when the boss takes damage.
+   * Temporarily sets the boss into a hurt state.
+   * @returns {void}
+   */
+  playHurtAnimation() {
+    const e = this.endboss;
+    if (e.isDead) return;
+
+    e.isHurt = true;
+    let i = 0;
+
+    const interval = setInterval(() => {
+      if (e.isDead) {
+        clearInterval(interval);
+        return;
+      }
+
+      e.img = e.imageCache[Endboss.IMAGES_HURT[i]];
+
+      if (i >= Endboss.IMAGES_HURT.length - 1) {
+        clearInterval(interval);
+        e.isHurt = false;
+      }
+      i++;
+    }, 400);
+  }
+
+  /**
+   * Plays the full death animation sequence.
+   * Progresses through all death frames and stops on the final image.
+   * @returns {void}
+   */
+  playDeathAnimation() {
+    const e = this.endboss;
+    let i = 0;
+
+    const nextFrame = () => {
+      if (i < Endboss.IMAGES_DEAD.length) {
+        e.img = e.imageCache[Endboss.IMAGES_DEAD[i]];
+        i++;
+        setTimeout(nextFrame, 250);
+      } else {
+        e.img =
+          e.imageCache[Endboss.IMAGES_DEAD[Endboss.IMAGES_DEAD.length - 1]];
+      }
+    };
+
+    nextFrame();
+  }
+
+  /**
+   * Plays the spawning (alert) animation sequence.
+   * Called when the boss first appears or becomes active.
+   * @returns {void}
+   */
+  playSpawningAnimation() {
+    this.endboss.playAnimation(Endboss.IMAGES_SPAWNING);
+  }
+}

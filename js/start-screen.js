@@ -1,16 +1,6 @@
-/**
- * Start screen background image
- * @type {HTMLImageElement}
- */
 let startScreenImg = new Image();
-
-/**
- * Flag indicating whether the start screen image has loaded
- * @type {boolean}
- */
 let startScreenImgLoaded = false;
 
-// Load start screen image and set up load handler
 startScreenImg.src = "img/9_intro_outro_screens/start/startscreen_1.png";
 startScreenImg.onload = function () {
   startScreenImgLoaded = true;
@@ -364,7 +354,7 @@ function drawCloseButton(overlayConfig) {
   const buttonConfig = getCloseButtonConfig(overlayConfig);
   drawButton(buttonConfig, "Schließen / Cerrar");
   setButtonArea("helpCloseButtonArea", buttonConfig);
-  ctx.restore(); // Close the save from drawOverlayBackground
+  ctx.restore();
 }
 
 /**

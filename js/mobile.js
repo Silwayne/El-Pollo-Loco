@@ -20,6 +20,34 @@ let MobileUI = {
   },
 
   /**
+   * Determines if mobile controls should be active
+   * @returns {boolean} True if touch controls should be enabled
+   */
+  shouldBeActive() {
+    return this.isTouchDevice();
+  },
+
+  /**
+   * Detects touch-capable devices
+   * @returns {boolean} True if device supports touch input
+   */
+  isTouchDevice() {
+    return (
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0 ||
+      navigator.msMaxTouchPoints > 0
+    );
+  },
+
+  /**
+   * Checks if mobile controls are fully enabled and ready
+   * @returns {boolean} True if controls are active and components exist
+   */
+  enabled() {
+    return this.canvas && this.world && this.shouldBeActive();
+  },
+
+  /**
    * Handles clicks on the help overlay close button
    * @param {number} x - Canvas X coordinate
    * @param {number} y - Canvas Y coordinate
@@ -185,5 +213,4 @@ let MobileUI = {
   },
 };
 
-// Shared utility methods
 MobileUI.isPointInArea = Mobile.isPointInArea;

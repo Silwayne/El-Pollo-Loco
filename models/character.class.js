@@ -5,29 +5,26 @@
  * @extends MovableObject
  */
 class Character extends MovableObject {
-  /** @type {number} */ y = 180;
-  /** @type {number} */ speed = 10;
-  /** @type {number} */ height = 250;
-  /** @type {number} */ width = 150;
-  /** @type {boolean} */ hurtSoundPlayed = false;
-  /** @type {boolean} */ deathHandled = false;
-  /** @type {World} */ world;
-  /** @type {boolean} */ isThrowing = false;
+  y = 180;
+  speed = 10;
+  height = 250;
+  width = 150;
+  hurtSoundPlayed = false;
+  deathHandled = false;
+  world;
+  isThrowing = false;
 
-  /** @type {number} */ lastActionTime = Date.now();
-  /** @type {boolean} */ isDozing = false;
-  /** @type {boolean} */ isSleeping = false;
-  /** @type {number} */ DOZE_TIMEOUT = 3000;
-  /** @type {number} */ SLEEP_TIMEOUT = 5000;
+  lastActionTime = Date.now();
+  isDozing = false;
+  isSleeping = false;
+  DOZE_TIMEOUT = 3000;
+  SLEEP_TIMEOUT = 5000;
 
-  /**
-   * Creates a Character instance
-   * Loads all animations and applies gravity physics
-   */
   constructor() {
     super().loadImage("img/2_character_pepe/2_walk/W-21.png");
     this.loadAllCharacterImages();
     this.applyGravity();
+    this.animation = new CharacterAnimation(this);
   }
 
   /**
@@ -42,6 +39,33 @@ class Character extends MovableObject {
     this.loadImages(Character.IMAGES_DOZE);
     this.loadImages(Character.IMAGES_SLEEP);
     this.loadImages(Character.IMAGES_IDLE);
+  }
+
+  /** Standard Idle Animation **/
+  playIdleAnimation() {
+    this.playAnimation(Character.IMAGES_IDLE);
+  }
+
+  /** Doze Animation (leichtes Dösen) **/
+  playDozeAnimation() {
+    this.playAnimation(Character.IMAGES_DOZE);
+  }
+
+  /** Sleep Animation (tiefes Schlafen) **/
+  playSleepAnimation() {
+    this.playAnimation(Character.IMAGES_SLEEP);
+  }
+
+  /** Charakter beginnt zu dösen **/
+  startDoze() {
+    this.isDozing = true;
+    this.isSleeping = false;
+  }
+
+  /** Charakter schläft tief **/
+  startSleep() {
+    this.isSleeping = true;
+    this.isDozing = false;
   }
 
   /**
@@ -113,6 +137,7 @@ class Character extends MovableObject {
     this.handleRightMovement();
     this.handleLeftMovement();
     this.handleJumpMovement();
+    this.handleThrowMovement();
     this.updateCameraPosition();
   }
 
@@ -167,6 +192,16 @@ class Character extends MovableObject {
   }
 
   /**
+   * Handles throw movement and wakes up character
+   * @returns {void}
+   */
+  handleThrowMovement() {
+    if (this.world.keyboard.E) {
+      this.updateLastAction(); 
+    }
+  }
+
+  /**
    * Makes the character jump with specified vertical speed
    * @returns {void}
    */
@@ -199,7 +234,7 @@ class Character extends MovableObject {
    */
   startAnimationLoop() {
     setInterval(() => {
-      this.handleAnimation();
+      this.animation.handleAnimation();
     }, 150);
   }
 
@@ -210,6 +245,8 @@ class Character extends MovableObject {
   startThrowAnimation() {
     this.isThrowing = true;
     this.currentImage = 0;
+    this.wakeUp();
+    this.updateLastAction();
 
     setTimeout(() => {
       this.isThrowing = false;
@@ -224,7 +261,7 @@ class Character extends MovableObject {
   wakeUp() {
     this.isDozing = false;
     this.isSleeping = false;
-    this.currentImage = 0;
+    this.lastMoveTime = Date.now();
   }
 
   /**

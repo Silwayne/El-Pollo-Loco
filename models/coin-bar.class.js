@@ -7,10 +7,15 @@
  * @extends StatusBar
  */
 class CoinBar extends StatusBar {
-  /**
-   * Creates a CoinBar instance
-   * Initializes position, size, and sets initial coin count to 0
-   */
+  IMAGES = [
+    "img/7_statusbars/1_statusbar/1_statusbar_coin/blue/0.png",
+    "img/7_statusbars/1_statusbar/1_statusbar_coin/blue/20.png",
+    "img/7_statusbars/1_statusbar/1_statusbar_coin/blue/40.png",
+    "img/7_statusbars/1_statusbar/1_statusbar_coin/blue/60.png",
+    "img/7_statusbars/1_statusbar/1_statusbar_coin/blue/80.png",
+    "img/7_statusbars/1_statusbar/1_statusbar_coin/blue/100.png",
+  ];
+
   constructor() {
     super();
     this.loadImages(this.IMAGES);
@@ -20,21 +25,6 @@ class CoinBar extends StatusBar {
     this.height = 60;
     this.setPercentage(0);
   }
-
-  /**
-   * Array of image paths representing different coin collection states
-   * Blue-colored coin status bar images in 20% increments
-   * Corresponds to 0-5 coins in inventory
-   * @type {string[]}
-   */
-  IMAGES = [
-    "img/7_statusbars/1_statusbar/1_statusbar_coin/blue/0.png",
-    "img/7_statusbars/1_statusbar/1_statusbar_coin/blue/20.png",
-    "img/7_statusbars/1_statusbar/1_statusbar_coin/blue/40.png",
-    "img/7_statusbars/1_statusbar/1_statusbar_coin/blue/60.png",
-    "img/7_statusbars/1_statusbar/1_statusbar_coin/blue/80.png",
-    "img/7_statusbars/1_statusbar/1_statusbar_coin/blue/100.png",
-  ];
 
   /**
    * Updates the coin count and refreshes the displayed image

@@ -6,31 +6,19 @@
  * @extends MovableObject
  */
 class LittleChicken extends MovableObject {
-  /** @type {number} */ y = 355;
-  /** @type {number} */ height = 70;
-  /** @type {number} */ width = 70;
-  /** @type {boolean} */ isDead = false;
+  y = 355;
+  height = 70;
+  width = 70;
+  isDead = false;
 
-  /**
-   * Walking animation frames for the small chicken
-   * @type {string[]}
-   */
   IMAGES_WALKING = [
     "img/3_enemies_chicken/chicken_small/1_walk/1_w.png",
     "img/3_enemies_chicken/chicken_small/1_walk/2_w.png",
     "img/3_enemies_chicken/chicken_small/1_walk/3_w.png",
   ];
 
-  /**
-   * Death animation frame for the small chicken
-   * @type {string[]}
-   */
   IMAGES_DEAD = ["img/3_enemies_chicken/chicken_small/2_dead/dead.png"];
 
-  /**
-   * Creates a LittleChicken instance with random position and speed
-   * Automatically starts movement and animation loops
-   */
   constructor() {
     super().loadImage("img/3_enemies_chicken/chicken_small/1_walk/1_w.png");
     this.initializeChicken();

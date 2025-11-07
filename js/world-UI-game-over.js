@@ -4,33 +4,10 @@
  * @class
  */
 class WorldUIGameOver {
-  /**
-   * Creates a WorldUIGameOver instance
-   * @param {WorldUI} worldUI - The parent WorldUI instance
-   */
   constructor(worldUI) {
-    /**
-     * Reference to the parent WorldUI instance
-     * @type {WorldUI}
-     */
     this.worldUI = worldUI;
-    
-    /**
-     * Reference to the game world instance
-     * @type {World}
-     */
     this.world = worldUI.world;
-    
-    /**
-     * Canvas 2D rendering context
-     * @type {CanvasRenderingContext2D}
-     */
     this.ctx = worldUI.ctx;
-    
-    /**
-     * Canvas element for rendering
-     * @type {HTMLCanvasElement}
-     */
     this.canvas = worldUI.canvas;
   }
 

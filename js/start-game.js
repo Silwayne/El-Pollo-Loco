@@ -7,13 +7,13 @@
 function handleCanvasClick(event) {
   const clickPosition = getClickPosition(event);
 
-  if (this.isSoundButtonClicked(clickPosition)) {
-    this.handleSoundButtonClick();
+  if (isSoundButtonClicked(clickPosition)) {
+    handleSoundButtonClick();
     return;
   }
 
-  if (this.isStartButtonClicked(clickPosition)) {
-    this.handleStartButtonClick();
+  if (isStartButtonClicked(clickPosition)) {
+    handleStartButtonClick();
     return;
   }
 }
@@ -71,7 +71,7 @@ function isButtonClicked(clickPosition, buttonArea) {
  * @returns {void}
  */
 function handleSoundButtonClick() {
-  this.toggleSound();
+  toggleSound();
   drawStartScreen();
 }
 

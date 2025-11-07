@@ -1,25 +1,6 @@
-/**
- * Global mouse position tracking
- * @type {{x: number, y: number}}
- */
 let mousePos = { x: 0, y: 0 };
-
-/**
- * Canvas element for game rendering
- * @type {HTMLCanvasElement}
- */
 let canvas;
-
-/**
- * Main game world instance
- * @type {World}
- */
 let world;
-
-/**
- * Keyboard input handler instance
- * @type {Keyboard}
- */
 let keyboard = new Keyboard();
 
 /**

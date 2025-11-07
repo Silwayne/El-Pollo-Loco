@@ -1,8 +1,3 @@
-/**
- * Character animation methods
- * All animation-related functionality for the Character class
- */
-
 Character.IMAGES_IDLE = [
   "img/2_character_pepe/1_idle/idle/I-1.png",
   "img/2_character_pepe/1_idle/idle/I-2.png",
@@ -76,180 +71,89 @@ Character.IMAGES_SLEEP = [
   "img/2_character_pepe/1_idle/long_idle/I-20.png",
 ];
 
-/**
- * Main animation handler - determines which animation to play
- * @returns {void}
- */
-Character.prototype.handleAnimation = function () {
-  if (this.isDead && this.isDead()) {
-    this.playDeadAnimation();
-    return;
+class CharacterAnimation {
+  constructor(character) {
+    this.character = character;
   }
 
-  if (this.isHurt && this.isHurt()) {
-    this.playHurtAnimation();
-    return;
+  /** Main animation handler **/
+  handleAnimation() {
+    const c = this.character;
+
+    if (c.isDead && c.isDead()) return this.playDeadAnimation();
+    if (c.isHurt && c.isHurt()) return this.playHurtAnimation();
+    if (c.isThrowing) return this.playThrowAnimation();
+
+    this.handleStandardAnimations();
   }
 
-  if (this.isThrowing) {
-    this.playThrowAnimation();
-    return;
+  /** Handles walking, jumping or idle animations **/
+  handleStandardAnimations() {
+    const c = this.character;
+
+    if (c.isAboveGround()) this.playJumpAnimation();
+    else if (c.world && (c.world.keyboard.D || c.world.keyboard.A))
+      this.playWalkAnimation();
+    else this.handleIdleAnimations();
   }
 
-  this.handleStandardAnimations();
-};
+  /** Plays idle, doze and sleep states **/
+  handleIdleAnimations() {
+    const c = this.character;
+    const idleTime = c.getIdleTime();
 
-/**
- * Handles standard animations (idle, movement, jumping)
- * @returns {void}
- */
-Character.prototype.handleStandardAnimations = function () {
-  if (this.isAboveGround()) {
-    this.playJumpAnimation();
-  } else if (this.world && (this.world.keyboard.D || this.world.keyboard.A)) {
-    this.playWalkAnimation();
-  } else {
-    this.handleIdleAnimations();
-  }
-};
+    if (!c.isDozing && !c.isSleeping) c.playIdleAnimation();
 
-/**
- * Plays death animation
- * @returns {void}
- */
-Character.prototype.playDeadAnimation = function () {
-  this.playAnimation(Character.IMAGES_DEAD);
-};
-
-/**
- * Plays hurt animation
- * @returns {void}
- */
-Character.prototype.playHurtAnimation = function () {
-  this.playAnimation(Character.IMAGES_HURT);
-
-  setTimeout(() => {
-    if (!this.isHurt()) {
-      this.resetAnimationState();
+    if (!c.isDozing && !c.isSleeping && idleTime >= c.DOZE_TIMEOUT) {
+      c.startDoze();
     }
-  }, 1000);
-};
 
-/**
- * Plays jumping animation with time-based frame management
- * @returns {void}
- */
-Character.prototype.playJumpAnimation = function () {
-  if (Character.IMAGES_JUMPING && Character.IMAGES_JUMPING.length > 0) {
-    let frameIndex =
-      Math.floor(Date.now() / 100) % Character.IMAGES_JUMPING.length;
-    let imagePath = Character.IMAGES_JUMPING[frameIndex];
+    if (!c.isSleeping && idleTime >= c.SLEEP_TIMEOUT) {
+      c.startSleep();
+    }
 
-    if (this.imageCache[imagePath]) {
-      this.img = this.imageCache[imagePath];
+    if (c.isSleeping) c.playSleepAnimation();
+    else if (c.isDozing) c.playDozeAnimation();
+  }
+
+  /** Plays death animation **/
+  playDeadAnimation() {
+    this.character.playAnimation(Character.IMAGES_DEAD);
+  }
+
+  /** Plays hurt animation **/
+  playHurtAnimation() {
+    const c = this.character;
+    c.playAnimation(Character.IMAGES_HURT);
+    setTimeout(() => {
+      if (!c.isHurt()) c.resetAnimationState();
+    }, 1000);
+  }
+
+  /** Plays jumping animation **/
+  playJumpAnimation() {
+    const c = this.character;
+    const frames = Character.IMAGES_JUMPING;
+    if (frames && frames.length > 0) {
+      let frameIndex = Math.floor(Date.now() / 100) % frames.length;
+      let imagePath = frames[frameIndex];
+      if (c.imageCache[imagePath]) c.img = c.imageCache[imagePath];
     }
   }
-};
 
-/**
- * Plays walking animation with time-based frame management
- * @returns {void}
- */
-Character.prototype.playWalkAnimation = function () {
-  if (Character.IMAGES_WALKING && Character.IMAGES_WALKING.length > 0) {
-    let frameIndex =
-      Math.floor(Date.now() / 150) % Character.IMAGES_WALKING.length;
-    let imagePath = Character.IMAGES_WALKING[frameIndex];
-
-    if (this.imageCache[imagePath]) {
-      this.img = this.imageCache[imagePath];
+  /** Plays walking animation **/
+  playWalkAnimation() {
+    const c = this.character;
+    const frames = Character.IMAGES_WALKING;
+    if (frames && frames.length > 0) {
+      let frameIndex = Math.floor(Date.now() / 150) % frames.length;
+      let imagePath = frames[frameIndex];
+      if (c.imageCache[imagePath]) c.img = c.imageCache[imagePath];
     }
   }
-};
 
-/**
- * Plays throw animation
- * @returns {void}
- */
-Character.prototype.playThrowAnimation = function () {
-  this.playAnimation(Character.IMAGES_JUMPING);
-};
-
-/**
- * Handles idle state animations (idle wiggling, dozing and sleeping)
- * @returns {void}
- */
-Character.prototype.handleIdleAnimations = function () {
-  const idleTime = this.getIdleTime();
-
-  if (!this.isDozing && !this.isSleeping) {
-    this.playIdleAnimation();
+  /** Plays throw animation **/
+  playThrowAnimation() {
+    this.character.playAnimation(Character.IMAGES_JUMPING);
   }
-
-  if (!this.isDozing && !this.isSleeping && idleTime >= this.DOZE_TIMEOUT) {
-    this.startDoze();
-  }
-
-  if (!this.isSleeping && idleTime >= this.SLEEP_TIMEOUT) {
-    this.startSleep();
-  }
-
-  if (this.isSleeping) {
-    this.playSleepAnimation();
-  } else if (this.isDozing) {
-    this.playDozeAnimation();
-  }
-};
-
-/**
- * Plays the standard idle animation (Wippen/Wackeln)
- * @returns {void}
- */
-Character.prototype.playIdleAnimation = function () {
-  if (Character.IMAGES_IDLE && Character.IMAGES_IDLE.length > 0) {
-    let frameIndex =
-      Math.floor(Date.now() / 200) % Character.IMAGES_IDLE.length;
-    let imagePath = Character.IMAGES_IDLE[frameIndex];
-
-    if (this.imageCache[imagePath]) {
-      this.img = this.imageCache[imagePath];
-    }
-  }
-};
-
-/**
- * Plays sleeping animation
- * @returns {void}
- */
-Character.prototype.playSleepAnimation = function () {
-  this.playAnimation(Character.IMAGES_SLEEP);
-};
-
-/**
- * Plays dozing animation
- * @returns {void}
- */
-Character.prototype.playDozeAnimation = function () {
-  this.playAnimation(Character.IMAGES_DOZE);
-};
-
-/**
- * Starts the dozing animation state
- * @returns {void}
- */
-Character.prototype.startDoze = function () {
-  if (this.isDozing || this.isSleeping) return;
-  this.isDozing = true;
-  this.currentImage = 0;
-};
-
-/**
- * Starts the sleeping animation state
- * @returns {void}
- */
-Character.prototype.startSleep = function () {
-  if (this.isSleeping) return;
-  this.isDozing = false;
-  this.isSleeping = true;
-  this.currentImage = 0;
-};
+}

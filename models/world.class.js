@@ -5,26 +5,21 @@
  * @class
  */
 class World {
-  /** @type {Character} */ character = new Character();
-  /** @type {Level} */ level = createNewLevel();
-  /** @type {HTMLCanvasElement} */ canvas;
-  /** @type {CanvasRenderingContext2D} */ ctx;
-  /** @type {Keyboard} */ keyboard;
-  /** @type {number} */ camera_x = 0;
-  /** @type {StatusBar} */ statusBar = new StatusBar();
-  /** @type {BottleBar} */ bottleBar = new BottleBar();
-  /** @type {CoinBar} */ coinBar = new CoinBar();
-  /** @type {BossBar} */ bossBar = new BossBar();
-  /** @type {Array} */ throwableObjects = [];
-  /** @type {number} */ bottleCount = 0;
-  /** @type {number} */ coinCount = 0;
-  /** @type {boolean} */ paused = false;
+  character = new Character();
+  level = createNewLevel();
+  canvas;
+  ctx;
+  keyboard;
+  camera_x = 0;
+  statusBar = new StatusBar();
+  bottleBar = new BottleBar();
+  coinBar = new CoinBar();
+  bossBar = new BossBar();
+  throwableObjects = [];
+  bottleCount = 0;
+  coinCount = 0;
+  paused = false;
 
-  /**
-   * Creates a World instance and initializes all game systems
-   * @param {HTMLCanvasElement} canvas - The game canvas element
-   * @param {Keyboard} keyboard - Keyboard input handler
-   */
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
@@ -264,5 +259,27 @@ class World {
   flipImageBack(mo) {
     mo.x = mo.x * -1;
     this.ctx.restore();
+  }
+
+  /**
+   * Conditionally draws mobile controls on touch devices
+   * @returns {void}
+   */
+  drawMobileControlsIfNeeded() {
+    if (this.isTouchDevice() && typeof this.drawMobileControls === "function") {
+      this.drawMobileControls();
+    }
+  }
+
+  /**
+   * Detects if the current device has touch capability
+   * @returns {boolean} True if touch device detected
+   */
+  isTouchDevice() {
+    return (
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0 ||
+      navigator.msMaxTouchPoints > 0
+    );
   }
 }

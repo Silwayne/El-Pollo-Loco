@@ -5,12 +5,12 @@
  * @class
  */
 class Level {
-  /** @type {Array} */ enemies;
-  /** @type {Array} */ clouds;
-  /** @type {Array} */ bottles;
-  /** @type {Array} */ coins;
-  /** @type {Array} */ backgroundObjects;
-  /** @type {number} */ level_end_x = 2250;
+  enemies;
+  clouds;
+  bottles;
+  coins;
+  backgroundObjects;
+  level_end_x = 2250;
 
   /**
    * Creates a Level instance with all game objects

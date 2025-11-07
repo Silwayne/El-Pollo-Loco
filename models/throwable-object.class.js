@@ -6,11 +6,6 @@
  * @extends MovableObject
  */
 class ThrowableObject extends MovableObject {
-  /**
-   * Rotation animation frames for bottle in flight
-   * Shows bottle spinning during trajectory
-   * @type {string[]}
-   */
   IMAGES_ROTATION = [
     "img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png",
     "img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png",
@@ -18,11 +13,6 @@ class ThrowableObject extends MovableObject {
     "img/6_salsa_bottle/bottle_rotation/4_bottle_rotation.png",
   ];
 
-  /**
-   * Splash animation frames for bottle impact
-   * Shows bottle breaking and liquid splashing
-   * @type {string[]}
-   */
   IMAGES_SPLASH = [
     "img/6_salsa_bottle/bottle_rotation/bottle_splash/1_bottle_splash.png",
     "img/6_salsa_bottle/bottle_rotation/bottle_splash/2_bottle_splash.png",
@@ -32,11 +22,6 @@ class ThrowableObject extends MovableObject {
     "img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png",
   ];
 
-  /**
-   * Creates a ThrowableObject instance at specified position
-   * @param {number} x - Initial x-coordinate for throwing position
-   * @param {number} y - Initial y-coordinate for throwing position
-   */
   constructor(x, y) {
     super();
     this.loadImage("img/6_salsa_bottle/salsa_bottle.png");

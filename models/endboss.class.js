@@ -142,8 +142,6 @@ class Endboss extends MovableObject {
 
     this.animation.playAttackAnimation();
 
-    this.dealDamageToPlayer();
-
     setTimeout(() => {
       this.isAttacking = false;
     }, 1000);
@@ -376,10 +374,10 @@ class Endboss extends MovableObject {
    */
   getCollisionBox() {
     return {
-      x: this.x + 20,
-      y: this.y + 80,
-      width: this.width - 30,
-      height: this.height - 150,
+      x: this.x + 50,
+      y: this.y + 120,
+      width: this.width - 120,
+      height: this.height - 180,
     };
   }
 }

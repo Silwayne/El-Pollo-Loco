@@ -79,7 +79,8 @@ class DrawableObject {
       this instanceof LittleChicken ||
       this instanceof Endboss ||
       this instanceof Bottle ||
-      this instanceof Coin
+      this instanceof Coin ||
+      this instanceof ThrowableObject
     );
   }
 
@@ -104,6 +105,7 @@ class DrawableObject {
    * @returns {void}
    */
   drawCollisionPath(ctx, box) {
+    // ctx.rect(box.x, box.y, box.width, box.height);
     ctx.stroke();
   }
 

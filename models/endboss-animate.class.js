@@ -13,17 +13,6 @@ Endboss.IMAGES_SPAWNING = [
   "img/4_enemie_boss_chicken/2_alert/G12.png",
 ];
 
-Endboss.IMAGES_ATTACK = [
-  "img/4_enemie_boss_chicken/3_attack/G13.png",
-  "img/4_enemie_boss_chicken/3_attack/G14.png",
-  "img/4_enemie_boss_chicken/3_attack/G15.png",
-  "img/4_enemie_boss_chicken/3_attack/G16.png",
-  "img/4_enemie_boss_chicken/3_attack/G17.png",
-  "img/4_enemie_boss_chicken/3_attack/G18.png",
-  "img/4_enemie_boss_chicken/3_attack/G19.png",
-  "img/4_enemie_boss_chicken/3_attack/G20.png",
-];
-
 Endboss.IMAGES_HURT = [
   "img/4_enemie_boss_chicken/4_hurt/G21.png",
   "img/4_enemie_boss_chicken/4_hurt/G22.png",
@@ -54,7 +43,7 @@ class EndbossAnimation {
   playWalkingAnimation() {
     const e = this.endboss;
     e.playAnimation(Endboss.IMAGES_WALKING);
-    e.x -= 40;
+    // e.x -= 40;
   }
 
   /**
@@ -62,9 +51,9 @@ class EndbossAnimation {
    * Called when the boss enters its attack phase.
    * @returns {void}
    */
-  playAttackAnimation() {
-    this.endboss.playAnimation(Endboss.IMAGES_ATTACK);
-  }
+  // playAttackAnimation() {
+  //   this.endboss.playAnimation(Endboss.IMAGES_ATTACK);
+  // }
 
   /**
    * Plays the hurt animation when the boss takes damage.

@@ -42,8 +42,10 @@ let Mobile = {
     this.canvas.addEventListener("touchend", (e) => this.onTouchEnd(e), options);
 
     this.canvas.addEventListener("touchcancel", (e) => this.onTouchEnd(e), options);
-  },
 
+    this.canvas.addEventListener("touchcancel", (e) => this.onTouchEnd(e), options); 
+  },
+  
   /**
    * Sets up mouse event listeners for desktop devices
    * Uses window for mouseup to capture release outside canvas
@@ -141,11 +143,6 @@ let Mobile = {
       this.activeTouches[touchId] = btn.key;
 
       this.setKey(btn.key, true);
-
-      setTimeout(() => {
-        this.setKey(btn.key, false);
-        delete this.activeTouches[touchId];
-      }, 150);
     }
   },
 
@@ -157,11 +154,20 @@ let Mobile = {
    */
   onTouchEnd(e) {
     if (e.cancelable) e.preventDefault();
-    if (!this.enabled()) return;
 
-    for (let t of e.changedTouches) {
-      this.releaseTouch(t.identifier);
+    for (let touchId in this.activeTouches) {
+      this.setKey(this.activeTouches[touchId], false);
     }
+    this.activeTouches = {};
+  },
+
+  /**
+   * Handles touch cancel events (wenn Touch unterbrochen wird)
+   * @param {TouchEvent} e - Touch event object
+   * @returns {void}
+   */
+  onTouchCancel(e) {
+    this.onTouchEnd(e);
   },
 
   /**

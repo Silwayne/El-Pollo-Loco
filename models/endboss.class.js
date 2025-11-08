@@ -11,14 +11,11 @@ class Endboss extends MovableObject {
   width = 250;
   energy = 100;
   triggered = false;
-  attacking = false;
-  attackPhase = false;
   isDead = false;
   isHurt = false;
 
   animateInterval = null;
   walkInterval = null;
-  attackInterval = null;
 
   constructor() {
     super().loadImage("img/4_enemie_boss_chicken/1_walk/G1.png");
@@ -37,7 +34,6 @@ class Endboss extends MovableObject {
   loadAllImages() {
     this.loadImages(Endboss.IMAGES_WALKING);
     this.loadImages(Endboss.IMAGES_SPAWNING);
-    this.loadImages(Endboss.IMAGES_ATTACK);
     this.loadImages(Endboss.IMAGES_DEAD);
     this.loadImages(Endboss.IMAGES_HURT);
   }
@@ -70,7 +66,7 @@ class Endboss extends MovableObject {
     if (this.isDead || this.isHurt) return;
 
     this.checkTriggerCondition();
-    this.handleAttackBehavior();
+    this.handleContinuousMovement();
   }
 
   /**
@@ -85,16 +81,28 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Controls attack/walk animations depending on attack phase.
+   * Continuous movement towards the player
    * @returns {void}
    */
-  handleAttackBehavior() {
-    if (this.attacking) {
-      if (this.attackPhase) {
-        this.animation.playWalkingAnimation();
-      } else {
-        this.animation.playAttackAnimation();
-      }
+  handleContinuousMovement() {
+    if (this.triggered && !this.isDead) {
+      this.moveTowardsPlayer();
+      this.animation.playWalkingAnimation();
+    }
+  }
+
+  /**
+   * Moves boss towards player position
+   * @returns {void}
+   */
+  moveTowardsPlayer() {
+    this.x -= 25;
+
+    const characterX = this.world.character.x;
+    if (this.x > characterX + 100) {
+      this.x -= 30;
+    } else {
+      this.x -= 20;
     }
   }
 
@@ -140,7 +148,7 @@ class Endboss extends MovableObject {
 
     this.animation.playSpawningAnimation();
     this.playBossSound();
-    this.scheduleAttackStart();
+    setTimeout(() => {}, 1500);
   }
 
   /**
@@ -151,56 +159,6 @@ class Endboss extends MovableObject {
     if (this.world && this.world.audioManager) {
       this.world.audioManager.play("boss");
     }
-  }
-
-  /**
-   * Waits briefly after spawning before beginning attack cycles.
-   * @returns {void}
-   */
-  scheduleAttackStart() {
-    setTimeout(() => {
-      this.startAttackPattern();
-    }, 1500);
-  }
-
-  /**
-   * Starts attack behavior and schedules repeated attack cycles.
-   * @returns {void}
-   */
-  startAttackPattern() {
-    this.attacking = true;
-    this.startAttackIntervals();
-  }
-
-  /**
-   * Repeatedly executes attack cycles in intervals.
-   * @returns {void}
-   */
-  startAttackIntervals() {
-    this.attackInterval = setInterval(() => {
-      this.executeAttackCycle();
-    }, 1500);
-  }
-
-  /**
-   * Executes a single attack phase.
-   * @returns {void}
-   */
-  executeAttackCycle() {
-    if (this.isDead) return;
-
-    this.attackPhase = true;
-    this.scheduleAttackEnd();
-  }
-
-  /**
-   * Ends the attack phase after a short duration.
-   * @returns {void}
-   */
-  scheduleAttackEnd() {
-    setTimeout(() => {
-      this.attackPhase = false;
-    }, 800);
   }
 
   /**
@@ -282,7 +240,7 @@ class Endboss extends MovableObject {
   clearAllIntervals() {
     this.clearInterval(this.animateInterval);
     this.clearInterval(this.walkInterval);
-    this.clearInterval(this.attackInterval);
+    // this.clearInterval(this.attackInterval);
   }
 
   /**

@@ -13,9 +13,15 @@ class Endboss extends MovableObject {
   triggered = false;
   isDead = false;
   isHurt = false;
+  isAttacking = false;
+  lastAttackTime = 0;
+  attackCooldown = 2000;
 
   animateInterval = null;
   walkInterval = null;
+  chaseInterval = null;
+
+  static ATTACK_RANGE = 150;
 
   constructor() {
     super().loadImage("img/4_enemie_boss_chicken/1_walk/G1.png");
@@ -34,6 +40,7 @@ class Endboss extends MovableObject {
   loadAllImages() {
     this.loadImages(Endboss.IMAGES_WALKING);
     this.loadImages(Endboss.IMAGES_SPAWNING);
+    this.loadImages(Endboss.IMAGES_ATTACK);
     this.loadImages(Endboss.IMAGES_DEAD);
     this.loadImages(Endboss.IMAGES_HURT);
   }
@@ -66,7 +73,7 @@ class Endboss extends MovableObject {
     if (this.isDead || this.isHurt) return;
 
     this.checkTriggerCondition();
-    this.handleContinuousMovement();
+    this.handleBossBehavior();
   }
 
   /**
@@ -77,6 +84,91 @@ class Endboss extends MovableObject {
   checkTriggerCondition() {
     if (!this.triggered && this.world.character.x > 2150) {
       this.startBossSequence();
+    }
+  }
+
+  /**
+   * Handles boss behavior based on distance to player
+   * @returns {void}
+   */
+  handleBossBehavior() {
+    if (this.triggered && !this.isDead) {
+      const distanceTopPlayer = this.getDistanceToPlayer();
+
+      if (
+        Endboss.isPlayerInAttackRange(distanceTopPlayer) &&
+        this.canAttack()
+      ) {
+        this.startAttack();
+      } else {
+        this.chasePlayer();
+      }
+    }
+  }
+
+  /**
+   * Calculates distance to player
+   * @returns {number} Distance to player
+   */
+  getDistanceToPlayer() {
+    return Math.abs(this.x - this.world.character.x);
+  }
+
+  /**
+   * Checks if player is within attack range
+   * @param {number} distance - Distance to player
+   * @returns {boolean} True if player is in attack range
+   */
+   static isPlayerInAttackRange(distance) {
+    return distance <= Endboss.ATTACK_RANGE;
+  }
+
+  /**
+   * Checks if boss can attack (cooldown finished)
+   * @returns {boolean} True if attack is available
+   */
+  canAttack() {
+    const now = new Date().getTime();
+    return now - this.lastAttackTime > this.attackCooldown;
+  }
+
+  /**
+   * Starts attack sequence
+   * @returns {void}
+   */
+  startAttack() {
+    this.isAttacking = true;
+    this.lastAttackTime = new Date().getTime();
+
+    this.animation.playAttackAnimation();
+
+    this.dealDamageToPlayer();
+
+    setTimeout(() => {
+      this.isAttacking = false;
+    }, 1000);
+  }
+
+  /**
+   * Deals damage to player if in range
+   * @returns {void}
+   */
+  dealDamageToPlayer() {
+    const distance = this.getDistanceToPlayer();
+    if (distance <= Endboss.ATTACK_RANGE) {
+      this.world.character.hit(10);
+    }
+  }
+
+  /**
+   * Chases player by moving towards them
+   * @returns {void}
+   */
+  chasePlayer() {
+    this.animation.playWalkingAnimation();
+
+    if (this.x > this.world.character.x + 50) {
+      this.x -= 20;
     }
   }
 
@@ -148,6 +240,20 @@ class Endboss extends MovableObject {
 
     this.animation.playSpawningAnimation();
     this.playBossSound();
+    setTimeout(() => {}, 1500);
+  }
+
+  /**
+   * Completes walking sequence and starts intelligent chasing
+   * @returns {void}
+   */
+  completeWalkSequence() {
+    clearInterval(this.walkInterval);
+    this.walkInterval = null;
+
+    this.animation.playSpawningAnimation();
+    this.playBossSound();
+
     setTimeout(() => {}, 1500);
   }
 
@@ -240,6 +346,7 @@ class Endboss extends MovableObject {
   clearAllIntervals() {
     this.clearInterval(this.animateInterval);
     this.clearInterval(this.walkInterval);
+    this.clearInterval(this.chaseInterval);
   }
 
   /**

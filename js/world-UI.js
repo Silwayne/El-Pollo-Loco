@@ -139,10 +139,29 @@ class WorldUI {
    * @returns {void}
    */
   drawStatusBars() {
+    this.setStatusBarPositions();
     this.addToCanvas(this.world.statusBar);
     this.addToCanvas(this.world.bottleBar);
     this.addToCanvas(this.world.coinBar);
     this.addToCanvas(this.world.bossBar);
+  }
+
+  /**
+   * Sets fixed positions for all status bars to prevent character overlap
+   * @returns {void}
+   */
+  setStatusBarPositions() {
+    this.world.statusBar.x = 0;
+    this.world.statusBar.y = 0;
+
+    this.world.bottleBar.x = 150;
+    this.world.bottleBar.y = 0;
+
+    this.world.coinBar.x = 300;
+    this.world.coinBar.y = 0;
+
+    this.world.bossBar.x = 500;
+    this.world.bossBar.y = 0;
   }
 
   /**

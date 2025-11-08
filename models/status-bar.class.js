@@ -59,7 +59,7 @@ class StatusBar extends DrawableObject {
 
     this.x = x;
     this.y = y;
-    this.width = 200;
+    this.width = 150;
     this.height = 60;
 
     if (initialValue !== null) {
@@ -106,18 +106,18 @@ class StatusBar extends DrawableObject {
    * @param {string} type - Type of status bar to create
    * @returns {StatusBar} Configured status bar instance
    */
-  static create(type) {
-    switch (type) {
-      case "health":
-        return new StatusBar("health", 10, 0, 100);
-      case "coin":
-        return new StatusBar("coin", 10, 100, 0);
-      case "bottle":
-        return new StatusBar("bottle", 10, 50, 0);
-      case "boss":
-        return new StatusBar("boss", 500, 20, 100);
-      default:
-        return new StatusBar("health", 10, 0, 100);
-    }
-  }
+  // static create(type) {
+  //   switch (type) {
+  //     case "health":
+  //       return new StatusBar("health", 10, 0, 100);
+  //     case "coin":
+  //       return new StatusBar("coin", 10, 100, 0);
+  //     case "bottle":
+  //       return new StatusBar("bottle", 10, 50, 0);
+  //     case "boss":
+  //       return new StatusBar("boss", 500, 20, 100);
+  //     default:
+  //       return new StatusBar("health", 10, 0, 100);
+  //   }
+  // }
 }

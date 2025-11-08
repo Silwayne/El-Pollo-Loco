@@ -240,7 +240,6 @@ class Endboss extends MovableObject {
   clearAllIntervals() {
     this.clearInterval(this.animateInterval);
     this.clearInterval(this.walkInterval);
-    // this.clearInterval(this.attackInterval);
   }
 
   /**

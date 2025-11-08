@@ -43,17 +43,7 @@ class EndbossAnimation {
   playWalkingAnimation() {
     const e = this.endboss;
     e.playAnimation(Endboss.IMAGES_WALKING);
-    // e.x -= 40;
   }
-
-  /**
-   * Plays the attack animation.
-   * Called when the boss enters its attack phase.
-   * @returns {void}
-   */
-  // playAttackAnimation() {
-  //   this.endboss.playAnimation(Endboss.IMAGES_ATTACK);
-  // }
 
   /**
    * Plays the hurt animation when the boss takes damage.

@@ -104,8 +104,6 @@ class DrawableObject {
    * @returns {void}
    */
   drawCollisionPath(ctx, box) {
-    // Zum Debuggen Kollisionsboxen anzeigen:
-    // ctx.rect(box.x, box.y, box.width, box.height);
     ctx.stroke();
   }
 

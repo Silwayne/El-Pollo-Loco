@@ -130,17 +130,6 @@ class CharacterAnimation {
     }, 1000);
   }
 
-  // /** Plays jumping animation **/
-  // playJumpAnimation() {
-  //   const c = this.character;
-  //   const frames = Character.IMAGES_JUMPING;
-  //   if (frames && frames.length > 0) {
-  //     let frameIndex = Math.floor(Date.now() / 100) % frames.length;
-  //     let imagePath = frames[frameIndex];
-  //     if (c.imageCache[imagePath]) c.img = c.imageCache[imagePath];
-  //   }
-  // }
-
 /** Plays jumping animation - super simple based on speedY */
 playJumpAnimation() {
   const c = this.character;

@@ -34,10 +34,8 @@ class MobileWorld extends World {
    * @returns {void}
    */
   drawMobileControlsIfNeeded() {
-    if (
-      this.shouldShowTouchControls() &&
-      typeof this.drawMobileControls === "function"
-    ) {
+    if (this.world && this.world.paused) return;
+    if (this.shouldShowTouchControls() && typeof this.drawMobileControls === "function") {
       this.drawMobileControls();
     }
   }

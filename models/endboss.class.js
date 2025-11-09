@@ -82,7 +82,7 @@ class Endboss extends MovableObject {
    * @returns {void}
    */
   checkTriggerCondition() {
-    if (!this.triggered && this.world.character.x > 2150) {
+    if (!this.triggered && this.world.character.x > 1800) {
       this.startBossSequence();
     }
   }
@@ -223,7 +223,7 @@ class Endboss extends MovableObject {
     this.x -= 24;
     this.playAnimation(Endboss.IMAGES_WALKING);
 
-    if (this.x <= 2350) {
+    if (this.x <= 1950) {
       this.completeWalkSequence();
     }
   }

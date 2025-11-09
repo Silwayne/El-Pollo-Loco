@@ -70,8 +70,10 @@ class WorldUI {
   drawMainOrOverlay() {
     if (this.world.character.isDead()) {
       this.showGameOver();
+      return;
     } else if (this.isEndbossDead()) {
       this.showGameWin();
+      return;
     } else {
       this.drawGameObjects();
     }

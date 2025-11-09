@@ -45,7 +45,7 @@ let Mobile = {
 
     this.canvas.addEventListener("touchcancel", (e) => this.onTouchEnd(e), options); 
   },
-  
+
   /**
    * Sets up mouse event listeners for desktop devices
    * Uses window for mouseup to capture release outside canvas
@@ -62,7 +62,13 @@ let Mobile = {
    * @returns {boolean} True if mobile controls should be enabled
    */
   enabled() {
-    return this.canvas && this.world && window.innerWidth <= this.threshold;
+    return (
+      this.canvas &&
+      this.world &&
+      ("ontouchstart" in window ||
+        navigator.maxTouchPoints > 0 ||
+        navigator.msMaxTouchPoints > 0)
+    );
   },
 
   /**

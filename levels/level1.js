@@ -27,6 +27,9 @@ function createNewLevel() {
     [
       new Bottle("ground"),
       new Bottle("ground"),
+      new Bottle("ground"),
+      new Bottle("ground"),
+      new Bottle("air"),
       new Bottle("air"),
       new Bottle("air"),
       new Bottle("air")
@@ -35,6 +38,9 @@ function createNewLevel() {
     [
       new Coin("ground"),
       new Coin("ground"),
+      new Coin("ground"),
+      new Coin("ground"),
+      new Coin("air"),
       new Coin("air"),
       new Coin("air"),
       new Coin("air")

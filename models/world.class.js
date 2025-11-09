@@ -202,8 +202,11 @@ class World {
    * @returns {void}
    */
   drawMobileControlsIfNeeded() {
+    if (this.world?.paused) return; 
     if (
-      window.innerWidth <= 1023 &&
+      ("ontouchstart" in window ||
+        navigator.maxTouchPoints > 0 ||
+        navigator.msMaxTouchPoints > 0) &&
       typeof this.drawMobileControls === "function"
     ) {
       this.drawMobileControls();

@@ -314,7 +314,7 @@ function getHelpInstructions() {
  * @returns {void}
  */
 function drawGermanInstructions(lines, x, baseY) {
-  ctx.font = "18px Arial";
+  ctx.font = "20px Arial";
   ctx.textAlign = "left";
   ctx.fillStyle = "#fff";
 
@@ -334,13 +334,13 @@ function drawGermanInstructions(lines, x, baseY) {
  * @returns {void}
  */
 function drawSpanishInstructions(lines, x, colWidth, baseY) {
-  ctx.font = "18px Arial";
+  ctx.font = "20px Arial";
   ctx.textAlign = "left";
   ctx.fillStyle = "#fff";
 
   let currentY = baseY;
   for (let line of lines) {
-    ctx.fillText(line, x + colWidth * 2, currentY);
+    ctx.fillText(line, x + colWidth * 1.8, currentY);
     currentY += 28;
   }
 }

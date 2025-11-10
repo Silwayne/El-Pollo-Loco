@@ -9,26 +9,37 @@ class WorldUIGameOver {
     this.world = worldUI.world;
     this.ctx = worldUI.ctx;
     this.canvas = worldUI.canvas;
+    this.preloadImages();
   }
 
-  /**
-   * Draws the game over screen and handles related audio
-   * @returns {void}
-   */
+  preloadImages() {
+    this.gameOverImage = new Image();
+    this.gameOverImage.src = "img/You won, you lost/Game over A.png";
+
+    this.winImage = new Image();
+    this.winImage.src = "img/You won, you lost/You Won B.png";
+  }
+
   drawGameOverImage() {
     this.setupGameEndState();
     this.playSound("gameOver");
-    this.drawImageAndButtons("img/You won, you lost/Game over A.png");
+    this.drawPreloadedImage(this.gameOverImage);
   }
 
-  /**
-   * Draws the game win screen and handles related audio
-   * @returns {void}
-   */
   drawGameWinImage() {
     this.setupGameEndState();
     this.playSound("win");
-    this.drawImageAndButtons("img/You won, you lost/You Won B.png");
+    this.drawPreloadedImage(this.winImage);
+  }
+
+  drawPreloadedImage(img) {
+    const imageConfig = this.getImageConfig();
+
+    if (img.complete && img.naturalHeight !== 0) {
+      this.drawGameEndScreen(img, imageConfig);
+    } else {
+      this.drawImageAndButtons(img.src);
+    }
   }
 
   /**

@@ -93,12 +93,16 @@ class Endboss extends MovableObject {
    */
   handleBossBehavior() {
     if (this.triggered && !this.isDead) {
-      const distanceTopPlayer = this.getDistanceToPlayer();
+      const bossFront = this.x + this.width - 240;
+      const char = this.world.character;
 
-      if (
-        Endboss.isPlayerInAttackRange(distanceTopPlayer) &&
-        this.canAttack()
-      ) {
+      if (char.x > bossFront) {
+        char.x = bossFront - 500;
+        char.hit(5);
+      }
+      const distanceToPlayer = this.getDistanceToPlayer();
+
+      if (Endboss.isPlayerInAttackRange(distanceToPlayer) && this.canAttack()) {
         this.startAttack();
       } else {
         this.chasePlayer();
@@ -119,7 +123,7 @@ class Endboss extends MovableObject {
    * @param {number} distance - Distance to player
    * @returns {boolean} True if player is in attack range
    */
-   static isPlayerInAttackRange(distance) {
+  static isPlayerInAttackRange(distance) {
     return distance <= Endboss.ATTACK_RANGE;
   }
 

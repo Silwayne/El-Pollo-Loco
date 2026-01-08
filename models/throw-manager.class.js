@@ -26,7 +26,7 @@ class ThrowManager {
    * @returns {void}
    */
   handleThrowInput() {
-    const THROW_COOLDOWN = 500;
+    const THROW_COOLDOWN = 1200;
     const now = Date.now();
 
     if (this.canThrow(now, THROW_COOLDOWN)) {
